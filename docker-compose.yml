@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: apps/web/Dockerfile
     working_dir: /app
-    command: sh -c "pnpm install && pnpm --filter web dev"
+    command: ["pnpm", "--filter", "web", "dev"]
     ports:
       - "3000:3000"
     environment:
@@ -15,6 +15,7 @@ services:
       - NEXT_PUBLIC_API_BASE_URL=http://api:3001
     volumes:
       - .:/app
+      - /app/node_modules
     depends_on:
       - api
 
@@ -23,7 +24,7 @@ services:
       context: .
       dockerfile: apps/api/Dockerfile
     working_dir: /app
-    command: sh -c "pnpm install && pnpm --filter api start:dev"
+    command: ["pnpm", "--filter", "api", "dev"]
     ports:
       - "3001:3001"
     environment:
@@ -32,6 +33,7 @@ services:
       - CHOKIDAR_USEPOLLING=true
     volumes:
       - .:/app
+      - /app/node_modules
 
 networks:
   default:

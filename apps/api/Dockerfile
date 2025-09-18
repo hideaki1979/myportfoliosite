@@ -18,6 +18,6 @@ COPY packages/typescript-config/package.json packages/typescript-config/package.
 RUN pnpm install
 
 # Default command for development (actual source will be bind-mounted by compose)
-CMD ["sh", "-c", "pnpm install && pnpm --filter api start:dev"]
+CMD ["pnpm", "--filter", "api", "start:dev"]
 
 
