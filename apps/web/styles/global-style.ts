@@ -9,9 +9,7 @@ export const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
     line-height: 1.5;
-    font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Arial;
-    background: #fff;
-    color: #111;
+    font-family: var(--font-geist-sans, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

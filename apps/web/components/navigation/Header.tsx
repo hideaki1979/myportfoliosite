@@ -20,6 +20,7 @@ const NAV_ITEMS: NavItem[] = [
 export function Header() {
     const [isOpen, setIsOpen] = useState(false);
     const panelRef = useRef<HTMLDivElement | null>(null);
+    const [focusables, setFocusables] = useState<HTMLElement[]>([]);
 
     // メニューを開いたときに本文のスクロールをロックする
     useEffect(() => {
@@ -45,13 +46,15 @@ export function Header() {
     }, [isOpen]);
 
     // 開いたときに最初のリンクにフォーカス + パネル内の単純なフォーカス トラップ
-    const focusables = useMemo(() => {
-        if (!panelRef.current) return [] as HTMLElement[];
-        const nodes = panelRef.current.querySelectorAll<HTMLElement>(
+    useEffect(() => {
+        if(!isOpen) return;
+        const panel = panelRef.current;
+        if (!panel) return;
+        const nodes = panel.querySelectorAll<HTMLElement>(
             'a, button, [tabindex]:not([tabindex="-1"])'
         );
-        return Array.from(nodes).filter((el) => !el.hasAttribute("disabled"));
-    }, []);
+        setFocusables(Array.from(nodes).filter((el) => !el.hasAttribute("disabled")));
+    }, [isOpen]);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -81,7 +84,7 @@ export function Header() {
         };
         window.addEventListener("keydown", handleTab);
         return () => window.removeEventListener("keydown", handleTab);
-    })
+    }, [isOpen, focusables])
 
     return (
         <SiteHeader>
