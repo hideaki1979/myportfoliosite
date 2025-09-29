@@ -1,7 +1,8 @@
 'use client'
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
 type NavItem = {
@@ -10,7 +11,7 @@ type NavItem = {
 };
 
 const NAV_ITEMS: NavItem[] = [
-    { url: "/home", label: "Home" },
+    { url: "/", label: "Home" },
     { url: "/about", label: "AboutMe" },
     { url: "/portfolio", label: "Portfolio" },
     { url: "/article", label: "Article" },
@@ -23,6 +24,7 @@ export function Header() {
     const triggerRef = useRef<HTMLButtonElement | null>(null);
     const wasOpenRef = useRef(false);
     const [focusables, setFocusables] = useState<HTMLElement[]>([]);
+    const pathname = usePathname();
 
     // メニューを開いたときに本文のスクロールをロックする
     useEffect(() => {
@@ -94,13 +96,16 @@ export function Header() {
     return (
         <SiteHeader>
             <HeaderInner>
-                <Brand href="/home">Mirrorman Portfolio Site</Brand>
+                <Brand href="/">Mirrorman Portfolio Site</Brand>
 
                 <DesktopNav aria-label="Primary">
                     <NavList>
                         {NAV_ITEMS.map((item) => (
                             <li key={item.url}>
-                                <StyledLink href={item.url}>
+                                <StyledLink
+                                    href={item.url}
+                                    aria-current={pathname === item.url ? "page" : undefined}
+                                >
                                     {item.label}
                                 </StyledLink>
                             </li>
@@ -130,7 +135,11 @@ export function Header() {
                 <MobileList>
                     {NAV_ITEMS.map((item) => (
                         <li key={item.url}>
-                            <StyledLink href={item.url} onClick={() => setIsOpen(false)}>
+                            <StyledLink
+                                href={item.url}
+                                aria-current={pathname === item.url ? "page" : undefined}
+                                onClick={() => setIsOpen(false)}
+                            >
                                 {item.label}
                             </StyledLink>
                         </li>
@@ -184,6 +193,10 @@ const StyledLink = styled(Link)`
     color: ${({ theme }) => theme.colors.text};
     &:hover {
         color: ${({ theme }) => theme.colors.primary};
+    }
+    &[aria-current="page"] {
+        color: ${({ theme }) => theme.colors.primary};
+        font-weight: 700;
     }
 `;
 
