@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Contact | Mirrorman Portfolio",
         description: "お仕事のご相談、技術的な質問、お問い合わせはこちらからお気軽にご連絡ください。フロントエンド・バックエンド開発に関するご相談をお待ちしています。",
-        url: "https://mirrorman-portfolio.vercel.app/contact",
+        url: "/contact",
         type: "website",
         images: [
             {
@@ -19,9 +19,10 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Contact | Mirrorman Portfolio",
-        description: "お仕事のご相談、技術的な質問、お問い合わせはこちらからお気軽にご連絡ください。フロントエンド・バックエンド開発に関するご相談をお待ちしています。",
         images: ["/og-contact.jpg"],
+    },
+    alternates: {
+        canonical: "/contact",
     },
 };
 

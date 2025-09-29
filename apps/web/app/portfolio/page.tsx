@@ -1,27 +1,28 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "About Me",
-    description: "フルスタックエンジニアを目指すための学習記録、スキル、経験について詳しく紹介しています。React、Next.js、TypeScriptを中心としたGithubのリポジトリをご覧ください。",
+    title: "Portfolio",
+    description: "製作物やGitHubの主要リポジトリ、使用技術のハイライトを掲載しています。React、Next.js、TypeScript を中心とした開発実績をご覧ください。",
     openGraph: {
-        title: "About Me | Mirrorman Portfolio",
-        description: "フルスタックエンジニアを目指すための学習記録、スキル、経験について詳しく紹介しています。React、Next.js、TypeScriptを中心としたGithubのリポジトリをご覧ください。",
-        url: "https://mirrorman-portfolio.vercel.app/about",
-        type: "profile",
+        title: "Portfolio | Mirrorman Portfolio",
+        description: "製作物やGitHubの主要リポジトリ、使用技術のハイライトを掲載しています。React、Next.js、TypeScript を中心とした開発実績をご覧ください。",
+        url: "/portfolio",
+        type: "website",
         images: [
             {
-                url: "/og-about.jpg",
+                url: "/og-portfolio.jpg",
                 width: 1200,
                 height: 630,
-                alt: "About Me - Mirrorman Portfolio",
+                alt: "Portfolio - Mirrorman Portfolio",
             },
         ],
     },
     twitter: {
         card: "summary_large_image",
-        title: "About Me | Mirrorman Portfolio",
-        description: "フルスタックエンジニアを目指すための学習記録、スキル、経験について詳しく紹介しています。React、Next.js、TypeScriptを中心としたGithubのリポジトリをご覧ください。",
-        images: ["/og-about.jpg"],
+        images: ["/og-portfolio.jpg"],
+    },
+    alternates: {
+        canonical: "/portfolio",
     },
 };
 
@@ -29,7 +30,7 @@ export default function PortfolioPage() {
     return (
         <main style={{ maxWidth: 960, margin: '0 auto', padding: '24px 16px' }}>
             <h1>Portfolio</h1>
-            <p>このページは Portfolio のプレースホルダーです。後でGithub連携機能を実装します。</p>
+            <p>このページは Portfolio のプレースホルダーです。後でGitHub連携機能を実装します。</p>
         </main>
     )
 }

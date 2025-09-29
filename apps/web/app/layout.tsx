@@ -16,6 +16,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://mirrorman-portfolio.vercel.app"),
   title: {
     default: "Mirrorman Portfolio",
     template: "%s | Mirrorman Portfolio",
@@ -38,8 +39,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    locale: "ja-JP",
-    url: "https://mirrorman-portfolio.vercel.app",
+    locale: "ja_JP",
+    url: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://mirrorman-portfolio.vercel.app"),
     siteName: "Mirrorman Portfolio",
     title: "Mirrorman Portfolio",
     description: "フルスタックエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
@@ -57,9 +58,6 @@ export const metadata: Metadata = {
     title: "Mirrorman Portfolio",
     description: "フルスタックエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
     images: ["/og-image.jpg"],
-  },
-  alternates: {
-    canonical: "https://mirrorman-portfolio.vercel.app",
   },
 };
 

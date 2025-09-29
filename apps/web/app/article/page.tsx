@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Article | Mirrorman Portfolio",
         description: "技術記事、ブログ投稿、Qiitaでの執筆活動を紹介しています。フルスタック開発、React、Next.js、TypeScriptに関する技術的な知見を共有しています。",
-        url: "https://mirrorman-portfolio.vercel.app/article",
+        url: "/article",
         type: "website",
         images: [
             {
@@ -19,9 +19,10 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Article | Mirrorman Portfolio",
-        description: "技術記事、ブログ投稿、Qiitaでの執筆活動を紹介しています。フルスタック開発、React、Next.js、TypeScriptに関する技術的な知見を共有しています。",
         images: ["/og-article.jpg"],
+    },
+    alternates: {
+        canonical: "/article",
     },
 };
 

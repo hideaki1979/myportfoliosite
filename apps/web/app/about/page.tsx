@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "About Me | Mirrorman Portfolio",
     description: "25年以上SIerに勤めていたシステムエンジニアがフルスタックエンジニアを目指すための学習記録について詳しく紹介しています。React、Next.js、TypeScriptを中心とした技術スタックと実績をご覧ください。",
-    url: "https://mirrorman-portfolio.vercel.app/about",
+    url: "/about",
     type: "profile",
     images: [
       {
@@ -19,9 +19,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "About Me | Mirrorman Portfolio",
-    description: "25年以上SIerに勤めていたシステムエンジニアがフルスタックエンジニアを目指すための学習記録について詳しく紹介しています。React、Next.js、TypeScriptを中心とした技術スタックと実績をご覧ください。",
     images: ["/og-about.jpg"],
+  },
+  alternates: {
+    canonical: "/about",
   },
 };
 

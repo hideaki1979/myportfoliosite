@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Mirrorman Portfolio - ホーム",
     description: "フロントエンドエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
-    url: "https://mirrorman-portfolio.vercel.app",
+    url: "/",
     type: "website",
     images: [
       {
@@ -27,9 +27,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mirrorman Portfolio - ホーム",
-    description: "フロントエンドエンジニアのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発の実績を紹介しています。",
     images: ["/og-home.jpg"],
+  },
+  alternates: {
+    canonical: "/",
   },
 }
 
