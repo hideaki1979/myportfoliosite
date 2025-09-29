@@ -20,6 +20,8 @@ const NAV_ITEMS: NavItem[] = [
 export function Header() {
     const [isOpen, setIsOpen] = useState(false);
     const panelRef = useRef<HTMLDivElement | null>(null);
+    const triggerRef = useRef<HTMLButtonElement | null>(null);
+    const wasOpenRef = useRef(false);
     const [focusables, setFocusables] = useState<HTMLElement[]>([]);
 
     // メニューを開いたときに本文のスクロールをロックする
@@ -47,7 +49,7 @@ export function Header() {
 
     // 開いたときに最初のリンクにフォーカス + パネル内の単純なフォーカス トラップ
     useEffect(() => {
-        if(!isOpen) return;
+        if (!isOpen) return;
         const panel = panelRef.current;
         if (!panel) return;
         const nodes = panel.querySelectorAll<HTMLElement>(
@@ -57,9 +59,12 @@ export function Header() {
     }, [isOpen]);
 
     useEffect(() => {
-        if (!isOpen) return;
-        const first = focusables[0];
-        first?.focus();
+        if (isOpen) {
+            focusables[0]?.focus();
+        } else if (wasOpenRef.current) {
+            triggerRef.current?.focus();
+        }
+        wasOpenRef.current = isOpen;
     }, [isOpen, focusables]);
 
     useEffect(() => {
@@ -108,6 +113,7 @@ export function Header() {
                     aria-expanded={isOpen}
                     aria-controls="primary-navigation"
                     onClick={() => setIsOpen((v) => !v)}
+                    ref={triggerRef}
                 >
                     <Bar $top aria-hidden="true" />
                     <Bar $middle aria-hidden="true" />
