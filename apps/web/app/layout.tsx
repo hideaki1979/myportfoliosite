@@ -30,8 +30,11 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ThemeProvider theme={theme}>
           <GlobalStyle />
+          <a href="#main" className="skip-link">メインコンテンツへスキップ</a>
           <Header />
-          {children}
+          <main id="main" tabIndex={-1}>
+            {children}
+          </main>
         </ThemeProvider>
       </body>
     </html>
