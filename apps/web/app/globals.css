@@ -51,8 +51,8 @@ a {
 }
 
 /* Global focus visible styles for keyboard users */
-:where(a, button, input, select, textarea, [role="button"]) :focus-visible,
-:where(a, button, input, select, textarea, [role="button"]) :focus {
+:where(a, button, input, select, textarea, [role="button"]):focus-visible,
+:where(a, button, input, select, textarea, [role="button"]):focus {
   outline: 2px solid #3b82f6; /* blue-500 */
   outline-offset: 2px;
 }
