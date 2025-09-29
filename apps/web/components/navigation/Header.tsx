@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import styled, { css } from "styled-components";
+import { useModalAccessibility } from "../hooks/useModalAccessibility";
 
 type NavItem = {
     url: string;
@@ -22,76 +23,14 @@ export function Header() {
     const [isOpen, setIsOpen] = useState(false);
     const panelRef = useRef<HTMLDivElement | null>(null);
     const triggerRef = useRef<HTMLButtonElement | null>(null);
-    const wasOpenRef = useRef(false);
-    const [focusables, setFocusables] = useState<HTMLElement[]>([]);
     const pathname = usePathname();
 
-    // メニューを開いたときに本文のスクロールをロックする
-    useEffect(() => {
-        if (!isOpen) return;
-
-        const original = document.body.style.overflow;
-        document.body.style.overflow = "hidden";
-        return () => {
-            document.body.style.overflow = original;
-        }
-    }, [isOpen]);
-
-    // escキーで終了
-    useEffect(() => {
-        if (!isOpen) return;
-
-        const onKey = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') setIsOpen(false);
-        }
-
-        window.addEventListener("keydown", onKey);
-        return () => window.removeEventListener("keydown", onKey);
-    }, [isOpen]);
-
-    // 開いたときに最初のリンクにフォーカス + パネル内の単純なフォーカス トラップ
-    useEffect(() => {
-        if (!isOpen) return;
-        const panel = panelRef.current;
-        if (!panel) return;
-        const nodes = panel.querySelectorAll<HTMLElement>(
-            'a, button, [tabindex]:not([tabindex="-1"])'
-        );
-        setFocusables(Array.from(nodes).filter((el) => !el.hasAttribute("disabled")));
-    }, [isOpen]);
-
-    useEffect(() => {
-        if (isOpen) {
-            focusables[0]?.focus();
-        } else if (wasOpenRef.current) {
-            triggerRef.current?.focus();
-        }
-        wasOpenRef.current = isOpen;
-    }, [isOpen, focusables]);
-
-    useEffect(() => {
-        if (!isOpen) return;
-        const handleTab = (e: KeyboardEvent) => {
-            if (e.key !== "Tab") return;
-            const elements = focusables;
-            if (elements.length === 0) return;
-            const first = elements[0];
-            const last = elements[elements.length - 1];
-            if (e.shiftKey) {
-                if (document.activeElement === first) {
-                    e.preventDefault();
-                    last?.focus();
-                }
-            } else {
-                if (document.activeElement === last) {
-                    e.preventDefault();
-                    first?.focus();
-                }
-            }
-        };
-        window.addEventListener("keydown", handleTab);
-        return () => window.removeEventListener("keydown", handleTab);
-    }, [isOpen, focusables])
+    useModalAccessibility({
+        isOpen,
+        panelRef: panelRef as unknown as React.RefObject<HTMLElement | null>,
+        triggerRef: triggerRef as unknown as React.RefObject<HTMLElement | null>,
+        onClose: () => setIsOpen(false),
+    });
 
     return (
         <SiteHeader>
@@ -114,15 +53,16 @@ export function Header() {
                 </DesktopNav>
 
                 <MenuButton
+                    type="button"
                     aria-label="メニュー"
                     aria-expanded={isOpen}
                     aria-controls="primary-navigation"
                     onClick={() => setIsOpen((v) => !v)}
                     ref={triggerRef}
                 >
-                    <Bar $top aria-hidden="true" />
-                    <Bar $middle aria-hidden="true" />
-                    <Bar $bottom aria-hidden="true" />
+                    <Bar $top $open={isOpen} aria-hidden="true" />
+                    <Bar $middle $open={isOpen} aria-hidden="true" />
+                    <Bar $bottom $open={isOpen} aria-hidden="true" />
                 </MenuButton>
             </HeaderInner>
             <MobileOverlay $open={isOpen} onClick={() => setIsOpen(false)} />
@@ -214,25 +154,25 @@ const MenuButton = styled.button`
     }
 `;
 
-const Bar = styled.span<{ $top?: boolean; $middle?: boolean; $bottom?: boolean }>`
+const Bar = styled.span<{ $open: boolean, $top?: boolean; $middle?: boolean; $bottom?: boolean }>`
     position: absolute;
     width: 24px;
     height: 2px;
     background: ${({ theme }) => theme.colors.text};
-    ${({ $top }) =>
+    ${({ $top, $open }) =>
         $top &&
         css`
-            transform: translateY(-6px);
+            transform: ${$open ? 'translateY(0px) rotate(45deg)' : 'translateY(-6px)'};
         `}
-    ${({ $middle }) =>
+    ${({ $middle, $open }) =>
         $middle &&
         css`
-            opacity: 0.9;
+            opacity: ${$open ? '0' : '0.9'};
         `}
-    ${({ $bottom }) =>
+    ${({ $bottom, $open }) =>
         $bottom &&
         css`
-            transform: translateY(6px);
+            transform: ${$open ? 'translateY(0px) rotate(-45deg)' : 'translateY(6px)'};
         `}
 `;
 
