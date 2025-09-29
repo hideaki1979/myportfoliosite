@@ -1,11 +1,37 @@
 import Image, { type ImageProps } from "next/image";
 import { Button } from "@repo/ui/button";
 import styles from "./page.module.css";
+import { Metadata } from "next";
 
 type Props = Omit<ImageProps, "src"> & {
   srcLight: string;
   srcDark: string;
 };
+
+export const metadata: Metadata = {
+  title: "ホーム",
+  description: "フロントエンドエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
+  openGraph: {
+    title: "Mirrorman Portfolio - ホーム",
+    description: "フロントエンドエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
+    url: "https://mirrorman-portfolio.vercel.app",
+    type: "website",
+    images: [
+      {
+        url: "/og-home.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Mirrorman Portfolio - ホーム",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Mirrorman Portfolio - ホーム",
+    description: "フロントエンドエンジニアのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発の実績を紹介しています。",
+    images: ["/og-home.jpg"],
+  },
+}
 
 const ThemeImage = (props: Props) => {
   const { srcLight, srcDark, ...rest } = props;

@@ -1,3 +1,30 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Article",
+    description: "技術記事、ブログ投稿、Qiitaでの執筆活動を紹介しています。フルスタック開発、React、Next.js、TypeScriptに関する技術的な知見を共有しています。",
+    openGraph: {
+        title: "Article | Mirrorman Portfolio",
+        description: "技術記事、ブログ投稿、Qiitaでの執筆活動を紹介しています。フルスタック開発、React、Next.js、TypeScriptに関する技術的な知見を共有しています。",
+        url: "https://mirrorman-portfolio.vercel.app/article",
+        type: "website",
+        images: [
+            {
+                url: "/og-article.jpg",
+                width: 1200,
+                height: 630,
+                alt: "Article - Mirrorman Portfolio",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Article | Mirrorman Portfolio",
+        description: "技術記事、ブログ投稿、Qiitaでの執筆活動を紹介しています。フルスタック開発、React、Next.js、TypeScriptに関する技術的な知見を共有しています。",
+        images: ["/og-article.jpg"],
+    },
+};
+
 export default function ArticlePage() {
     return (
         <main style={{ maxWidth: 960, margin: '0 auto', padding: '24px 16px' }}>
