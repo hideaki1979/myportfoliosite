@@ -1,4 +1,14 @@
 import { Metadata } from "next";
+import { createBreadcrumbStructuredData, StructuredData } from "../../lib/structured-data";
+
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mirrorman-portfolio.vercel.app'
+    
+    const breadcrumbData = createBreadcrumbStructuredData({
+        items: [
+            { name: "ホーム", url: baseUrl },
+            { name: "Article", url: `${baseUrl}/article` },
+        ],
+    })
 
 export const metadata: Metadata = {
     title: "Article",
@@ -28,9 +38,12 @@ export const metadata: Metadata = {
 
 export default function ArticlePage() {
     return (
-        <main style={{ maxWidth: 960, margin: '0 auto', padding: '24px 16px' }}>
-            <h1>Article</h1>
-            <p>このページは Article のプレースホルダーです。Qiita連携を後で追加します。</p>
-        </main>
+        <>
+            <StructuredData data={breadcrumbData} />
+            <main style={{ maxWidth: 960, margin: '0 auto', padding: '24px 16px' }}>
+                <h1>Article</h1>
+                <p>このページは Article のプレースホルダーです。Qiita連携を後で追加します。</p>
+            </main>
+        </>
     )
 }
