@@ -1,3 +1,31 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Contact",
+    description: "お仕事のご相談、技術的な質問、お問い合わせはこちらからお気軽にご連絡ください。フロントエンド・バックエンド開発に関するご相談をお待ちしています。",
+    openGraph: {
+        title: "Contact | Mirrorman Portfolio",
+        description: "お仕事のご相談、技術的な質問、お問い合わせはこちらからお気軽にご連絡ください。フロントエンド・バックエンド開発に関するご相談をお待ちしています。",
+        url: "/contact",
+        type: "website",
+        images: [
+            {
+                url: "/og-contact.jpg",
+                width: 1200,
+                height: 630,
+                alt: "Contact - Mirrorman Portfolio",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        images: ["/og-contact.jpg"],
+    },
+    alternates: {
+        canonical: "/contact",
+    },
+};
+
 export default function ContactPage() {
     return (
         <main style={{ maxWidth: 960, margin: '0 auto', padding: '24px 16px' }}>
