@@ -22,7 +22,7 @@ export function createWebsiteStructuredData(data: WebsiteData) {
             name: data.author.name,
             url: data.author.url,
         },
-        inLauguage: data.inLanguage,
+        inLanguage: data.inLanguage,
         ...(data.copyrightYear && { copyrightYear: data.copyrightYear }),
     }
 }

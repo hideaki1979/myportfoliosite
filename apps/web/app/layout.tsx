@@ -5,6 +5,7 @@ import { ThemeProvider } from "styled-components";
 import { theme } from "../styles/theme";
 import { GlobalStyle } from "../styles/global-style";
 import { Header } from "../components/navigation/Header";
+import { createPersonStructuredData, createWebsiteStructuredData } from "../lib/structured-data";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -14,6 +15,40 @@ const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
 });
+
+export async function generateMetadata(): Promise<Metadata> {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://mirrorman-portfolio.vercel.app";
+
+  const website = createWebsiteStructuredData({
+    name: "Mirrorman Portfolio",
+    description:
+      "フルスタックエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
+    url: baseUrl,
+    author: { name: "Mirrorman", url: baseUrl },
+    inLanguage: "ja-JP",
+    copyrightYear: new Date().getFullYear(),
+  });
+
+  const person = createPersonStructuredData({
+    name: "Mirrorman",
+    jobTitle: "フルスタックエンジニア",
+    description:
+      "フルスタックエンジニアを目指す46歳おじさん。React、Next.js、TypeScriptを中心としたWebアプリケーション開発に取り組んでいます。",
+    url: baseUrl,
+    image: `${baseUrl}/og-image.jpg`,
+    sameAs: [
+      "https://github.com/hideaki1979",
+      "https://qiita.com/H_Kagami_Gs",
+    ],
+  });
+
+  return {
+    other: {
+      "ld+json:website": JSON.stringify(website),
+      "ld+json:person": JSON.stringify(person),
+    },
+  };
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://mirrorman-portfolio.vercel.app"),
