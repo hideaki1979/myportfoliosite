@@ -1,4 +1,14 @@
 import { Metadata } from "next";
+import { createBreadcrumbStructuredData, StructuredData } from "../../lib/structured-data";
+
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mirrorman-portfolio.vercel.app';
+
+const breadcrumbData = createBreadcrumbStructuredData({
+    items: [
+        { name: "ホーム", url: baseUrl },
+        { name: "Portfolio", url: `${baseUrl}/portfolio` },
+    ],
+})
 
 export const metadata: Metadata = {
     title: "Portfolio",
@@ -28,9 +38,12 @@ export const metadata: Metadata = {
 
 export default function PortfolioPage() {
     return (
-        <main style={{ maxWidth: 960, margin: '0 auto', padding: '24px 16px' }}>
-            <h1>Portfolio</h1>
-            <p>このページは Portfolio のプレースホルダーです。後でGitHub連携機能を実装します。</p>
-        </main>
+        <>
+            <StructuredData data={breadcrumbData} />
+            <main style={{ maxWidth: 960, margin: '0 auto', padding: '24px 16px' }}>
+                <h1>Portfolio</h1>
+                <p>このページは Portfolio のプレースホルダーです。後でGitHub連携機能を実装します。</p>
+            </main>
+        </>
     )
 }
