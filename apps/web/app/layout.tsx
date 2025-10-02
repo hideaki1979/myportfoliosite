@@ -6,6 +6,7 @@ import { theme } from "../styles/theme";
 import { GlobalStyle } from "../styles/global-style";
 import { Header } from "../components/navigation/Header";
 import { createPersonStructuredData, createWebsiteStructuredData } from "../lib/structured-data";
+import { baseUrl } from "../lib/constants";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -17,7 +18,6 @@ const geistMono = localFont({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://mirrorman-portfolio.vercel.app";
 
   const website = createWebsiteStructuredData({
     name: "Mirrorman Portfolio",
@@ -43,6 +43,49 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 
   return {
+    metadataBase: new URL(baseUrl),
+    title: {
+      default: "Mirrorman Portfolio",
+      template: "%s | Mirrorman Portfolio",
+    },
+    description: "フルスタックエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
+    keywords: ["ポートフォリオ", "フロントエンド", "バックエンド", "フルスタック", "React", "Next.js", "TypeScript", "Web開発"],
+    authors: [{ name: "Mirrorman" }],
+    creator: "Mirrorman",
+    publisher: "Mirrorman",
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
+    },
+    openGraph: {
+      type: "website",
+      locale: "ja_JP",
+      url: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://mirrorman-portfolio.vercel.app"),
+      siteName: "Mirrorman Portfolio",
+      title: "Mirrorman Portfolio",
+      description: "フルスタックエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
+      images: [
+        {
+          url: "/og-image.jpg",
+          width: 1200,
+          height: 630,
+          alt: "Mirrorman Portfolio",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Mirrorman Portfolio",
+      description: "フルスタックエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
+      images: ["/og-image.jpg"],
+    },
     other: {
       "ld+json:website": JSON.stringify(website),
       "ld+json:person": JSON.stringify(person),
@@ -50,59 +93,30 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://mirrorman-portfolio.vercel.app"),
-  title: {
-    default: "Mirrorman Portfolio",
-    template: "%s | Mirrorman Portfolio",
-  },
-  description: "フルスタックエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
-  keywords: ["ポートフォリオ", "フロントエンド", "バックエンド", "フルスタック", "React", "Next.js", "TypeScript", "Web開発"],
-  authors: [{ name: "Mirrorman" }],
-  creator: "Mirrorman",
-  publisher: "Mirrorman",
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-  openGraph: {
-    type: "website",
-    locale: "ja_JP",
-    url: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://mirrorman-portfolio.vercel.app"),
-    siteName: "Mirrorman Portfolio",
-    title: "Mirrorman Portfolio",
-    description: "フルスタックエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Mirrorman Portfolio",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Mirrorman Portfolio",
-    description: "フルスタックエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
-    images: ["/og-image.jpg"],
-  },
-};
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const structuredData = await generateMetadata();
   return (
     <html lang="ja">
+      <head>
+        {structuredData.other &&
+          Object.entries(structuredData.other).map(([key, value]) => {
+            if (key.startsWith('ld+json:')) {
+              return (
+                <script
+                  key={key}
+                  type="application/ld+json"
+                  dangerouslySetInnerHTML={{ __html: value as string }}
+                />
+              );
+            }
+            return null;
+          })
+        }
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ThemeProvider theme={theme}>
           <GlobalStyle />

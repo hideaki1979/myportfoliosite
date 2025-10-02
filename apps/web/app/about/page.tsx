@@ -1,10 +1,9 @@
 import { Metadata } from "next";
 import { createBreadcrumbStructuredData, createPersonStructuredData } from "../../lib/structured-data";
+import { baseUrl } from "../../lib/constants";
 
 
 export async function generateMetadata(): Promise<Metadata> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mirrorman-portfolio.vercel.app';
-
   const personData = createPersonStructuredData({
     name: "Mirrorman",
     jobTitle: "フルスタックエンジニア",

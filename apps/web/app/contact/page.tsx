@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import { createBreadcrumbStructuredData } from "../../lib/structured-data";
-
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mirrorman-portfolio.vercel.app'
+import { baseUrl } from "../../lib/constants";
 
 const breadcrumbData = createBreadcrumbStructuredData({
     items: [
