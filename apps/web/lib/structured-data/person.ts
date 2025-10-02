@@ -16,7 +16,7 @@ export function createPersonStructuredData(data: PersonData) {
         '@context': 'https://schema.org',
         '@type': 'Person',
         name: data.name,
-        jobTitle: data.description,
+        jobTitle: data.jobTitle,
         url: data.url,
         ...(data.image && { image: data.image }),
         ...(data.sameAs && { sameAs: data.sameAs }),
