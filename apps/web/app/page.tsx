@@ -11,10 +11,8 @@ type Props = Omit<ImageProps, "src"> & {
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "ホーム",
-    description: "フロントエンドエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
     openGraph: {
       title: "Mirrorman Portfolio - ホーム",
-      description: "フロントエンドエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
       url: "/",
       type: "website",
       images: [
