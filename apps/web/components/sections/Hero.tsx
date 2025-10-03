@@ -86,17 +86,15 @@ const Subtitle = styled.p`
 `;
 
 const Description = styled.p`
-    margin-top: 8px;
     color: ${({ theme }) => theme.colors.text};
 `;
 
 const CTA = styled(Link)`
-    margin-top: 16px;
     width: fit-content;
     padding: 8px 16px;
     border-radius: 8px;
     background: ${({ theme }) => theme.colors.primary};
-    color: #fff;
+    color: ${({ theme }) => theme.colors.onPrimary};
     border: 1px solid transparent;
     transition: filter 0.15s ease, transform 0.05s ease;
     will-change: filter, transform;

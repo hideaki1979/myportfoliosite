@@ -7,6 +7,7 @@ export const theme = {
         primary: "#0070f3",
         surface: "#f5f7fb",
         border: "#e5e7eb",
+        onPrimary: "#fff",
     },
     spacing: {
         xs: 4,
