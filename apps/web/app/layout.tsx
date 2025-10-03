@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { ThemeProvider } from "styled-components";
-import { theme } from "../styles/theme";
-import { GlobalStyle } from "../styles/global-style";
+// ThemeProvider はクライアント側の Providers に委譲
 import { Header } from "../components/navigation/Header";
 import { createPersonStructuredData, createWebsiteStructuredData } from "../lib/structured-data";
 import { baseUrl } from "../lib/constants";
+import Providers from "../components/Providers";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -118,14 +117,13 @@ export default async function RootLayout({
         }
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ThemeProvider theme={theme}>
-          <GlobalStyle />
+        <Providers>
           <a href="#main" className="skip-link">メインコンテンツへスキップ</a>
           <Header />
           <main id="main" tabIndex={-1}>
             {children}
           </main>
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );
