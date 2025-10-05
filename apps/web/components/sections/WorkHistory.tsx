@@ -4,7 +4,7 @@ import styled, { keyframes } from "styled-components";
 import { WORK_HISTORY } from "../../lib/data/work-history";
 import { ANIMATION_DELAY } from "../../lib/constants";
 
-const formatPeriodFormDateTime = (period: string) => {
+const formatPeriodFromDateTime = (period: string) => {
     const [startRaw, endRaw] = period.split("-").map((part) => part.trim());
     const normalize = (value: string) => value.replace(/\//g, "-");
     if (!startRaw) {
@@ -27,12 +27,12 @@ export default function WorkHistory() {
 
                 <Timeline role="list">
                     {WORK_HISTORY.map((item, index) => (
-                        <TimelineItem key={item.id} style={{ animationDelay: `${index * ANIMATION_DELAY}` }}>
+                        <TimelineItem key={item.id} style={{ animationDelay: `${index * ANIMATION_DELAY}ms` }}>
                             <Bullet aria-hidden="true" />
                             <Content>
                                 <ItemHeader>
                                     <Company>{item.company}</Company>
-                                    <Period dateTime={formatPeriodFormDateTime(item.period)}>{item.period}</Period>
+                                    <Period dateTime={formatPeriodFromDateTime(item.period)}>{item.period}</Period>
                                 </ItemHeader>
                                 <Role>{item.role}</Role>
                                 <Description>{item.description}</Description>
