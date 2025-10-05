@@ -1,33 +1,20 @@
 'use client'
 
 import styled, { keyframes } from "styled-components";
+import { WORK_HISTORY } from "../../lib/data/work-history";
+import { ANIMATION_DELAY } from "../../lib/constants";
 
-type WorkHistoryItem = {
-    id: number;
-    company: string;
-    role: string;
-    period: string;
-    description: string;
-}
-
-const WORK_HISTORY: WorkHistoryItem[] = [
-    {
-        id: 1,
-        company: '某中小SIer（SES）',
-        role: 'システムエンジニア',
-        period: '2000/04 - 2011/06',
-        description:
-            '要件定義〜保守・運用まで幅広く担当。言語はCOBOLをメインにVBやJavaを経験。'
-    },
-    {
-        id: 2,
-        company: '某中小SIer（SES）',
-        role: 'システムエンジニア',
-        period: '2011/10 - 2024/09',
-        description:
-            '要件定義〜保守・運用まで幅広く担当。言語はCOBOLとJavaに経験。'
-    },
-];
+const formatPeriodFormDateTime = (period: string) => {
+    const [startRaw, endRaw] = period.split("-").map((part) => part.trim());
+    const normalize = (value: string) => value.replace(/\//g, "-");
+    if (!startRaw) {
+        return "";
+    }
+    if (!endRaw) {
+        return normalize(startRaw);
+    }
+    return `${normalize(startRaw)}/${normalize(endRaw)}`;
+};
 
 export default function WorkHistory() {
     return (
@@ -39,13 +26,13 @@ export default function WorkHistory() {
                 </Header>
 
                 <Timeline role="list">
-                    {WORK_HISTORY.map((item) => (
-                        <TimelineItem key={item.id}>
+                    {WORK_HISTORY.map((item, index) => (
+                        <TimelineItem key={item.id} style={{ animationDelay: `${index * ANIMATION_DELAY}` }}>
                             <Bullet aria-hidden="true" />
                             <Content>
                                 <ItemHeader>
                                     <Company>{item.company}</Company>
-                                    <Period dateTime={item.period.replace(/\s—\s/g, "/").replace(/\s/g, "")}>{item.period}</Period>
+                                    <Period dateTime={formatPeriodFormDateTime(item.period)}>{item.period}</Period>
                                 </ItemHeader>
                                 <Role>{item.role}</Role>
                                 <Description>{item.description}</Description>

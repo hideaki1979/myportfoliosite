@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
+import { TYPING_SPEED_MS } from "../../lib/constants";
 
 export default function Hero() {
 
@@ -24,7 +25,7 @@ export default function Hero() {
             if (i >= fullSubtitle.length) {
                 window.clearInterval(interval);
             }
-        }, 100);
+        }, TYPING_SPEED_MS);
         return () => window.clearInterval(interval);
     }, []);
 
