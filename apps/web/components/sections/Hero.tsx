@@ -2,9 +2,32 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 
 export default function Hero() {
+
+    const fullSubtitle = "フルスタックエンジニアへの道";
+    const [typedText, setTypedText] = useState("");
+
+    useEffect(() => {
+        // Respect reduced motion preference
+        const mql = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+        if (mql && mql.matches) {
+            setTypedText(fullSubtitle);
+            return;
+        }
+        let i = 0;
+        const interval = window.setInterval(() => {
+            i += 1;
+            setTypedText(fullSubtitle.slice(0, i));
+            if (i >= fullSubtitle.length) {
+                window.clearInterval(interval);
+            }
+        }, 100);
+        return () => window.clearInterval(interval);
+    }, []);
+
     return (
         <Section aria-labelledby="hero-heading">
             <Inner>
@@ -20,7 +43,13 @@ export default function Hero() {
 
                 <Content>
                     <Title id="hero-heading">Mirrorman</Title>
-                    <Subtitle>フルスタックエンジニア</Subtitle>
+                    <Subtitle>
+                        <span aria-hidden="true">
+                            {typedText}
+                            {typedText.length < fullSubtitle.length ? <Carat aria-hidden="true" /> : null}
+                        </span>
+                        <SrOnly>{fullSubtitle}</SrOnly>
+                    </Subtitle>
                     <Description>
                         React（Next.js）とTypeScriptを中心に学習・開発しています。GitHubとQiitaの情報を連携したポートフォリオを公開中です。
                     </Description>
@@ -71,7 +100,7 @@ const ProfileImage = styled(Image)`
 const Content = styled.div`
     display: grid;
     gap: 8px;
-    animation: ${fadeInUp} 0.3s ease 0s both;
+    animation: ${fadeInUp} 0.5s ease 0.3s both;
 `;
 
 const Title = styled.h1`
@@ -96,8 +125,33 @@ const CTA = styled(Link)`
     background: ${({ theme }) => theme.colors.primary};
     color: ${({ theme }) => theme.colors.onPrimary};
     border: 1px solid transparent;
-    transition: filter 0.15s ease, transform 0.05s ease;
+    transition: filter 0.5s ease, transform 0.3s ease;
     will-change: filter, transform;
     &:hover {filter: brightness(1.05);}
     &:active {transform: translateY(1px);}
+`;
+
+const blink = keyframes`
+    0%, 49% {opacity: 1;}
+    50%, 100% {opacity: 0;}
+`;
+
+const Carat = styled.span`
+    display: inline-block;
+    width: 1ch;
+    margin-left: 2px;
+    border-left: 2px solid ${({ theme }) => theme.colors.text};
+    animation: ${blink} 1s steps(1, end) infinite;
+`;
+
+const SrOnly = styled.span`
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 `;
