@@ -11,7 +11,8 @@ export default function AboutMe() {
                     <Subtitle>
                         2000年4月〜2024年9月まで、
                         2社の中小SIer（実態はSES）の企業で20年以上勤務しておりました。
-                        <br />
+                    </Subtitle>
+                    <Subtitle>
                         中小のブラック寄りのグレー企業で案件ガチャも大凶なのもあり、<br />
                         デスマーチ案件や音信不通になった社員の肩代わりを中心に<br />
                         要件定義〜保守・運用を浅く広く経験しましたが、<br />
@@ -21,7 +22,7 @@ export default function AboutMe() {
                         HTML,CSS,JavaScript,PHP,Laravel,React,Swiftを学習
                     </Subtitle>
                     <Subtitle>
-                        現在は、React（Next.js）を中心にポートフォリアを作成し、<br />
+                        現在は、React（Next.js）を中心にポートフォリオを作成し、<br />
                         AI駆動開発（Cursor、Claude Code、Gemini CLIなど）を使って、<br />
                         React（Next.js）、Go、NestJSを学習しながら、就職活動中。
                     </Subtitle>

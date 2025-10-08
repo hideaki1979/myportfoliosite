@@ -43,7 +43,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function PortfolioPage() {
     return (
-        <div style={{ maxWidth: 960, margin: '0 auto', padding: '24px 16px' }}>
+        <div style={{ maxWidth: 1248, margin: '0 auto', padding: '24px 16px' }}>
             <h1>Portfolio</h1>
             <p>このページは Portfolio のプレースホルダーです。後でGitHub連携機能を実装します。</p>
         </div>
