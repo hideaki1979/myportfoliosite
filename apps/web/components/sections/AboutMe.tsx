@@ -63,7 +63,7 @@ const Section = styled.section`
 `;
 
 const Inner = styled.div`
-    max-width: 1024px;
+    max-width: ${({ theme }) => theme.breakpoints.lg}px;
     margin: 0 auto;
     padding: 40px 16px;
     display: grid;

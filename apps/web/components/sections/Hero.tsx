@@ -76,7 +76,7 @@ const Inner = styled.div`
     grid-template-columns: 1fr;
     align-items: center;
     gap: 24px;
-    max-width: 1024px;
+    max-width: ${({ theme }) => theme.breakpoints.lg}px;
     margin: 0 auto;
     padding: 40px 16px;
     @media (min-width: ${({ theme }) => theme.breakpoints.md}px) {
