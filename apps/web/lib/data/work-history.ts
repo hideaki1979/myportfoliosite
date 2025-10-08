@@ -44,7 +44,7 @@ export const WORK_HISTORY: WorkHistoryItem[] = [
             "G'sでは、週2回の課題作成をしながらモダンWeb技術習得を学習。\n 卒業後は、React、Next.jsのフロントエンドを中心にGoやNode.js（Express）、NestJSも学習",
         devProcess: '設計・開発・テスト・デプロイ',
         devProgram:
-            'HTML、CSS、JavaScript、PHP、Laravel、React、Swift、Next.js、ReactNative、Node.js（Express）、NestJS。Visual Studio Code、Cursor',
+            'HTML、CSS、JavaScript、PHP、Laravel、React、Swift、Next.js、ReactNative、 \n Node.js（Express）、NestJS。Visual Studio Code、Cursor',
         devMethod: '−',
         AI: "Github Copilot, Cursor, Gemini CLI, Claude Code, Code Rabbit, Gemini Code Assist",
     },

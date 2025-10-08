@@ -7,7 +7,7 @@ export default function AboutMe() {
         <Section aria-labelledby="about-me-heading">
             <Inner>
                 <Header>
-                    <Title>■自己紹介</Title>
+                    <Title id="about-me-heading">自己紹介</Title>
                     <Subtitle>
                         2000年4月〜2024年9月まで、
                         2社の中小SIer（実態はSES）の企業で20年以上勤務しておりました。
@@ -18,8 +18,9 @@ export default function AboutMe() {
                         これと言った強みというのが無いなと思い、<br />
                         （COBOL5年、Javaを2年程度やっているが、、、）<br />
                         思い立って2024年10月にG's Academy（現G's）に入学し、<br />
-                        HTML,CSS,JavaScript,PHP,Laravel,React,Swiftを学習。<br /><br />
-
+                        HTML,CSS,JavaScript,PHP,Laravel,React,Swiftを学習
+                    </Subtitle>
+                    <Subtitle>
                         現在は、React（Next.js）を中心にポートフォリアを作成し、<br />
                         AI駆動開発（Cursor、Claude Code、Gemini CLIなど）を使って、<br />
                         React（Next.js）、Go、NestJSを学習しながら、就職活動中。
@@ -83,6 +84,11 @@ const Title = styled.h2`
     font-size: ${({ theme }) => theme.typography.headings.h2}px;
     line-height: 1.5;
     color: ${({ theme }) => theme.colors.text};
+
+    &::before {
+        content: "■";
+        margin-right: 8px;
+    }
 `;
 
 const Subtitle = styled.p`
@@ -101,16 +107,16 @@ const Grid = styled.div`
 `;
 
 const Block = styled.section`
-    background-color: ${({theme}) => theme.colors.background};
+    background-color: ${({ theme }) => theme.colors.background};
     padding: 16px;
-    border: 1px solid ${({theme}) => theme.colors.border};
+    border: 1px solid ${({ theme }) => theme.colors.border};
     border-radius: 8px;
 `;
 
 const BlockTitle = styled.h3`
-    font-size: ${({theme}) => theme.typography.headings};
+    font-size: ${({ theme }) => theme.typography.headings.h3}px;
     margin-bottom: 12px;
-    color: ${({theme}) => theme.colors.text};
+    color: ${({ theme }) => theme.colors.text};
 `;
 
 const BlockList = styled.ul`
@@ -118,6 +124,6 @@ const BlockList = styled.ul`
     padding-left: 16px;
     display: grid;
     gap: 8px;
-    color: ${({theme}) => theme.colors.text};
-    font-size: ${({theme}) => theme.typography.body}px;
+    color: ${({ theme }) => theme.colors.text};
+    font-size: ${({ theme }) => theme.typography.body}px;
 `;

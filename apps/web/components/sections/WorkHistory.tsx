@@ -36,10 +36,10 @@ export default function WorkHistory() {
                                 </ItemHeader>
                                 <Role>職種：{item.role}</Role>
                                 <Description>概要：{item.description}</Description>
-                                <DevProcess>開発工程：{item.devProcess}</DevProcess>
-                                <DevProgram>開発言語、IDEなど：{item.devProgram}</DevProgram>
-                                <DevMethod>開発手法：{item.devMethod}</DevMethod>
-                                <AI>AI：{item.AI}</AI>
+                                <DetailText>開発工程：{item.devProcess}</DetailText>
+                                <DetailText>開発言語、IDEなど：{item.devProgram}</DetailText>
+                                <DetailText>開発手法：{item.devMethod}</DetailText>
+                                <DetailText>AI：{item.AI}</DetailText>
                             </Content>
                         </TimelineItem>
                     ))}
@@ -154,24 +154,11 @@ const Role = styled.span`
 const Description = styled.p`
     color: ${({ theme }) => theme.colors.text};
     font-size: ${({ theme }) => theme.typography.small}px;
+    white-space: pre-line;
 `;
 
-const DevProcess = styled.p`
+const DetailText = styled.p`
     color: ${({ theme }) => theme.colors.text};
     font-size: ${({ theme }) => theme.typography.small}px;
-`;
-
-const DevProgram = styled.p`
-    color: ${({ theme }) => theme.colors.text};
-    font-size: ${({ theme }) => theme.typography.small}px;
-`;
-
-const DevMethod = styled.p`
-    color: ${({ theme }) => theme.colors.text};
-    font-size: ${({ theme }) => theme.typography.small}px;
-`;
-
-const AI = styled.p`
-    color: ${({ theme }) => theme.colors.text};
-    font-size: ${({ theme }) => theme.typography.small}px;
+    white-space: pre-line;
 `;
