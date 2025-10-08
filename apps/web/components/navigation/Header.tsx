@@ -103,7 +103,7 @@ const HeaderInner = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: 1200px;
+  max-width: ${({ theme }) => theme.breakpoints.xl}px;
   margin: 0 auto;
   padding: 12px 16px;
 `;

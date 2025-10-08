@@ -34,8 +34,12 @@ export default function WorkHistory() {
                                     <Company>{item.company}</Company>
                                     <Period dateTime={formatPeriodFromDateTime(item.period)}>{item.period}</Period>
                                 </ItemHeader>
-                                <Role>{item.role}</Role>
-                                <Description>{item.description}</Description>
+                                <Role>職種：{item.role}</Role>
+                                <Description>概要：{item.description}</Description>
+                                <Description>開発工程：{item.devProcess}</Description>
+                                <Description>開発言語、IDEなど：{item.devProgram}</Description>
+                                <Description>開発手法：{item.devMethod}</Description>
+                                <Description>AI：{item.AI}</Description>
                             </Content>
                         </TimelineItem>
                     ))}
@@ -56,7 +60,7 @@ const Section = styled.section`
 `;
 
 const Inner = styled.div`
-    max-width: 1024px;
+    max-width: ${({ theme }) => theme.breakpoints.lg}px;
     margin: 0 auto;
     padding: 40px 16px;
     display: grid;
@@ -143,9 +147,12 @@ const Period = styled.time`
 `;
 
 const Role = styled.span`
-    color: ${({ theme }) => theme.colors.subText};
+    color: ${({ theme }) => theme.colors.text};
+    font-size: ${({ theme }) => theme.typography.small}px;
 `;
 
 const Description = styled.p`
     color: ${({ theme }) => theme.colors.text};
+    font-size: ${({ theme }) => theme.typography.small}px;
+    white-space: pre-line;
 `;
