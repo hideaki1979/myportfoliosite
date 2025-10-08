@@ -39,13 +39,26 @@ export const WORK_HISTORY: WorkHistoryItem[] = [
         id: 3,
         company: "G'sアカデミー〜自己学習",
         role: '−',
-        period: '2024/10 - 2025/04',
+        period: '2024/10 - ',
         description:
             "G'sでは、週2回の課題作成をしながらモダンWeb技術習得を学習。\n 卒業後は、React、Next.jsのフロントエンドを中心にGoやNode.js（Express）、NestJSも学習",
         devProcess: '設計・開発・テスト・デプロイ',
         devProgram:
-            'HTML、CSS、JavaScript、PHP、Laravel、React、Swift、Next.js、ReactNative、 \n Node.js（Express）、NestJS。Visual Studio Code、Cursor',
+            'HTML、CSS、JavaScript、TypeScript、React、Swift、Next.js、ReactNative、 \n Node.js（Express）、NestJS、PHP、Laravel、 \n MySQL、PostgreSQL、Firebase、Supabase、AWS、\n Visual Studio Code、Cursor',
         devMethod: '−',
         AI: "Github Copilot, Cursor, Gemini CLI, Claude Code, Code Rabbit, Gemini Code Assist",
+    },
+    {
+        id: 4,
+        company: "業務委託",
+        role: '−',
+        period: '2025/09 - 2005/09',
+        description:
+            "某通信系企業様向け配信プラットフォーム開発",
+        devProcess: '開発・テスト',
+        devProgram:
+            'Node.js（Express）、TypeScript、MySQL',
+        devMethod: '-',
+        AI: "Cursor",
     },
 ];

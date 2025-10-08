@@ -41,6 +41,7 @@ export default function AboutMe() {
                             <li>Next.js / TypeScript / styled-components</li>
                             <li>Node.js（Express / NestJS）/ Go / Java / COBOL</li>
                             <li>Jest / Testing Library / Playwright</li>
+                            <li>Oracle / MySQL / PostgreSQL</li>
                         </BlockList>
                     </Block>
                     <Block>

@@ -60,10 +60,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function AboutPage() {
   return (
-    <main style={{ maxWidth: '1248px', margin: '0 auto', padding: '24px 16px' }}>
+    <div style={{ maxWidth: '1248px', margin: '0 auto', padding: '24px 16px' }}>
       <h1>About Me</h1>
       <AboutMe />
       <WorkHistory />
-    </main>
+    </div>
   )
 }
