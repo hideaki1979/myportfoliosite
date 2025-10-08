@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { createBreadcrumbStructuredData, createPersonStructuredData } from "../../lib/structured-data";
 import { baseUrl } from "../../lib/constants";
 import WorkHistory from "../../components/sections/WorkHistory";
+import AboutMe from "../../components/sections/AboutMe";
 
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -61,6 +62,7 @@ export default function AboutPage() {
   return (
     <main style={{ maxWidth: 960, margin: '0 auto', padding: '24px 16px' }}>
       <h1>About Me</h1>
+      <AboutMe />
       <WorkHistory />
     </main>
   )

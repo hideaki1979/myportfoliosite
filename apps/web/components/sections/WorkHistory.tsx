@@ -34,8 +34,12 @@ export default function WorkHistory() {
                                     <Company>{item.company}</Company>
                                     <Period dateTime={formatPeriodFromDateTime(item.period)}>{item.period}</Period>
                                 </ItemHeader>
-                                <Role>{item.role}</Role>
-                                <Description>{item.description}</Description>
+                                <Role>職種：{item.role}</Role>
+                                <Description>概要：{item.description}</Description>
+                                <DevProcess>開発工程：{item.devProcess}</DevProcess>
+                                <DevProgram>開発言語、IDEなど：{item.devProgram}</DevProgram>
+                                <DevMethod>開発手法：{item.devMethod}</DevMethod>
+                                <AI>AI：{item.AI}</AI>
                             </Content>
                         </TimelineItem>
                     ))}
@@ -143,9 +147,31 @@ const Period = styled.time`
 `;
 
 const Role = styled.span`
-    color: ${({ theme }) => theme.colors.subText};
+    color: ${({ theme }) => theme.colors.text};
+    font-size: ${({ theme }) => theme.typography.small}px;
 `;
 
 const Description = styled.p`
     color: ${({ theme }) => theme.colors.text};
+    font-size: ${({ theme }) => theme.typography.small}px;
+`;
+
+const DevProcess = styled.p`
+    color: ${({ theme }) => theme.colors.text};
+    font-size: ${({ theme }) => theme.typography.small}px;
+`;
+
+const DevProgram = styled.p`
+    color: ${({ theme }) => theme.colors.text};
+    font-size: ${({ theme }) => theme.typography.small}px;
+`;
+
+const DevMethod = styled.p`
+    color: ${({ theme }) => theme.colors.text};
+    font-size: ${({ theme }) => theme.typography.small}px;
+`;
+
+const AI = styled.p`
+    color: ${({ theme }) => theme.colors.text};
+    font-size: ${({ theme }) => theme.typography.small}px;
 `;
