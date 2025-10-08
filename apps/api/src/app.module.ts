@@ -23,7 +23,7 @@ import { LoggerModule } from 'nestjs-pino';
         const nodeEnv = config.get<string>('NODE_ENV');
         return {
           pinoHttp: {
-            level: process.env.NODE_ENV === 'development' ? 'info' : 'warn',
+            level: nodeEnv === 'development' ? 'info' : 'warn',
             transport:
               nodeEnv === 'development'
                 ? {
