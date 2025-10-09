@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
+import { Logger } from 'nestjs-pino';
 import { securityMiddleware } from './common/middleware/security.middleware';
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
 import { MetricsInterceptor } from './common/interceptors/metrics.interceptor';
@@ -11,21 +11,18 @@ async function bootstrap() {
   app.use(securityMiddleware);
 
   app.useGlobalFilters(new GlobalExceptionFilter(app.get(Logger)));
-  app.useGlobalInterceptors(
-    new LoggerErrorInterceptor(),
-    new MetricsInterceptor(app.get(Logger)),
-  );
+  app.useGlobalInterceptors(new MetricsInterceptor(app.get(Logger)));
+
+  const allowed = (process.env.ALLOWED_ORIGINS ?? '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
 
   app.enableCors({
     origin: (
       origin: string | undefined,
       callback: (err: Error | null, allow?: boolean) => void,
     ) => {
-      const allowed = (process.env.ALLOWED_ORIGINS ?? '')
-        .split(',')
-        .map((o) => o.trim())
-        .filter(Boolean);
-
       // 同一オリジン/ツール系は origin が undefined になることがある → 許可
       if (!origin || allowed.includes('*') || allowed.includes(origin)) {
         callback(null, true);
@@ -35,7 +32,7 @@ async function bootstrap() {
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credential: true,
+    credentials: true,
     optionsSuccessStatus: 204,
   });
 
