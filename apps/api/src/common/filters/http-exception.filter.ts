@@ -32,6 +32,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
                 const maybeMessage = body.message;
                 if (isString(maybeMessage)) {
                     message = maybeMessage;
+                } else if (
+                    Array.isArray(maybeMessage) &&
+                    maybeMessage.every(isString)
+                ) {
+                    message = maybeMessage.join(', ');
                 }
                 const maybeCode = body.code;
                 if (isString(maybeCode)) {
