@@ -1,6 +1,6 @@
 import { INestApplication, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
 import { AppModule } from 'src/app.module';
 import { GithubService } from 'src/modules/github/github.service';
 import request from 'supertest';
@@ -21,14 +21,20 @@ describe('Github Repositories API (e2e)', () => {
     },
   };
 
-  async function initApp(): Promise<INestApplication> {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
+  async function initApp(
+    overrides: ((builder: TestingModuleBuilder) => TestingModuleBuilder)[] = [],
+  ): Promise<INestApplication> {
+    let builder = Test.createTestingModule({
       imports: [AppModule],
     })
       .overrideProvider(ConfigService)
-      .useValue(mockConfig)
-      .compile();
+      .useValue(mockConfig);
 
+    for (const overrideFn of overrides) {
+      builder = overrideFn(builder);
+    }
+
+    const moduleFixture: TestingModule = await builder.compile();
     const created = moduleFixture.createNestApplication();
     await created.init();
     return created;
@@ -57,8 +63,7 @@ describe('Github Repositories API (e2e)', () => {
     ];
 
     // Mock global fetch to avoid external network calls
-    const g1 = global as { fetch: typeof fetch };
-    fetchSpy = jest.spyOn(g1, 'fetch').mockResolvedValue({
+    fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(mockRepos),
     } as Response);
@@ -88,8 +93,7 @@ describe('Github Repositories API (e2e)', () => {
   });
 
   it('GET /api/github/repositories applies default limit when invalid (inspect fetch URL)', async () => {
-    const g2 = global as { fetch: typeof fetch };
-    fetchSpy = jest.spyOn(g2, 'fetch').mockResolvedValue({
+    fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
       json: () => Promise.resolve([]),
     } as Response);
@@ -109,24 +113,16 @@ describe('Github Repositories API (e2e)', () => {
   });
 
   it('GET /api/github/repositories returns 503 when service is unavailable', async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(ConfigService)
-      .useValue(mockConfig)
-      .overrideProvider(GithubService)
-      .useValue({
-        getUserPublicRepositories: jest
-          .fn()
-          .mockRejectedValue(
-            new ServiceUnavailableException('Github API error'),
-          ),
-      })
-      .compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
-
+    app = await initApp([
+      (builder) =>
+        builder.overrideProvider(GithubService).useValue({
+          getUserPublicRepositories: jest
+            .fn()
+            .mockRejectedValue(
+              new ServiceUnavailableException('Github API error'),
+            ),
+        }),
+    ]);
     const server = app.getHttpServer() as Parameters<typeof request>[0];
     await request(server).get('/api/github/repositories').expect(503);
   });
