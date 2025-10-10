@@ -4,5 +4,6 @@
       "mode": "auto"
     }
   ],
-  "kiroAgent.configureMCP": "Enabled"
+  "kiroAgent.configureMCP": "Enabled",
+  "postman.settings.dotenv-detection-notification-visibility": false
 }
