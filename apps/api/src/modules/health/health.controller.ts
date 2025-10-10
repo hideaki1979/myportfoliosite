@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import os from 'os';
+import * as os from 'os';
 
 @Controller('api/health')
 export class HealthController {

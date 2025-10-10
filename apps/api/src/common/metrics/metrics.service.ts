@@ -43,8 +43,8 @@ export class MetricsService {
     const p95Index = Math.max(0, Math.floor(durations.length * 0.95) - 1);
     const p95 = durations.length ? durations[p95Index] : 0;
 
-    const avgDuration = this.totalRequests
-      ? Math.round(this.totalDurationMs / this.totalRequests)
+    const avgDuration = durations.length
+      ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
       : 0;
 
     return {
