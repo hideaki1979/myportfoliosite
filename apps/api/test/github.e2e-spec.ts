@@ -1,26 +1,48 @@
 import { INestApplication, ServiceUnavailableException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from 'src/app.module';
 import { GithubService } from 'src/modules/github/github.service';
 import request from 'supertest';
-import { App } from 'supertest/types';
 
 describe('Github Repositories API (e2e)', () => {
-  let app: INestApplication<App>;
-  const originalEnv = { ...process.env };
-  const originalFetch = global.fetch;
+  let app: INestApplication;
+  let fetchSpy: jest.SpiedFunction<typeof fetch> | undefined;
+
+  const mockConfig: Partial<ConfigService> = {
+    get: <T = string>(key: string, defaultValue?: T): T => {
+      const map: Record<string, unknown> = {
+        NODE_ENV: 'test',
+        PORT: 0,
+        GITHUB_USERNAME: 'octocat',
+        GITHUB_TOKEN: '',
+      };
+      return (map[key] as T) ?? (defaultValue as T);
+    },
+  };
+
+  async function initApp(): Promise<INestApplication> {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    })
+      .overrideProvider(ConfigService)
+      .useValue(mockConfig)
+      .compile();
+
+    const created = moduleFixture.createNestApplication();
+    await created.init();
+    return created;
+  }
 
   afterEach(async () => {
     if (app) {
       await app.close();
     }
     jest.restoreAllMocks();
-    process.env = { ...originalEnv };
-    global.fetch = originalFetch;
+    fetchSpy = undefined;
   });
 
   it('GET /api/github/repositories returns mapped repositories (success)', async () => {
-    process.env.GITHUB_USERNAME = 'octocat';
     const mockRepos = [
       {
         id: 123,
@@ -35,19 +57,16 @@ describe('Github Repositories API (e2e)', () => {
     ];
 
     // Mock global fetch to avoid external network calls
-    global.fetch = jest.fn().mockResolvedValue({
+    const g1 = global as { fetch: typeof fetch };
+    fetchSpy = jest.spyOn(g1, 'fetch').mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(mockRepos),
-    } as unknown as Response);
+    } as Response);
 
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+    app = await initApp();
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
-
-    const res = await request(app.getHttpServer())
+    const server = app.getHttpServer() as Parameters<typeof request>[0];
+    const res = await request(server)
       .get('/api/github/repositories?limit=1')
       .expect(200);
 
@@ -69,39 +88,32 @@ describe('Github Repositories API (e2e)', () => {
   });
 
   it('GET /api/github/repositories applies default limit when invalid (inspect fetch URL)', async () => {
-    process.env.GITHUB_USERNAME = 'octocat';
+    const g2 = global as { fetch: typeof fetch };
+    fetchSpy = jest.spyOn(g2, 'fetch').mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve([]),
+    } as Response);
 
-    const fetchMock = jest
-      .fn<Promise<Response>, [string, RequestInit?]>()
-      .mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve([] as unknown[]),
-      } as unknown as Response);
-    global.fetch = fetchMock as unknown as typeof global.fetch;
+    app = await initApp();
 
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
-
-    await request(app.getHttpServer())
+    const server = app.getHttpServer() as Parameters<typeof request>[0];
+    await request(server)
       .get('/api/github/repositories?limit=not-a-number')
       .expect(200);
 
     // Ensure default limit (20) is used in the GitHub API request
-    const firstCall = fetchMock.mock.calls[0];
-    const calledWithUrl = firstCall ? firstCall[0] : '';
-    expect(String(calledWithUrl)).toContain('per_page=20');
+    const firstCall = fetchSpy?.mock.calls[0];
+    const calledWithUrl =
+      firstCall && typeof firstCall[0] === 'string' ? firstCall[0] : '';
+    expect(calledWithUrl).toContain('per_page=20');
   });
 
   it('GET /api/github/repositories returns 503 when service is unavailable', async () => {
-    process.env.GITHUB_USERNAME = 'octocat';
-
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
+      .overrideProvider(ConfigService)
+      .useValue(mockConfig)
       .overrideProvider(GithubService)
       .useValue({
         getUserPublicRepositories: jest
@@ -115,8 +127,7 @@ describe('Github Repositories API (e2e)', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
 
-    await request(app.getHttpServer())
-      .get('/api/github/repositories')
-      .expect(503);
+    const server = app.getHttpServer() as Parameters<typeof request>[0];
+    await request(server).get('/api/github/repositories').expect(503);
   });
 });
