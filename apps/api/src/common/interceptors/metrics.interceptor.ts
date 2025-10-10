@@ -7,10 +7,14 @@ import {
 import { Request, Response } from 'express';
 import { Logger } from 'nestjs-pino';
 import { Observable, tap } from 'rxjs';
+import { MetricsService } from '../metrics/metrics.service';
 
 @Injectable()
 export class MetricsInterceptor implements NestInterceptor<unknown, unknown> {
-  constructor(private readonly logger: Logger) {}
+  constructor(
+    private readonly logger: Logger,
+    private readonly metrics: MetricsService,
+  ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const start = performance.now?.() ?? Date.now();
@@ -31,6 +35,15 @@ export class MetricsInterceptor implements NestInterceptor<unknown, unknown> {
           { method, url, status, durationMs, userAgent },
           'metrics',
         );
+
+        this.metrics.record({
+          timestamp: Date.now(),
+          method,
+          url,
+          status,
+          durationMs,
+          userAgent,
+        });
       }),
     );
   }

@@ -4,6 +4,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import Joi from 'joi';
 import { LoggerModule } from 'nestjs-pino';
+import { HealthModule } from './modules/health/health.module';
+import { MetricsModule } from './modules/metrics/metrics.module';
 
 @Module({
   imports: [
@@ -35,6 +37,8 @@ import { LoggerModule } from 'nestjs-pino';
         };
       },
     }),
+    HealthModule,
+    MetricsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

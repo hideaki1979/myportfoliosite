@@ -4,6 +4,7 @@ import { Logger } from 'nestjs-pino';
 import { securityMiddleware } from './common/middleware/security.middleware';
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
 import { MetricsInterceptor } from './common/interceptors/metrics.interceptor';
+import { MetricsService } from './common/metrics/metrics.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -11,7 +12,9 @@ async function bootstrap() {
   app.use(securityMiddleware);
 
   app.useGlobalFilters(new GlobalExceptionFilter(app.get(Logger)));
-  app.useGlobalInterceptors(new MetricsInterceptor(app.get(Logger)));
+  app.useGlobalInterceptors(
+    new MetricsInterceptor(app.get(Logger), app.get(MetricsService)),
+  );
 
   const allowed = (process.env.ALLOWED_ORIGINS ?? '')
     .split(',')
