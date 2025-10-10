@@ -6,6 +6,7 @@ import Joi from 'joi';
 import { LoggerModule } from 'nestjs-pino';
 import { HealthModule } from './modules/health/health.module';
 import { MetricsModule } from './modules/metrics/metrics.module';
+import { GithubModule } from './modules/github/github.module';
 
 @Module({
   imports: [
@@ -17,6 +18,8 @@ import { MetricsModule } from './modules/metrics/metrics.module';
           .valid('development', 'test', 'production')
           .default('development'),
         PORT: Joi.number().port().default(3100),
+        GITHUB_TOKEN: Joi.string().allow('').default(''),
+        GITHUB_USERNAME: Joi.string().trim().min(1).required(),
       }),
     }),
     LoggerModule.forRootAsync({
@@ -39,6 +42,7 @@ import { MetricsModule } from './modules/metrics/metrics.module';
     }),
     HealthModule,
     MetricsModule,
+    GithubModule,
   ],
   controllers: [AppController],
   providers: [AppService],
