@@ -18,6 +18,7 @@ export function createPersonStructuredData(data: PersonData) {
     name: data.name,
     jobTitle: data.jobTitle,
     url: data.url,
+    description: data.description,
     ...(data.image && { image: data.image }),
     ...(data.sameAs && { sameAs: data.sameAs }),
     ...(data.worksFor && {

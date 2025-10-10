@@ -19,7 +19,7 @@ import { GithubModule } from './modules/github/github.module';
           .default('development'),
         PORT: Joi.number().port().default(3100),
         GITHUB_TOKEN: Joi.string().allow('').default(''),
-        GITHUB_USERNAME: Joi.string().allow('').default(''),
+        GITHUB_USERNAME: Joi.string().trim().min(1).required(),
       }),
     }),
     LoggerModule.forRootAsync({

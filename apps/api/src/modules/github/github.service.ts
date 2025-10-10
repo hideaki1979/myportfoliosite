@@ -47,7 +47,12 @@ export class GithubService {
       );
       return [];
     }
-    const perPage = Math.min(Math.max(limit, 1), 100);
+
+    const numericLimit = Number(limit);
+    const perPageBase = Number.isFinite(numericLimit)
+      ? Math.floor(numericLimit)
+      : 20;
+    const perPage = Math.min(Math.max(perPageBase, 1), 100);
     const path = `/users/${encodeURIComponent(this.githubUsername)}/repos?per_page=${perPage}&sort=updated&direction=desc`;
 
     const repos = await this.request<GitHubRepositoryApiResponse[]>(
