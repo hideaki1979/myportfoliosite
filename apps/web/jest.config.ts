@@ -3,11 +3,11 @@
  * https://jestjs.io/docs/configuration
  */
 
-import type { Config } from 'jest';
-import nextJest from 'next/jest.js';
+import type { Config } from "jest";
+import nextJest from "next/jest.js";
 
 const createJestConfig = nextJest({
-  dir: './'
+  dir: "./",
 });
 
 const config: Config = {
@@ -171,7 +171,7 @@ const config: Config = {
   testPathIgnorePatterns: [
     "/node_modules/",
     "<rootDir>/tests/",
-    "<rootDir>/tests-examples/"
+    "<rootDir>/tests-examples/",
   ],
 
   // The regexp pattern or array of patterns that Jest uses to detect test files

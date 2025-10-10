@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: {
       canonical: "/",
     },
-  }
+  };
 }
 
 export default function Home() {

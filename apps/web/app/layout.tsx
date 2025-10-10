@@ -3,7 +3,10 @@ import localFont from "next/font/local";
 import "./globals.css";
 // ThemeProvider はクライアント側の Providers に委譲
 import { Header } from "../components/navigation/Header";
-import { createPersonStructuredData, createWebsiteStructuredData } from "../lib/structured-data";
+import {
+  createPersonStructuredData,
+  createWebsiteStructuredData,
+} from "../lib/structured-data";
 import { baseUrl } from "../lib/constants";
 import Providers from "../components/Providers";
 
@@ -17,7 +20,6 @@ const geistMono = localFont({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-
   const website = createWebsiteStructuredData({
     name: "Mirrorman Portfolio",
     description:
@@ -35,10 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
       "フルスタックエンジニアを目指す46歳おじさん。React、Next.js、TypeScriptを中心としたWebアプリケーション開発に取り組んでいます。",
     url: baseUrl,
     image: `${baseUrl}/og-image.jpg`,
-    sameAs: [
-      "https://github.com/hideaki1979",
-      "https://qiita.com/H_Kagami_Gs",
-    ],
+    sameAs: ["https://github.com/hideaki1979", "https://qiita.com/H_Kagami_Gs"],
   });
 
   return {
@@ -47,8 +46,18 @@ export async function generateMetadata(): Promise<Metadata> {
       default: "Mirrorman Portfolio",
       template: "%s | Mirrorman Portfolio",
     },
-    description: "フルスタックエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
-    keywords: ["ポートフォリオ", "フロントエンド", "バックエンド", "フルスタック", "React", "Next.js", "TypeScript", "Web開発"],
+    description:
+      "フルスタックエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
+    keywords: [
+      "ポートフォリオ",
+      "フロントエンド",
+      "バックエンド",
+      "フルスタック",
+      "React",
+      "Next.js",
+      "TypeScript",
+      "Web開発",
+    ],
     authors: [{ name: "Mirrorman" }],
     creator: "Mirrorman",
     publisher: "Mirrorman",
@@ -66,10 +75,14 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: "website",
       locale: "ja_JP",
-      url: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://mirrorman-portfolio.vercel.app"),
+      url: new URL(
+        process.env.NEXT_PUBLIC_SITE_URL ||
+          "https://mirrorman-portfolio.vercel.app",
+      ),
       siteName: "Mirrorman Portfolio",
       title: "Mirrorman Portfolio",
-      description: "フルスタックエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
+      description:
+        "フルスタックエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
       images: [
         {
           url: "/og-image.jpg",
@@ -82,7 +95,8 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: "summary_large_image",
       title: "Mirrorman Portfolio",
-      description: "フルスタックエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
+      description:
+        "フルスタックエンジニアを目指す46歳おじさんのポートフォリオサイト。React、Next.js、TypeScriptを活用したWebアプリケーション開発・学習の実績を紹介しています。",
       images: ["/og-image.jpg"],
     },
     other: {
@@ -103,7 +117,7 @@ export default async function RootLayout({
       <head>
         {structuredData.other &&
           Object.entries(structuredData.other).map(([key, value]) => {
-            if (key.startsWith('ld+json:')) {
+            if (key.startsWith("ld+json:")) {
               return (
                 <script
                   key={key}
@@ -113,12 +127,13 @@ export default async function RootLayout({
               );
             }
             return null;
-          })
-        }
+          })}
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Providers>
-          <a href="#main" className="skip-link">メインコンテンツへスキップ</a>
+          <a href="#main" className="skip-link">
+            メインコンテンツへスキップ
+          </a>
           <Header />
           <main id="main" tabIndex={-1}>
             {children}

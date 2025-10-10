@@ -1,0 +1,1 @@
+export const DEFAULT_REPOSITORY_LIMIT = 20;

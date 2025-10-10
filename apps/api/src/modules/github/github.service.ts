@@ -41,6 +41,12 @@ export class GithubService {
   }
 
   async getUserPublicRepositories(limit = 20): Promise<GitHubRepositoryDto[]> {
+    if (!this.githubUsername) {
+      this.logger.warn(
+        'GITHUB_USERNAME is not configured, returning empty list.',
+      );
+      return [];
+    }
     const perPage = Math.min(Math.max(limit, 1), 100);
     const path = `/users/${encodeURIComponent(this.githubUsername)}/repos?per_page=${perPage}&sort=updated&direction=desc`;
 
@@ -126,6 +132,11 @@ export class GithubService {
       } catch (err) {
         clearTimeout(abortTimeout);
         lastError = err;
+
+        if (err instanceof ServiceUnavailableException) {
+          throw err;
+        }
+
         // AbortError/ネットワークエラー時はリトライ
         if (attempt < maxRetries) {
           const backoffMs = this.getBackoffMs(attempt);
