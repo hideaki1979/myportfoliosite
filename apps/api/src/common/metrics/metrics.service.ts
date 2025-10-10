@@ -23,11 +23,9 @@ export class MetricsService {
   private readonly maxBufferSize = 1000;
   private totalRequests = 0;
   private errorRequests = 0;
-  private totalDurationMs = 0;
 
   record(metric: RequestMetric): void {
     this.totalRequests += 1;
-    this.totalDurationMs += metric.durationMs;
     if (metric.status >= 400) this.errorRequests += 1;
 
     this.ringBuffer.push(metric);
@@ -40,7 +38,7 @@ export class MetricsService {
     const durations = this.ringBuffer
       .map((m) => m.durationMs)
       .sort((a, b) => a - b);
-    const p95Index = Math.max(0, Math.floor(durations.length * 0.95) - 1);
+    const p95Index = Math.max(0, Math.ceil(durations.length * 0.95) - 1);
     const p95 = durations.length ? durations[p95Index] : 0;
 
     const avgDuration = durations.length
