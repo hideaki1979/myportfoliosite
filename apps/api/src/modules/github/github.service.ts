@@ -28,7 +28,7 @@ export interface GitHubRepositoryDto {
 export interface GitHubRateLimitInfo {
   limit: number;
   remaining: number;
-  resetAt: number; // Linux timestamp
+  resetAt: number; // Unix timestamp (秒単位)
 }
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
