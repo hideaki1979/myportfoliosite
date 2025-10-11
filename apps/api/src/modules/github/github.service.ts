@@ -319,10 +319,21 @@ export class GithubService {
       return undefined;
     }
 
+    const parsedLimit = parseInt(limit, 10);
+    const parsedRemaining = parseInt(remaining, 10);
+    const parsedReset = parseInt(reset, 10);
+
+    if (isNaN(parsedLimit) || isNaN(parsedRemaining) || isNaN(parsedReset)) {
+      this.logger.warn(
+        `Invalid rate limit headers: limit=${limit}, remaining=${remaining}, reset=${reset}`,
+      );
+      return undefined;
+    }
+
     return {
-      limit: parseInt(limit, 10),
-      remaining: parseInt(remaining, 10),
-      resetAt: parseInt(reset, 10),
+      limit: parsedLimit,
+      remaining: parsedRemaining,
+      resetAt: parsedReset,
     };
   }
 
