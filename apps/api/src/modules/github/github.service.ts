@@ -107,7 +107,15 @@ export class GithubService {
 
       // レート制限情報をキャッシュ
       if (response.rateLimit) {
-        this.cacheService.set('github:rate-limit', response.rateLimit, 3600);
+        const ttlSeconds = Math.max(
+          0,
+          response.rateLimit.resetAt - Math.floor(Date.now() / 1000),
+        );
+        this.cacheService.set(
+          'github:rate-limit',
+          response.rateLimit,
+          ttlSeconds,
+        );
       }
 
       this.logger.log(
@@ -218,9 +226,12 @@ export class GithubService {
           return { data, rateLimit };
         }
 
-        // レート制限エラーの特別処理
-        if (res.status === 429) {
-          const rateLimit = this.extraRateLimitInfo(res);
+        // レート制限エラーの特別処理（429 または 403+remaining=0）
+        const rl = this.extraRateLimitInfo(res);
+        const isRateLimited =
+          res.status === 429 || (res.status === 403 && rl?.remaining === 0);
+        if (isRateLimited) {
+          const rateLimit = rl;
           const resetTime = rateLimit
             ? new Date(rateLimit.resetAt * 1000).toISOString()
             : 'unknown';
@@ -228,12 +239,22 @@ export class GithubService {
             `GitHub API rate limit exceeded. Reset at: ${resetTime}`,
           );
 
+          // キャッシュ更新
+          if (rateLimit) {
+            this.cacheService.set('github:rate-limit', rateLimit, 3600);
+          }
+
           if (attempt < maxRetries) {
-            const backoffMs = this.getBackoffMs(attempt);
+            let waitMs = this.getBackoffMs(attempt);
+            if (rateLimit) {
+              // リセット時刻まで待機する（+1秒のバッファ）
+              const waitUntil = rateLimit.resetAt * 1000;
+              waitMs = Math.max(0, waitUntil - Date.now()) + 1000;
+            }
             this.logger.warn(
-              `Retrying in ${backoffMs}ms (attempt ${attempt + 1}/${maxRetries})`,
+              `Retrying in ${waitMs}ms (attempt ${attempt + 1}/${maxRetries})`,
             );
-            await this.sleep(backoffMs);
+            await this.sleep(waitMs);
             continue;
           }
         }

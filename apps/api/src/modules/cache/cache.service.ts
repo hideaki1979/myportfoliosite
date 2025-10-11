@@ -53,7 +53,7 @@ export class CacheService implements OnModuleDestroy {
    * @returns キャッシュされたデータ（存在しないか期限切れの場合はnull）
    */
   get<T>(key: string): T | null {
-    const entry = this.cache.get(key) as CacheEntry<T> | undefined;
+    const entry = this.cache.get(key);
 
     if (!entry) {
       this.logger.debug(`Cache miss: ${key}`);
@@ -67,7 +67,7 @@ export class CacheService implements OnModuleDestroy {
     }
 
     this.logger.debug(`Cache hit: ${key}`);
-    return entry.data;
+    return entry.data as T;
   }
 
   /**
