@@ -241,7 +241,11 @@ export class GithubService {
 
           // キャッシュ更新
           if (rateLimit) {
-            this.cacheService.set('github:rate-limit', rateLimit, 3600);
+            const ttlSeconds = Math.max(
+              0,
+              rateLimit.resetAt - Math.floor(Date.now() / 1000),
+            );
+            this.cacheService.set('github:rate-limit', rateLimit, ttlSeconds);
           }
 
           if (attempt < maxRetries) {
