@@ -7,6 +7,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { HealthModule } from './modules/health/health.module';
 import { MetricsModule } from './modules/metrics/metrics.module';
 import { GithubModule } from './modules/github/github.module';
+import { CacheModule } from './modules/cache/cache.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { GithubModule } from './modules/github/github.module';
         };
       },
     }),
+    CacheModule,
     HealthModule,
     MetricsModule,
     GithubModule,
