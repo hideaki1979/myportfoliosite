@@ -88,8 +88,8 @@ export default function GitHubRepos({
 
     // リポジトリをソート
     const sortedRepos = useMemo(() => {
-        const repos = limit ? initialData.slice(0, limit) : initialData;
-        return sortRepositories(repos, sortBy);
+        const sorted = sortRepositories(initialData, sortBy);
+        return limit ? sorted.slice(0, limit) : sorted;
     }, [initialData, sortBy, limit]);
 
     // 言語統計を計算

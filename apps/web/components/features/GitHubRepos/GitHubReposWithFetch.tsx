@@ -96,8 +96,9 @@ export default function GitHubReposWithFetch({
 
     // リポジトリをソート
     const sortedRepos = useMemo(() => {
-        return sortRepositories(data, sortBy);
-    }, [data, sortBy]);
+        const sorted = sortRepositories(data, sortBy);
+        return limit ? sorted.slice(0, limit) : sorted;
+    }, [data, sortBy, limit]);
 
     // 言語統計を計算
     const languageStats = useMemo(

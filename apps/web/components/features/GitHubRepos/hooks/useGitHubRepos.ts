@@ -18,8 +18,9 @@ export function useGitHubRepos(
     initialData?: GitHubRepository[],
     limit = 20,
 ): UseGitHubReposResult {
+    const hasInitialData = initialData !== undefined && initialData.length > 0;
     const [data, setData] = useState<GitHubRepository[]>(initialData || []);
-    const [loading, setLoading] = useState(!initialData);
+    const [loading, setLoading] = useState(!hasInitialData);
     const [error, setError] = useState<Error | null>(null);
 
     const fetchData = useCallback(async () => {
@@ -39,10 +40,10 @@ export function useGitHubRepos(
     }, [limit]);
 
     useEffect(() => {
-        if (!initialData) {
+        if (!hasInitialData) {
             fetchData();
         }
-    }, [initialData, fetchData]);
+    }, [hasInitialData, fetchData]);
 
     const refetch = useCallback(async () => {
         await fetchData();

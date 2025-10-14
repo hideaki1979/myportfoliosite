@@ -12,7 +12,7 @@ const Card = styled.article`
   display: flex;
   flex-direction: column;
   gap: 16px;
-  height: 120px;
+  min-height: 120px;
 
   &:hover {
     border-color: #0070f3;
@@ -127,53 +127,53 @@ const ForkIcon = styled(StatItem)`
 `;
 
 interface RepositoryCardProps {
-    repository: GitHubRepository;
+  repository: GitHubRepository;
 }
 
 export default function RepositoryCard({ repository }: RepositoryCardProps) {
-    const languageColor = repository.primaryLanguage
-        ? getLanguageColor(repository.primaryLanguage)
-        : "#858585";
+  const languageColor = repository.primaryLanguage
+    ? getLanguageColor(repository.primaryLanguage)
+    : "#858585";
 
-    return (
-        <Card>
-            <RepoTitle
-                href={repository.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`${repository.name}のリポジトリを開く`}
-            >
-                {repository.name}
-            </RepoTitle>
+  return (
+    <Card>
+      <RepoTitle
+        href={repository.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`${repository.name}のリポジトリを開く`}
+      >
+        {repository.name}
+      </RepoTitle>
 
-            {repository.description && (
-                <RepoDescription>{repository.description}</RepoDescription>
-            )}
+      {repository.description && (
+        <RepoDescription>{repository.description}</RepoDescription>
+      )}
 
-            <MetaInfo>
-                {repository.primaryLanguage && (
-                    <LanguageInfo>
-                        <LanguageDot $color={languageColor} />
-                        <LanguageName>{repository.primaryLanguage}</LanguageName>
-                    </LanguageInfo>
-                )}
+      <MetaInfo>
+        {repository.primaryLanguage && (
+          <LanguageInfo>
+            <LanguageDot $color={languageColor} />
+            <LanguageName>{repository.primaryLanguage}</LanguageName>
+          </LanguageInfo>
+        )}
 
-                <UpdateAt>Updated: {getRelativeTime(repository.updatedAt)}</UpdateAt>
+        <UpdateAt>Updated: {getRelativeTime(repository.updatedAt)}</UpdateAt>
 
-                <StatsInfo>
-                    {repository.starCount > 0 && (
-                        <StarIcon aria-label={`${repository.starCount}個のスター`}>
-                            {formatNumber(repository.starCount)}
-                        </StarIcon>
-                    )}
-                    {repository.forkCount > 0 && (
-                        <ForkIcon aria-label={`${repository.forkCount}個のフォーク`}>
-                            {formatNumber(repository.forkCount)}
-                        </ForkIcon>
-                    )}
-                </StatsInfo>
-            </MetaInfo>
-        </Card>
-    )
+        <StatsInfo>
+          {repository.starCount > 0 && (
+            <StarIcon aria-label={`${repository.starCount}個のスター`}>
+              {formatNumber(repository.starCount)}
+            </StarIcon>
+          )}
+          {repository.forkCount > 0 && (
+            <ForkIcon aria-label={`${repository.forkCount}個のフォーク`}>
+              {formatNumber(repository.forkCount)}
+            </ForkIcon>
+          )}
+        </StatsInfo>
+      </MetaInfo>
+    </Card>
+  )
 }
 
