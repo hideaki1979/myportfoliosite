@@ -38,8 +38,12 @@ const GithubIcon = styled.span`
 
 const RepoGrid = styled.div`
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 24px;
+
+    @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+    }
 `;
 
 const EmptyState = styled.div`
@@ -63,17 +67,23 @@ const MoreLink = styled.a`
     font-family: 'Noto Sans JP', sans-serif;
     font-weight: 500;
     font-size: 14px;
-    color: #858383;
+    color: #0070f3;
     margin-top: 16px;
     transition: color 0.2s;
 
     &:hover {
-        color: #0070f3;
+        color: #0056b3;
     }
 
     &::before {
         content: '→';
         font-size: 16px;
+    }
+
+    &:focus-visible {
+        outline: 2px solid #0056b3;
+        outline-offset: 2px;
+        border-radius: 4px;
     }
 `;
 
