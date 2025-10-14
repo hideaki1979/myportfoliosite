@@ -5,9 +5,17 @@ const nextConfig = {
     compiler: {
         styledComponents: true,
     },
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'github.com'
+            },
+        ],
+    },
     async redirects() {
         return [
-            {source: '/home', destination: '/', permanent: true}
+            { source: '/home', destination: '/', permanent: true }
         ]
     },
 };

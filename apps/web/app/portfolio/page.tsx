@@ -1,6 +1,9 @@
 import { Metadata } from "next";
 import { createBreadcrumbStructuredData } from "../../lib/structured-data";
 import { baseUrl } from "../../lib/constants";
+import GitHubRepos, { GitHubRepository } from "../../components/features/GitHubRepos";
+import { fetchGitHubRepositories } from "../../lib/api/github";
+import { GITHUB_PROFILE } from "../../lib/data/github-profile";
 
 const breadcrumbData = createBreadcrumbStructuredData({
   items: [
@@ -42,14 +45,43 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function PortfolioPage() {
+export default async function PortfolioPage() {
+  // GitHubリポジトリをサーバーサイドで取得
+  let repositories: GitHubRepository[] = [];
+
+  try {
+    repositories = await fetchGitHubRepositories(20);
+  } catch(error) {
+    console.error("Failed to fetch GitHub repositories:", error);
+  }
+
   return (
     <div style={{ maxWidth: 1248, margin: "0 auto", padding: "24px 16px" }}>
-      <h1>Portfolio</h1>
-      <p>
-        このページは Portfolio
-        のプレースホルダーです。後でGitHub連携機能を実装します。
+      <h1
+        style={{
+          fontFamily: "Noto Sans JP, sans-serif",
+          fontWeight: 700,
+          fontSize: 28,
+          textAlign: "center",
+          marginBottom: 24,
+        }}
+      >
+        ■Portfolio（Github）
+      </h1>
+      <p style={{textAlign: "center", marginBottom: 48}}>
+        今まで作成した学校の課題やポートフォリオ、
+        <br />
+        Udemyや学習のために作成したアプリとなります。
       </p>
+      
+      <GitHubRepos
+          initialData={repositories}
+          profile={GITHUB_PROFILE}
+          showProfile={true}
+          showLanguageBar={true}
+          showTechTags={true}
+      />
     </div>
+
   );
 }
