@@ -5,9 +5,6 @@
 // メインコンポーネント（サーバーサイドレンダリング専用）
 export { default } from './GitHubRepos';
 
-// クライアントサイド取得版（オプション）
-export { default as GitHubReposWithFetch } from './GitHubReposWithFetch';
-
 // サブコンポーネント
 export { default as GitHubProfile } from './GitHubProfile';
 export { default as LanguageBar } from './LanguageBar';
