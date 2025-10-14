@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import { useCallback, useEffect, useState } from "react";
-import { GitHubRepository } from "../types"
-import { fetchGitHubRepositoriesClient } from "../../../../lib/api/github";
+import { useState, useEffect, useCallback } from 'react';
+import type { GitHubRepository } from '../types';
+import { fetchGitHubRepositoriesClient } from '../../../../lib/api/github';
 
 interface UseGitHubReposResult {
     data: GitHubRepository[];
@@ -31,10 +31,10 @@ export function useGitHubRepos(
         } catch (err) {
             const error =
                 err instanceof Error ? err : new Error('Failed to fetch repositories');
-            setError(error)
+            setError(error);
             console.error('Failed to fetch GitHub repositories:', error);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     }, [limit]);
 
@@ -55,3 +55,4 @@ export function useGitHubRepos(
         refetch,
     };
 }
+

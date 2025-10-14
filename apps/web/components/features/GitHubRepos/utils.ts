@@ -96,29 +96,29 @@ export function getRelativeTime(dateString: string): string {
 
     if (diffYears > 0) {
         return `${diffYears}年前`;
-      }
-      if (diffMonths > 0) {
+    }
+    if (diffMonths > 0) {
         return `${diffMonths}ヶ月前`;
-      }
-      if (diffWeeks > 0) {
+    }
+    if (diffWeeks > 0) {
         return `${diffWeeks}週間前`;
-      }
-      if (diffDays > 0) {
+    }
+    if (diffDays > 0) {
         return `${diffDays}日前`;
-      }
-      if (diffHours > 0) {
+    }
+    if (diffHours > 0) {
         return `${diffHours}時間前`;
-      }
-      if (diffMinutes > 0) {
+    }
+    if (diffMinutes > 0) {
         return `${diffMinutes}分前`;
-      }
-      return 'たった今';
+    }
+    return 'たった今';
 }
 
 /**
  * 技術タグの一覧を取得する
  */
-export function extractTechTags (
+export function extractTechTags(
     repositories: GitHubRepository[],
 ): string[] {
     const tags = new Set<string>();
@@ -144,3 +144,4 @@ export function formatNumber(num: number): string {
     }
     return num.toString();
 }
+

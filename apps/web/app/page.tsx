@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 import Hero from "../components/sections/Hero";
 import { fetchGitHubRepositories } from "../lib/api/github";
-import GitHubRepos, { GitHubRepository } from "../components/features/GitHubRepos";
 import { GITHUB_PROFILE } from "../lib/data/github-profile";
+import GitHubRepos, { GitHubRepository } from "../components/features/GitHubRepos";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {

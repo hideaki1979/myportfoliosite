@@ -8,12 +8,15 @@ const API_BASE_URL = process.env.API_URL || 'http://localhost:3100';
  */
 export async function GET(request: NextRequest) {
     try {
-        const searchParams = request.nextUrl.searchParams;
-        const limit = searchParams.get('limit') || '20';
+        const rawLimit = request.nextUrl.searchParams.get('limit');
+        const parsed = rawLimit ? parseInt(rawLimit, 10) : 20;
+        const safeLimit = Number.isFinite(parsed) ? Math.min(Math.max(parsed, 1), 100) : 20;
+        const url = new URL(`${API_BASE_URL}/api/github/repositories`);
+        url.searchParams.set('limit', String(safeLimit))
 
         // バックエンドAPIを呼び出し
         const response = await fetch(
-            `${API_BASE_URL}/api/github/repositories?limit=${limit}`,
+            url.toString(),
             {
                 method: 'GET',
                 headers: {
@@ -25,15 +28,21 @@ export async function GET(request: NextRequest) {
         );
 
         if (!response.ok) {
-            const errorData = await response.json();
+            let message = `Backend API request failed: ${response.status}`;
+            try {
+                const errorData = await response.json();
+                message = errorData.error?.message ||
+                errorData?.message || message;
+            } catch {
+                const text = await response.text().catch(() => '');
+                if (text) message = text;
+            }
             return NextResponse.json(
                 {
                     success: false,
                     error: {
                         code: 'BACKEND_API_ERROR',
-                        message:
-                            errorData.error?.message ||
-                            `Backend API request failed: ${response.status}`,
+                        message,
                     },
                 },
                 { status: response.status },

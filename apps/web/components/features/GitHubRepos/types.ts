@@ -1,6 +1,7 @@
 /**
  * GitHubリポジトリ関連の型定義
  */
+
 export interface GitHubRepository {
     id: string;
     name: string;
@@ -38,3 +39,4 @@ export interface GitHubReposProps {
     showTechTags?: boolean;
     limit?: number;
 }
+

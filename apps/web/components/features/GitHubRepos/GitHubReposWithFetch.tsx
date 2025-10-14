@@ -4,11 +4,14 @@ import styled from "styled-components"
 import { GitHubReposProps, SortBy } from "./types";
 import { useMemo, useState } from "react";
 import { calculateLanguageStats, extractTechTags, sortRepositories } from "./utils";
+import SkeletonLoader from "./SkeletonLoader";
+import ErrorDisplay from "./ErrorDisplay";
 import GitHubProfile from "./GitHubProfile";
 import LanguageBar from "./LanguageBar";
 import TechTags from "./TechTags";
 import SortControls from "./SortControls";
 import RepositoryCard from "./RepositoryCard";
+import { useGitHubRepos } from "./hooks/useGitHubRepos";
 
 const Container = styled.section`
     width: 100%;
@@ -66,18 +69,20 @@ const MoreLink = styled.a`
 
     &:hover {
         color: #0070f3;
-
     }
 
     &::before {
         content: '→';
         font-size: 16px;
     }
-
 `;
 
-export default function GitHubRepos({
-    initialData = [],
+/**
+ * クライアントサイドでデータ取得を行うGitHubReposコンポーネント
+ * useGitHubReposフックを使用して、リアルタイム更新やrefetchが可能
+ */
+export default function GitHubReposWithFetch({
+    initialData,
     profile,
     showProfile = true,
     showLanguageBar = true,
@@ -86,11 +91,13 @@ export default function GitHubRepos({
 }: GitHubReposProps) {
     const [sortBy, setSortBy] = useState<SortBy>('stars');
 
+    // カスタムフックでデータ取得
+    const { data, loading, error } = useGitHubRepos(initialData, limit);
+
     // リポジトリをソート
     const sortedRepos = useMemo(() => {
-        const repos = limit ? initialData.slice(0, limit) : initialData;
-        return sortRepositories(repos, sortBy);
-    }, [initialData, sortBy, limit]);
+        return sortRepositories(data, sortBy);
+    }, [data, sortBy]);
 
     // 言語統計を計算
     const languageStats = useMemo(
@@ -98,11 +105,27 @@ export default function GitHubRepos({
         [sortedRepos],
     );
 
-    // 技術メモを抽出
+    // 技術タグを抽出
     const techTags = useMemo(
         () => extractTechTags(sortedRepos),
         [sortedRepos],
     );
+
+    // ローディング状態
+    if (loading) {
+        return (
+            <SkeletonLoader
+                count={6}
+                showProfile={showProfile}
+                showBar={showLanguageBar}
+            />
+        );
+    }
+
+    // エラー状態
+    if (error) {
+        return <ErrorDisplay error={error} />;
+    }
 
     // 空チェック
     if (sortedRepos.length === 0) {

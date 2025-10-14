@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 import { createBreadcrumbStructuredData } from "../../lib/structured-data";
 import { baseUrl } from "../../lib/constants";
-import GitHubRepos, { GitHubRepository } from "../../components/features/GitHubRepos";
 import { fetchGitHubRepositories } from "../../lib/api/github";
 import { GITHUB_PROFILE } from "../../lib/data/github-profile";
+import GitHubRepos, { GitHubRepository } from "../../components/features/GitHubRepos";
 
 const breadcrumbData = createBreadcrumbStructuredData({
   items: [
@@ -51,7 +51,7 @@ export default async function PortfolioPage() {
 
   try {
     repositories = await fetchGitHubRepositories(20);
-  } catch(error) {
+  } catch (error) {
     console.error("Failed to fetch GitHub repositories:", error);
   }
 
@@ -68,18 +68,18 @@ export default async function PortfolioPage() {
       >
         ■Portfolio（Github）
       </h1>
-      <p style={{textAlign: "center", marginBottom: 48}}>
+      <p style={{ textAlign: "center", marginBottom: 48 }}>
         今まで作成した学校の課題やポートフォリオ、
         <br />
         Udemyや学習のために作成したアプリとなります。
       </p>
-      
+
       <GitHubRepos
-          initialData={repositories}
-          profile={GITHUB_PROFILE}
-          showProfile={true}
-          showLanguageBar={true}
-          showTechTags={true}
+        initialData={repositories}
+        profile={GITHUB_PROFILE}
+        showProfile={true}
+        showLanguageBar={true}
+        showTechTags={true}
       />
     </div>
 
