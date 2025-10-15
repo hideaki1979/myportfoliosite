@@ -82,6 +82,5 @@ export default async function PortfolioPage() {
         showTechTags={true}
       />
     </div>
-
   );
 }
