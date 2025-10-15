@@ -1,39 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { fetchGitHubRepositories, fetchGitHubRepositoriesClient } from '../../../lib/api/github';
-import { GitHubRepository } from '../../../components/features/GitHubRepos/types';
-
-const mockRepositories: GitHubRepository[] = [
-    {
-        id: "1",
-        name: 'test-repo-1',
-        description: 'Test repository 1',
-        url: 'https://github.com/user/test-repo-1',
-        starCount: 10,
-        forkCount: 5,
-        primaryLanguage: 'TypeScript',
-        updatedAt: '2024-01-01T00:00:00Z',
-    },
-    {
-        id: "2",
-        name: 'test-repo-2',
-        description: 'Test repository 2',
-        url: 'https://github.com/user/test-repo-2',
-        starCount: 20,
-        forkCount: 10,
-        primaryLanguage: 'JavaScript',
-        updatedAt: '2024-01-02T00:00:00Z',
-    },
-    {
-        id: "3",
-        name: 'test-repo-3',
-        description: 'Test repository 3',
-        url: 'https://github.com/user/test-repo-3',
-        starCount: 30,
-        forkCount: 12,
-        primaryLanguage: 'Python',
-        updatedAt: '2024-01-02T00:00:00Z',
-    },
-];
+import { mockRepositories } from '../../mocks/github';
 
 const mockSuccessResponse = {
     success: true,
@@ -46,6 +13,7 @@ describe('GitHub API Client', () => {
     });
 
     afterEach(() => {
+        vi.unstubAllEnvs();
         vi.restoreAllMocks();
     });
 
@@ -157,8 +125,7 @@ describe('GitHub API Client', () => {
         });
 
         it('環境変数NEXT_PUBLIC_BASE_URLが設定されている場合、そのURLを使用すること', async () => {
-            const originalEnv = process.env.NEXT_PUBLIC_BASE_URL;
-            process.env.NEXT_PUBLIC_BASE_URL = 'https://example.com';
+            vi.stubEnv('NEXT_PUBLIC_BASE_URL', 'https://example.com');
 
             const fetchMock = vi.fn().mockResolvedValue({
                 ok: true,
@@ -172,13 +139,10 @@ describe('GitHub API Client', () => {
                 'https://example.com/api/github/repositories?limit=20',
                 expect.any(Object)
             );
-
-            process.env.NEXT_PUBLIC_BASE_URL = originalEnv;
         });
 
         it('環境変数NEXT_PUBLIC_BASE_URLが未設定の場合、localhostを使用すること', async () => {
-            const originalEnv = process.env.NEXT_PUBLIC_BASE_URL;
-            delete process.env.NEXT_PUBLIC_BASE_URL;
+            vi.stubEnv('NEXT_PUBLIC_BASE_URL', undefined);
 
             const fetchMock = vi.fn().mockResolvedValue({
                 ok: true,
@@ -192,8 +156,6 @@ describe('GitHub API Client', () => {
                 'http://localhost:3000/api/github/repositories?limit=20',
                 expect.any(Object)
             );
-
-            process.env.NEXT_PUBLIC_BASE_URL = originalEnv;
         });
     });
 

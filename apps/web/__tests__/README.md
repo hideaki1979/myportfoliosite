@@ -36,7 +36,7 @@ pnpm test:coverage
 
 ## テストファイルの構成
 
-```
+```text
 __tests__/
 ├── app/
 │   ├── page.test.tsx              # Home画面のテスト

@@ -2,7 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Home from '../../app/page';
 import { fetchGitHubRepositories } from '../../lib/api/github';
-import { GitHubRepository } from '../../components/features/GitHubRepos/types';
+import { MockHero } from '../mocks/components';
+import { MockGitHubRepos, mockRepositories } from '../mocks/github';
 
 // モジュールのモック
 vi.mock('../../lib/api/github', () => ({
@@ -11,51 +12,13 @@ vi.mock('../../lib/api/github', () => ({
 
 // Heroコンポーネントのモック
 vi.mock('../../components/sections/Hero', () => ({
-    default: () => <div data-testid="hero-section">Hero Section</div>
+    default: MockHero,
 }));
 
 // GitHubReposコンポーネントのモック
 vi.mock('../../components/features/GitHubRepos', () => ({
-    default: ({ initialData, showProfile, showLanguageBar, showTechTags, limit }: {
-        initialData: GitHubRepository[];
-        profile?: unknown;
-        showProfile?: boolean;
-        showLanguageBar?: boolean;
-        showTechTags?: boolean;
-        limit?: number;
-    }) => (
-        <div data-testid="github-repos">
-            <span data-testid="repos-count">{initialData?.length || 0}</span>
-            <span data-testid="profile-visible">{showProfile ? 'yes' : 'no'}</span>
-            <span data-testid="language-bar-visible">{showLanguageBar ? 'yes' : 'no'}</span>
-            <span data-testid="tech-tags-visible">{showTechTags ? 'yes' : 'no'}</span>
-            <span data-testid="repos-limit">{limit}</span>
-        </div>
-    ),
+    default: MockGitHubRepos,
 }));
-
-const mockRepositories: GitHubRepository[] = [
-    {
-        id: "1",
-        name: 'test-repo-1',
-        description: 'Test repository 1',
-        url: 'https://github.com/user/test-repo-1',
-        starCount: 10,
-        forkCount: 5,
-        primaryLanguage: 'TypeScript',
-        updatedAt: '2024-01-01T00:00:00Z',
-    },
-    {
-        id: "2",
-        name: 'test-repo-2',
-        description: 'Test repository 2',
-        url: 'https://github.com/user/test-repo-2',
-        starCount: 20,
-        forkCount: 10,
-        primaryLanguage: 'JavaScript',
-        updatedAt: '2024-01-02T00:00:00Z',
-    },
-];
 
 describe('Home Page', () => {
     beforeEach(() => {
