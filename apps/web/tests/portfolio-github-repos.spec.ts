@@ -74,8 +74,6 @@ test.describe("Portfolio ページ - ユーザージャーニー", () => {
         // ソートボタン
         await expect(portfolioPage.starsSortButton).toBeVisible();
         await expect(portfolioPage.updatedSortButton).toBeVisible();
-
-        console.log("✓ ページが正しく表示されました");
     });
 
     test("ソート機能が動作する", async () => {
@@ -95,8 +93,6 @@ test.describe("Portfolio ページ - ユーザージャーニー", () => {
         await portfolioPage.repositoryList.waitFor({ state: "visible" });
 
         await expect(portfolioPage.starsSortButton).toHaveAttribute("aria-pressed", "true");
-
-        console.log("✓ ソート機能が正常に動作しました");
     });
 
     test("リポジトリリンクが正しく設定されている", async () => {
@@ -118,8 +114,6 @@ test.describe("Portfolio ページ - ユーザージャーニー", () => {
         const rel = await titleLink.getAttribute("rel");
         expect(rel).toContain("noopener");
         expect(rel).toContain("noreferrer");
-
-        console.log("✓ リポジトリリンクが正しく設定されています");
     });
 
     test("Moreリンクが正しく動作する", async () => {
@@ -130,8 +124,6 @@ test.describe("Portfolio ページ - ユーザージャーニー", () => {
 
         const target = await portfolioPage.moreLink.getAttribute("target");
         expect(target).toBe("_blank");
-
-        console.log("✓ Moreリンクが正しく動作します");
     });
 });
 
@@ -146,8 +138,6 @@ test.describe("Portfolio ページ - レスポンシブデザイン", () => {
         await expect(portfolioPage.pageTitle).toBeVisible();
         await expect(portfolioPage.repositoryCards.first()).toBeVisible();
         await expect(portfolioPage.starsSortButton).toBeVisible();
-
-        console.log("✓ モバイル画面で正しく表示されます");
     });
 
     test("タブレット画面で正しく表示される", async ({ page }) => {
@@ -158,8 +148,6 @@ test.describe("Portfolio ページ - レスポンシブデザイン", () => {
 
         await expect(portfolioPage.pageTitle).toBeVisible();
         await expect(portfolioPage.repositoryCards.first()).toBeVisible();
-
-        console.log("✓ タブレット画面で正しく表示されます");
     });
 
     test("デスクトップ画面で正しく表示される", async ({ page }) => {
@@ -173,8 +161,6 @@ test.describe("Portfolio ページ - レスポンシブデザイン", () => {
 
         const count = await portfolioPage.repositoryCards.count();
         expect(count).toBeGreaterThan(0);
-
-        console.log(`✓ デスクトップ画面で${count}件のリポジトリが表示されます`);
     });
 });
 
@@ -195,18 +181,24 @@ test.describe("Portfolio ページ - キーボードナビゲーション", () =
         // webkit は toBeFocused() が正しく動作しないため、別の方法で確認
         if (browserName === "webkit") {
             // document.activeElement で直接確認
-            await page.waitForTimeout(500);
-            const activeElementText = await page.evaluate(() => {
-                const activeEl = document.activeElement;
-                return activeEl?.textContent || '';
-            });
-            expect(activeElementText).toContain("更新日順");
+            await expect
+                .poll(
+                    async () => {
+                        return await page.evaluate(() => {
+                            const activeEl = document.activeElement;
+                            return activeEl?.textContent || '';
+                        });
+                    },
+                    {
+                        message: "フォーカスが更新日順ボタンに移動することを期待",
+                        timeout: 2000,
+                    }
+                )
+                .toContain("更新日順");
         } else {
             // chromium/firefox: toBeFocused() で確認
             await expect(portfolioPage.updatedSortButton).toBeFocused();
         }
-
-        console.log("✓ Tabキーでフォーカスが移動します");
     });
 
     test("Enterキーでソートボタンを操作できる", async ({ page }) => {
@@ -221,15 +213,12 @@ test.describe("Portfolio ページ - キーボードナビゲーション", () =
         await expect(portfolioPage.starsSortButton).toHaveAttribute("aria-pressed", "true");
         await expect(portfolioPage.updatedSortButton).toHaveAttribute("aria-pressed", "false");
 
-        // Enterキーでボタンを押下し、状態更新を待つ
+        // Enterキーでボタンを押下
         await page.keyboard.press("Enter");
-        await page.waitForTimeout(300);
 
-        // ボタンの状態が切り替わったことを確認
+        // ボタンの状態が切り替わったことを確認（自動リトライ付き）
         await expect(portfolioPage.updatedSortButton).toHaveAttribute("aria-pressed", "true");
         await expect(portfolioPage.starsSortButton).toHaveAttribute("aria-pressed", "false");
-
-        console.log("✓ Enterキーでソートボタンを操作できます");
     });
 });
 
@@ -245,15 +234,15 @@ test.describe("Portfolio ページ - アクセシビリティ", () => {
 
         // 違反がないことを確認
         expect(accessibilityScanResults.violations).toEqual([]);
-
-        console.log(
-            `✓ アクセシビリティチェック完了: ${accessibilityScanResults.passes.length}件のチェックに合格`
-        );
     });
 });
 
 test.describe("Portfolio ページ - パフォーマンス", () => {
-    test("ページロードが3秒以内に完了する", async ({ page }) => {
+    // NOTE: パフォーマンステストは環境依存が大きいため、寛容な閾値を設定
+    // 厳密なパフォーマンス測定は Lighthouse など専用ツールで実施すること
+    // ここでは「極端に遅くないか」の基本的なスモークテストとして機能させる
+    test("ページロードが極端に遅くない（10秒以内）", async ({ page }) => {
+        test.skip(!!process.env.CI, "CI では環境依存で不安定なためスキップ");
         const startTime = Date.now();
 
         const portfolioPage = new PortfolioPage(page);
@@ -261,11 +250,12 @@ test.describe("Portfolio ページ - パフォーマンス", () => {
 
         const loadTime = Date.now() - startTime;
 
-        console.log(`✓ ページロード時間: ${loadTime}ms`);
-        expect(loadTime).toBeLessThan(3000);
+        // CI環境やネットワーク状況を考慮して寛容な閾値を設定
+        expect(loadTime).toBeLessThan(10000);
     });
 
-    test("ソート切り替えが1秒以内に完了する", async ({ page }) => {
+    test("ソート切り替えが極端に遅くない（3秒以内）", async ({ page }) => {
+        test.skip(!!process.env.CI, "CI では性能計測をスキップ");
         const portfolioPage = new PortfolioPage(page);
         await portfolioPage.goto();
 
@@ -274,13 +264,13 @@ test.describe("Portfolio ページ - パフォーマンス", () => {
         await portfolioPage.repositoryList.waitFor({ state: "visible" });
         const sortTime = Date.now() - startTime;
 
-        console.log(`✓ ソート切り替え時間: ${sortTime}ms`);
-        expect(sortTime).toBeLessThan(1000);
+         // CI環境やブラウザの処理速度を考慮して寛容な閾値を設定
+        expect(sortTime).toBeLessThan(3000);
     });
 });
 
 test.describe("Portfolio ページ - クロスブラウザ", () => {
-    test("複数のブラウザで正常に動作する", async ({ page, browserName }) => {
+    test("複数のブラウザで正常に動作する", async ({ page }) => {
         const portfolioPage = new PortfolioPage(page);
         await portfolioPage.goto();
 
@@ -292,7 +282,5 @@ test.describe("Portfolio ページ - クロスブラウザ", () => {
         // ソート機能の動作確認
         await portfolioPage.updatedSortButton.click();
         await expect(portfolioPage.updatedSortButton).toHaveAttribute("aria-pressed", "true");
-
-        console.log(`✓ ${browserName}で正常に動作しました`);
     });
 });

@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import PortfolioPage from "../../../app/portfolio/page";
 import { fetchGitHubRepositories } from "../../../lib/api/github";
 import { mockRepositories } from '../../mocks/github';
+import { GitHubReposProps } from '../../../components/features/GitHubRepos';
 
 // モジュールのモック
 vi.mock('../../../lib/api/github', () => ({
@@ -11,7 +12,7 @@ vi.mock('../../../lib/api/github', () => ({
 
 // GitHubReposコンポーネントのモック
 vi.mock('../../../components/features/GitHubRepos', () => ({
-    default: ({ initialData = [], showProfile, showLanguageBar, showTechTags, limit }: any) => (
+    default: ({ initialData = [], showProfile, showLanguageBar, showTechTags, limit }: GitHubReposProps) => (
         <div data-testid="github-repos">
             <div data-testid="profile-visible">{showProfile ? 'yes' : 'no'}</div>
             <div data-testid="language-bar-visible">{showLanguageBar ? 'yes' : 'no'}</div>
