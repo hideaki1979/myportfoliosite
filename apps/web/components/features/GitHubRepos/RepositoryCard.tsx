@@ -18,6 +18,11 @@ const Card = styled.article`
     border-color: #0070f3;
     box-shadow: 0 2px 8px rgba(0, 112, 243, 0.1);
   }
+
+  &:focus-within {
+    outline: 2px solid #0070f3;
+    outline-offset: 2px;
+  }
 `;
 
 const RepoTitle = styled.a`
@@ -136,7 +141,7 @@ export default function RepositoryCard({ repository }: RepositoryCardProps) {
     : "#858585";
 
   return (
-    <Card>
+    <Card role="listitem">
       <RepoTitle
         href={repository.url}
         target="_blank"

@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Home from '../../app/page';
 import { fetchGitHubRepositories } from '../../lib/api/github';
-import { MockHero } from '../mocks/components';
-import { MockGitHubRepos, mockRepositories } from '../mocks/github';
+import { mockRepositories } from '../mocks/github';
+import { GitHubReposProps } from '../../components/features/GitHubRepos';
 
 // モジュールのモック
 vi.mock('../../lib/api/github', () => ({
@@ -12,12 +12,20 @@ vi.mock('../../lib/api/github', () => ({
 
 // Heroコンポーネントのモック
 vi.mock('../../components/sections/Hero', () => ({
-    default: MockHero,
+    default: () => <div data-testid="hero-section">Hero Section</div>,
 }));
 
 // GitHubReposコンポーネントのモック
 vi.mock('../../components/features/GitHubRepos', () => ({
-    default: MockGitHubRepos,
+    default: ({ initialData = [], showProfile, showLanguageBar, showTechTags, limit }: GitHubReposProps) => (
+        <div data-testid="github-repos">
+            <div data-testid="profile-visible">{showProfile ? 'yes' : 'no'}</div>
+            <div data-testid="language-bar-visible">{showLanguageBar ? 'yes' : 'no'}</div>
+            <div data-testid="tech-tags-visible">{showTechTags ? 'yes' : 'no'}</div>
+            {limit !== undefined && <div data-testid="repos-limit">{limit}</div>}
+            <div data-testid="repos-count">{initialData.length}</div>
+        </div>
+    ),
 }));
 
 describe('Home Page', () => {

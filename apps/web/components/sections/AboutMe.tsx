@@ -23,7 +23,7 @@ export default function AboutMe() {
             <br />
             （COBOL5年、Javaを2年程度やっているが、、、）
             <br />
-            思い立って2024年10月にG's Academy（現G's）に入学し、
+            思い立って2024年10月にG&apos;s Academy（現G&apos;s）に入学し、
             <br />
             HTML,CSS,JavaScript,PHP,Laravel,React,Swiftを学習
           </Subtitle>

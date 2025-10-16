@@ -50,7 +50,7 @@ const ProfileUrl = styled.a`
   font-weight: 700;
   font-size: 12px;
   line-height: 1.1;
-  color: #868686;
+  color: #4a4a4a;
   text-decoration: none;
   transition: color 0.2s;
 
@@ -70,34 +70,34 @@ const Bio = styled.p`
 `;
 
 interface GitHubProfileProps {
-    profile: GitHubProfileType;
+  profile: GitHubProfileType;
 }
 
 export default function GitHubProfile({ profile }: GitHubProfileProps) {
-    return (
-        <ProfileContainer>
-            <ProfileImageWrapper>
-                <Image
-                    src={profile.avatarUrl}
-                    alt={profile.displayName}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                    sizes="88px"
-                    priority
-                />
-            </ProfileImageWrapper>
-            <ProfileInfo>
-                <DisplayName>{profile.displayName}</DisplayName>
-                <ProfileUrl
-                    href={profile.profileUrl}
-                    target="_blank"
-                    rel='noopener noreferrer'
-                >
-                    {profile.profileUrl}
-                </ProfileUrl>
-                <Bio>{profile.bio}</Bio>
-            </ProfileInfo>
-        </ProfileContainer>
-    );
+  return (
+    <ProfileContainer>
+      <ProfileImageWrapper>
+        <Image
+          src={profile.avatarUrl}
+          alt={profile.displayName}
+          fill
+          style={{ objectFit: 'cover' }}
+          sizes="88px"
+          priority
+        />
+      </ProfileImageWrapper>
+      <ProfileInfo>
+        <DisplayName>{profile.displayName}</DisplayName>
+        <ProfileUrl
+          href={profile.profileUrl}
+          target="_blank"
+          rel='noopener noreferrer'
+        >
+          {profile.profileUrl}
+        </ProfileUrl>
+        <Bio>{profile.bio}</Bio>
+      </ProfileInfo>
+    </ProfileContainer>
+  );
 }
 
