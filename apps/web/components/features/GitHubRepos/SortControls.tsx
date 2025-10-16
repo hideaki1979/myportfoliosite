@@ -50,31 +50,35 @@ const SortButton = styled.button<{ $active: boolean }>`
 `
 
 interface SortControlProps {
-    value: SortBy;
-    onChange: (sortBy: SortBy) => void;
+  value: SortBy;
+  onChange: (sortBy: SortBy) => void;
 }
 
 export default function SortControls({ value, onChange }: SortControlProps) {
-    return (
-        <Container role="group" aria-label="並び順の選択">
-            <Label>並び順：</Label>
-            <ButtonGroup>
-                <SortButton
-                    $active={value === 'stars'}
-                    onClick={() => onChange('stars')}
-                    aria-pressed={value === 'stars'}
-                >
-                    スター数順
-                </SortButton>
-                <SortButton
-                    $active={value === 'updated'}
-                    onClick={() => onChange('updated')}
-                    aria-pressed={value === 'updated'}
-                >
-                    更新日順
-                </SortButton>
-            </ButtonGroup>
-        </Container>
-    )
+  return (
+    <Container role="group" aria-label="並び順の選択">
+      <Label>並び順：</Label>
+      <ButtonGroup>
+        <SortButton
+          type="button"
+          $active={value === 'stars'}
+          onClick={() => onChange('stars')}
+          aria-pressed={value === 'stars'}
+          aria-label="スター数順に並び替え"
+        >
+          スター数順
+        </SortButton>
+        <SortButton
+          type="button"
+          $active={value === 'updated'}
+          onClick={() => onChange('updated')}
+          aria-pressed={value === 'updated'}
+          aria-label="更新日順に並び替え"
+        >
+          更新日順
+        </SortButton>
+      </ButtonGroup>
+    </Container>
+  )
 }
 
