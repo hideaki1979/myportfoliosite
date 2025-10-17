@@ -45,6 +45,8 @@ describe('Github Repositories API (e2e)', () => {
         PORT: 0,
         GITHUB_USERNAME: 'octocat',
         GITHUB_TOKEN: '',
+        QIITA_USER_ID: 'testuser',
+        QIITA_TOKEN: '',
       };
       return (map[key] as T) ?? (defaultValue as T);
     },
@@ -229,33 +231,30 @@ describe('Github Repositories API (e2e)', () => {
   it('GET /api/github/rate-limit returns rate limit info', async () => {
     const mockRepos = [
       {
-        id: 789,
+        id: '789',
         name: 'test-repo',
         description: 'test',
-        html_url: 'https://github.com/octocat/test-repo',
-        stargazers_count: 5,
-        forks_count: 1,
-        language: 'Python',
-        updated_at: '2025-01-03T00:00:00Z',
+        url: 'https://github.com/octocat/test-repo',
+        starCount: 5,
+        forkCount: 1,
+        primaryLanguage: 'Python',
+        updatedAt: '2025-01-03T00:00:00Z',
       },
     ];
 
-    fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(mockRepos),
-      headers: {
-        get: (key: string) => {
-          const headers: Record<string, string> = {
-            'x-ratelimit-limit': '5000',
-            'x-ratelimit-remaining': '4998',
-            'x-ratelimit-reset': '1704070800',
-          };
-          return headers[key.toLowerCase()] || null;
-        },
-      },
-    } as unknown as Response);
+    const mockGithubService = {
+      getUserPublicRepositories: jest.fn().mockResolvedValue(mockRepos),
+      getRateLimitInfo: jest.fn().mockReturnValue({
+        limit: 5000,
+        remaining: 4998,
+        resetAt: 1704070800,
+      }),
+    };
 
-    app = await initApp();
+    app = await initApp([
+      (builder) =>
+        builder.overrideProvider(GithubService).useValue(mockGithubService),
+    ]);
     const server = app.getHttpServer() as Parameters<typeof request>[0];
 
     // まずリポジトリを取得してレート制限情報をキャッシュに保存

@@ -73,7 +73,6 @@ const MoreLink = styled.a`
         content: '→';
         font-size: 16px;
     }
-
 `;
 
 export default function GitHubRepos({
