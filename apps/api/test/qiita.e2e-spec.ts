@@ -308,9 +308,9 @@ describe('Qiita API (e2e)', () => {
       const mockHeaders = {
         get: jest.fn((name: string) => {
           const headers: Record<string, string> = {
-            'ratelimit-limit': '1000',
-            'ratelimit-remaining': '999',
-            'ratelimit-reset': '1704067200',
+            'rate-limit': '1000',
+            'rate-remaining': '999',
+            'rate-reset': '1704067200',
           };
           return headers[name.toLowerCase()] || null;
         }),
