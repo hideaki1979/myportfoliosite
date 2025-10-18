@@ -1,1 +1,2 @@
 export const DEFAULT_REPOSITORY_LIMIT = 20;
+export const DEFAULT_ARTICLE_LIMIT = 10;

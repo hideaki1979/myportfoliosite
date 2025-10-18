@@ -8,6 +8,7 @@ import { HealthModule } from './modules/health/health.module';
 import { MetricsModule } from './modules/metrics/metrics.module';
 import { GithubModule } from './modules/github/github.module';
 import { CacheModule } from './modules/cache/cache.module';
+import { QiitaModule } from './modules/qiita/qiita.module';
 
 @Module({
   imports: [
@@ -21,6 +22,8 @@ import { CacheModule } from './modules/cache/cache.module';
         PORT: Joi.number().port().default(3100),
         GITHUB_TOKEN: Joi.string().allow('').default(''),
         GITHUB_USERNAME: Joi.string().trim().min(1).required(),
+        QIITA_TOKEN: Joi.string().allow('').default(''),
+        QIITA_USER_ID: Joi.string().trim().min(1).required(),
       }),
     }),
     LoggerModule.forRootAsync({
@@ -45,6 +48,7 @@ import { CacheModule } from './modules/cache/cache.module';
     HealthModule,
     MetricsModule,
     GithubModule,
+    QiitaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
