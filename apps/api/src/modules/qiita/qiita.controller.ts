@@ -4,7 +4,7 @@ import { DEFAULT_ARTICLE_LIMIT } from 'src/constants/constants';
 
 @Controller('api/qiita')
 export class QiitaController {
-  constructor(private readonly qiita: QiitaService) {}
+  constructor(private readonly qiita: QiitaService) { }
 
   @Get('articles')
   async getArticles(@Query('limit') limit?: string) {
@@ -16,11 +16,7 @@ export class QiitaController {
       success: true,
       articles,
       ...(rateLimit && {
-        rateLimit: {
-          limit: rateLimit.limit,
-          remaining: rateLimit.remaining,
-          resetAt: new Date(rateLimit.resetAt * 1000).toISOString(),
-        },
+        rateLimit: this.formatRateLimit(rateLimit),
       }),
     };
   }
@@ -39,11 +35,24 @@ export class QiitaController {
 
     return {
       success: true,
-      rateLimit: {
-        limit: rateLimit.limit,
-        remaining: rateLimit.remaining,
-        resetAt: new Date(rateLimit.resetAt * 1000).toISOString(),
-      },
+      rateLimit: this.formatRateLimit(rateLimit),
+    };
+  }
+
+    /**
+   * レート制限情報をフォーマットする
+   * @param rateLimit - Qiitaサービスから取得したレート制限情報
+   * @returns フォーマット済みのレート制限情報
+   */
+  private formatRateLimit(rateLimit: {
+    limit: number;
+    remaining: number;
+    resetAt: number;
+  }) {
+    return {
+      limit: rateLimit.limit,
+      remaining: rateLimit.remaining,
+      resetAt: new Date(rateLimit.resetAt * 1000).toISOString(),
     };
   }
 }

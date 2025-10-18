@@ -300,19 +300,35 @@ describe('Qiita API (e2e)', () => {
           stocksCount: 50,
           createdAt: '2025-01-05T00:00:00Z',
           tags: [],
+          user: { id: 'testuser' },
         },
       ];
 
-      const mockQiitaService = {
-        getUserArticles: jest.fn().mockResolvedValue(mockArticles),
-        getRateLimitInfo: jest.fn().mockReturnValue(null),
+      // Headersオブジェクトを正しくモック
+      const mockHeaders = {
+        get: jest.fn((name: string) => {
+          const headers: Record<string, string> = {
+            'ratelimit-limit': '1000',
+            'ratelimit-remaining': '999',
+            'ratelimit-reset': '1704067200',
+          };
+          return headers[name.toLowerCase()] || null;
+        }),
       };
 
-      app = await initApp([
-        (builder) =>
-          builder.overrideProvider(QiitaService).useValue(mockQiitaService),
-      ]);
+      // QiitaServiceをモックせず、fetchをモックして実際のキャッシュ動作をテスト
+      const mockFetch = jest.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        headers: mockHeaders,
+        json: () => Promise.resolve(mockArticles),
+      });
 
+      global.fetch = mockFetch as unknown as typeof fetch;
+
+      // モックを使わずに実際のQiitaServiceを使用
+      app = await initApp();
       const server = app.getHttpServer() as Parameters<typeof request>[0];
 
       // 最初のリクエスト（API呼び出し）
@@ -321,18 +337,17 @@ describe('Qiita API (e2e)', () => {
       const body1 = res1.body as ArticleResponse;
       expect(body1.success).toBe(true);
       expect(body1.articles).toHaveLength(1);
-      expect(mockQiitaService.getUserArticles).toHaveBeenCalledTimes(1);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
 
       // 2回目のリクエスト（サービスを再度呼び出す）
       const res2 = await request(server).get('/api/qiita/articles').expect(200);
 
       const body2 = res2.body as ArticleResponse;
       expect(body2.success).toBe(true);
-
-      // データ構造の確認
-      expect(body2).toHaveProperty('articles');
-      expect(Array.isArray(body2.articles)).toBe(true);
       expect(body2.articles).toHaveLength(1);
+
+      // キャッシュから取得されるため、fetchは1回のまま
+      expect(mockFetch).toHaveBeenCalledTimes(1);
     });
   });
 

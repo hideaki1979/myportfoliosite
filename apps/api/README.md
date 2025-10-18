@@ -93,7 +93,7 @@ pnpm test:cov
 
 ## アーキテクチャ
 
-```
+```text
 src/
 ├── common/           # 共通機能（フィルター、インターセプター等）
 ├── modules/

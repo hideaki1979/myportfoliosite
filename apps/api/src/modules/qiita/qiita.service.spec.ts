@@ -252,6 +252,29 @@ describe('QiitaService', () => {
 
       fetchSpy.mockRestore();
     });
+
+    it('should fetch articles correctly when rate limit headers are missing', async () => {
+      cacheService.get.mockReturnValue(null);
+
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockArticles),
+        headers: {
+          get: () => null,
+        },
+      } as unknown as Response);
+
+      const result = await service.getUserArticles(10);
+
+      expect(result).toHaveLength(1);
+      expect(cacheService.set).toHaveBeenCalledWith(
+        'qiita:articles:10',
+        expect.any(Array),
+        900,
+      );
+
+      fetchSpy.mockRestore();
+    });
   });
 
   describe('getRateLimitInfo', () => {

@@ -2,6 +2,7 @@ import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from 'nestjs-pino';
 import { CacheService } from '../cache/cache.service';
+import { DEFAULT_ARTICLE_LIMIT } from 'src/constants/constants';
 
 interface QiitaArticleApiResponse {
   id: string;
@@ -75,7 +76,7 @@ export class QiitaService {
     const numericLimit = Number(limit);
     const perPageBase = Number.isFinite(numericLimit)
       ? Math.floor(numericLimit)
-      : 10;
+      : DEFAULT_ARTICLE_LIMIT;
     const perPage = Math.min(Math.max(perPageBase, 1), 100);
 
     const cacheKey = `${CACHE_KEY_PREFIX}:${perPage}`;
@@ -224,8 +225,8 @@ export class QiitaService {
                 `Qiita API rate limit is low: ${rateLimit.remaining} remaining`,
               );
             }
-            return { data, rateLimit };
           }
+          return { data, rateLimit };
         }
 
         // レート制限エラーの特別処理（429 または 403+remaining=0）
