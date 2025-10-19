@@ -94,6 +94,7 @@ describe('Qiita API Client', () => {
         });
 
         it('環境変数API_URLが正しく使用されること', async () => {
+            vi.unstubAllEnvs();
             vi.stubEnv('API_URL', 'https://api.example.com');
 
             const fetchMock = vi.fn().mockResolvedValue({
@@ -106,7 +107,7 @@ describe('Qiita API Client', () => {
 
             expect(fetchMock).toHaveBeenCalledWith(
                 'https://api.example.com/api/qiita/articles?limit=10',
-                expect.any(Object)
+                expect.objectContaining({ next: { revalidate: 900 } }),
             );
         });
     });
@@ -187,6 +188,7 @@ describe('Qiita API Client', () => {
         });
 
         it('環境変数API_URLが正しく使用されること', async () => {
+            vi.unstubAllEnvs();
             vi.stubEnv('API_URL', 'https://api.example.com');
 
             const fetchMock = vi.fn().mockResolvedValue({
@@ -199,7 +201,9 @@ describe('Qiita API Client', () => {
 
             expect(fetchMock).toHaveBeenCalledWith(
                 'https://api.example.com/api/qiita/articles?limit=10',
-                expect.any(Object)
+                expect.objectContaining({
+                    cache: "no-store",
+                }),
             );
         });
     });
@@ -208,6 +212,7 @@ describe('Qiita API Client', () => {
         beforeEach(() => {
             vi.stubEnv('API_URL', 'http://localhost:3100');
         });
+
         it('正常にプロフィールを取得できること', async () => {
             const fetchMock = vi.fn().mockResolvedValue({
                 ok: true,
@@ -274,6 +279,7 @@ describe('Qiita API Client', () => {
         });
 
         it('環境変数API_URLが正しく使用されること', async () => {
+            vi.unstubAllEnvs();
             vi.stubEnv('API_URL', 'https://api.example.com');
 
             const fetchMock = vi.fn().mockResolvedValue({
@@ -286,7 +292,7 @@ describe('Qiita API Client', () => {
 
             expect(fetchMock).toHaveBeenCalledWith(
                 'https://api.example.com/api/qiita/profile',
-                expect.any(Object)
+                expect.objectContaining({ next: { revalidate: 3600 } }),
             );
         });
     });

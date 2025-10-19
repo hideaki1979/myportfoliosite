@@ -94,12 +94,7 @@ describe('GitHub API Client', () => {
             },
             {
                 description: 'ネットワークエラーが発生した場合、空配列を返すこと',
-                setup: () =>
-                    vi.fn().mockResolvedValue({
-                        ok: false,
-                        status: 500,
-                        json: async () => vi.fn().mockRejectedValue(new Error('Network error')),
-                    })
+                setup: () => vi.fn().mockRejectedValue(new Error('Network error')),
             },
         ];
 
