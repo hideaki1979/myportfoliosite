@@ -1,6 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { QiitaService } from './qiita.service';
-import { DEFAULT_ARTICLE_LIMIT } from 'src/constants/constants';
+import { DEFAULT_ARTICLE_LIMIT } from '../../constants/constants';
 
 @Controller('api/qiita')
 export class QiitaController {

@@ -78,7 +78,7 @@ export async function fetchQiitaArticles(
         return data.articles;
     } catch (error) {
         console.error('Failed to fetch Qiita articles:', error);
-        throw [];
+        return [];
     }
 }
 

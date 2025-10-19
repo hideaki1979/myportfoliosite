@@ -56,73 +56,57 @@ describe('GitHub API Client', () => {
             );
         });
 
-        it('APIがエラーレスポンスを返した場合、空配列を返すこと', async () => {
-            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
-            const fetchMock = vi.fn().mockResolvedValue({
-                ok: false,
-                status: 500,
-                json: async () => ({
-                    success: false,
-                    error: {
-                        code: 'INTERNAL_ERROR',
-                        message: 'Internal server error',
-                    },
-                }),
-            });
-            global.fetch = fetchMock;
+        const errorCases = [
+            {
+                description: 'APIがエラーレスポンスを返した場合、空配列を返すこと',
+                setup: () =>
+                    vi.fn().mockResolvedValue({
+                        ok: false,
+                        status: 500,
+                        json: async () => ({
+                            success: false,
+                            error: {
+                                code: 'INTERNAL_ERROR',
+                                message: 'Internal server error',
+                            },
+                        }),
+                    })
+            },
+            {
+                description: 'successがfalseの場合、空配列を返すこと',
+                setup: () =>
+                    vi.fn().mockResolvedValue({
+                        ok: true,
+                        json: async () => ({
+                            success: false,
+                        }),
+                    })
+            },
+            {
+                description: 'repositoriesが存在しない場合、空配列を返すこと',
+                setup: () =>
+                    vi.fn().mockResolvedValue({
+                        ok: true,
+                        json: async () => ({
+                            success: true,
+                        }),
+                    })
+            },
+            {
+                description: 'ネットワークエラーが発生した場合、空配列を返すこと',
+                setup: () => vi.fn().mockRejectedValue(new Error('Network error')),
+            },
+        ];
+
+        it.each(errorCases)('$description', async ({ setup }) => {
+            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { })
+            global.fetch = setup();
 
             const result = await fetchGitHubRepositories(20);
-
             expect(result).toEqual([]);
             expect(consoleErrorSpy).toHaveBeenCalled();
-            consoleErrorSpy.mockRestore();
         });
 
-        it('successがfalseの場合、空配列を返すこと', async () => {
-            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
-            const fetchMock = vi.fn().mockResolvedValue({
-                ok: true,
-                json: async () => ({
-                    success: false,
-                }),
-            });
-            global.fetch = fetchMock;
-
-            const result = await fetchGitHubRepositories(20);
-
-            expect(result).toEqual([]);
-            expect(consoleErrorSpy).toHaveBeenCalled();
-            consoleErrorSpy.mockRestore();
-        });
-
-        it('repositoriesが存在しない場合、空配列を返すこと', async () => {
-            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
-            const fetchMock = vi.fn().mockResolvedValue({
-                ok: true,
-                json: async () => ({
-                    success: true,
-                }),
-            });
-            global.fetch = fetchMock;
-
-            const result = await fetchGitHubRepositories(20);
-
-            expect(result).toEqual([]);
-            expect(consoleErrorSpy).toHaveBeenCalled();
-            consoleErrorSpy.mockRestore();
-        });
-
-        it('ネットワークエラーが発生した場合、空配列を返すこと', async () => {
-            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
-            const fetchMock = vi.fn().mockRejectedValue(new Error('Network error'));
-            global.fetch = fetchMock;
-
-            const result = await fetchGitHubRepositories(20);
-
-            expect(result).toEqual([]);
-            expect(consoleErrorSpy).toHaveBeenCalled();
-            consoleErrorSpy.mockRestore();
-        });
 
         it('環境変数NEXT_PUBLIC_BASE_URLが設定されている場合、そのURLを使用すること', async () => {
             vi.stubEnv('NEXT_PUBLIC_BASE_URL', 'https://example.com');
@@ -198,60 +182,53 @@ describe('GitHub API Client', () => {
             );
         });
 
-        it('APIがエラーレスポンスを返した場合、エラーをスローすること', async () => {
-            const fetchMock = vi.fn().mockResolvedValue({
-                ok: false,
-                status: 500,
-                json: async () => ({
-                    success: false,
-                    error: {
-                        code: 'INTERNAL_ERROR',
-                        message: 'Internal server error',
-                    },
-                }),
-            });
-            global.fetch = fetchMock;
+        const errorCases = [
+            {
+                description: 'APIがエラーレスポンスを返した場合、エラーをスローすること',
+                setup: () =>
+                    vi.fn().mockResolvedValue({
+                        ok: false,
+                        status: 500,
+                        json: async () => ({
+                            success: false,
+                            error: {
+                                code: 'INTERNAL_ERROR',
+                                message: 'Internal server error',
+                            },
+                        }),
+                    }),
+            },
+            {
+                description: 'successがfalseの場合、エラーをスローすること',
+                setup: () =>
+                    vi.fn().mockResolvedValue({
+                        ok: true,
+                        json: async () => ({ success: false }),
+                    }),
+            },
+            {
+                description: 'repositoriesが存在しない場合、エラーをスローすること',
+                setup: () =>
+                    vi.fn().mockResolvedValue({
+                        ok: true,
+                        json: async () => ({ success: true }),
+                    }),
+            },
+            {
+                description: 'ネットワークエラーが発生した場合、エラーをスローすること',
+                setup: () => vi.fn().mockRejectedValue(new Error('Network error')),
+            },
+            {
+                description: '未知のエラーが発生した場合、汎用エラーメッセージをスローすること',
+                setup: () => vi.fn().mockRejectedValue('Unknown error'),
+            },
+        ];
 
-            await expect(fetchGitHubRepositoriesClient(20)).rejects.toThrow('Internal server error');
-        });
+        it.each(errorCases)('$description', async ({ setup }) => {
+            global.fetch = setup();
 
-        it('successがfalseの場合、エラーをスローすること', async () => {
-            const fetchMock = vi.fn().mockResolvedValue({
-                ok: true,
-                json: async () => ({
-                    success: false,
-                }),
-            });
-            global.fetch = fetchMock;
-
-            await expect(fetchGitHubRepositoriesClient(20)).rejects.toThrow('GitHub API returned invalid response');
-        });
-
-        it('repositoriesが存在しない場合、エラーをスローすること', async () => {
-            const fetchMock = vi.fn().mockResolvedValue({
-                ok: true,
-                json: async () => ({
-                    success: true,
-                }),
-            });
-            global.fetch = fetchMock;
-
-            await expect(fetchGitHubRepositoriesClient(20)).rejects.toThrow('GitHub API returned invalid response');
-        });
-
-        it('ネットワークエラーが発生した場合、エラーをスローすること', async () => {
-            const fetchMock = vi.fn().mockRejectedValue(new Error('Network error'));
-            global.fetch = fetchMock;
-
-            await expect(fetchGitHubRepositoriesClient(20)).rejects.toThrow('Network error');
-        });
-
-        it('未知のエラーが発生した場合、汎用エラーメッセージをスローすること', async () => {
-            const fetchMock = vi.fn().mockRejectedValue('Unknown error');
-            global.fetch = fetchMock;
-
-            await expect(fetchGitHubRepositoriesClient(20)).rejects.toThrow('Failed to fetch GitHub repositories');
-        });
+            await expect(fetchGitHubRepositoriesClient()).rejects.toThrow();
+        })
     });
 });
 

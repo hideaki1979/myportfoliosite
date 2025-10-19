@@ -6,7 +6,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { timingSafeEqual } from 'crypto';
-import { MetricsService } from 'src/common/metrics/metrics.service';
+import { MetricsService } from '../../common/metrics/metrics.service';
 
 @Controller('api/metrics')
 export class MetricsController {
