@@ -2,7 +2,7 @@ import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from 'nestjs-pino';
 import { CacheService } from '../cache/cache.service';
-import { DEFAULT_ARTICLE_LIMIT } from 'src/constants/constants';
+import { API_TIMEOUT, DEFAULT_ARTICLE_LIMIT, DEFAULT_CACHE_TIME, DEFAULT_STALE_CACHE_TIME, RETRY_TIME } from 'src/constants/constants';
 
 interface QiitaArticleApiResponse {
   id: string;
@@ -211,18 +211,18 @@ export class QiitaService {
         'GET',
         undefined,
         {
-          timeoutMs: 8_000,
-          retries: 2,
+          timeoutMs: API_TIMEOUT,
+          retries: RETRY_TIME,
         },
       );
 
       const userInfo = this.mapUser(response.data);
 
       // 通常のキャッシュに保存（1時間）
-      this.cacheService.set(cacheKey, userInfo, 3600);
+      this.cacheService.set(cacheKey, userInfo, DEFAULT_CACHE_TIME);
 
       // staleキャッシュに保存（24時間、エラー時のフォールバック用）
-      this.cacheService.set(staleCacheKey, userInfo, 86400);
+      this.cacheService.set(staleCacheKey, userInfo, DEFAULT_STALE_CACHE_TIME);
 
       this.logger.log(
         `Fetched user info for ${this.qiitaUserId} from Qiita API`,

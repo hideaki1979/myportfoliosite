@@ -4,6 +4,8 @@ import { baseUrl } from "../../lib/constants";
 import { fetchGitHubRepositories } from "../../lib/api/github";
 import { GITHUB_PROFILE } from "../../lib/data/github-profile";
 import GitHubRepos, { GitHubRepository } from "../../components/features/GitHubRepos";
+import { PageContainer } from "../../components/layouts/PageLayout";
+import { PageDescription, PageTitle } from "../../components/ui/Typography";
 
 const breadcrumbData = createBreadcrumbStructuredData({
   items: [
@@ -56,23 +58,13 @@ export default async function PortfolioPage() {
   }
 
   return (
-    <div style={{ maxWidth: 1248, margin: "0 auto", padding: "24px 16px" }}>
-      <h1
-        style={{
-          fontFamily: "Noto Sans JP, sans-serif",
-          fontWeight: 700,
-          fontSize: 28,
-          textAlign: "center",
-          marginBottom: 24,
-        }}
-      >
-        ■Portfolio（Github）
-      </h1>
-      <p style={{ textAlign: "center", marginBottom: 48 }}>
+    <PageContainer>
+      <PageTitle>■Portfolio（Github）</PageTitle>
+      <PageDescription>
         今まで作成した学校の課題やポートフォリオ、
         <br />
         Udemyや学習のために作成したアプリとなります。
-      </p>
+      </PageDescription>
 
       <GitHubRepos
         initialData={repositories}
@@ -81,6 +73,6 @@ export default async function PortfolioPage() {
         showLanguageBar={true}
         showTechTags={true}
       />
-    </div>
+    </PageContainer>
   );
 }

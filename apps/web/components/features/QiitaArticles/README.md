@@ -80,12 +80,16 @@ interface QiitaTag {
 ### QiitaProfile
 
 ```typescript
-interface QiitaProfile {
-  username: string;
-  displayName: string;
-  profileUrl: string;
+interface QiitaUser {
+  id: string;
+  name: string;
+  profileImageUrl: string;
   description: string;
-  avatarUrl: string;
+  followersCount: number;
+  followeesCount: number;
+  itemsCount: number;
+  websiteUrl?: string;
+  organization?: string;
 }
 ```
 

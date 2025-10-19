@@ -78,12 +78,18 @@ export async function fetchQiitaArticles(
         return data.articles;
     } catch (error) {
         console.error('Failed to fetch Qiita articles:', error);
-        throw error;
+        throw [];
     }
 }
 
 /**
- * Qiita記事を取得（クライアントサイド）
+ * Qiita記事を取得(将来のクライアントサイド使用を想定)
+ * 
+ * 現状: サーバーサイドで実行(no-storeキャッシュ戦略)
+ * 将来: ユーザーの明示的な更新アクション(ボタンクリック等)で使用予定
+ * 
+ * @note クライアントコンポーネントから使用する際は、
+ *       環境変数をNEXT_PUBLIC_API_URLに変更する必要があります
  */
 export async function fetchQiitaArticlesClient(
     limit = 10,

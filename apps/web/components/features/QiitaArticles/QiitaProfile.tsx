@@ -4,7 +4,7 @@ import styled from "styled-components"
 import { QiitaUser } from "../../../lib/api/qiita";
 
 const ProfileContainer = styled.div`
-    display: 'flex';
+    display: flex;
     align-items: center;
     gap: 24px;
     padding: 24px;

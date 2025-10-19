@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { createBreadcrumbStructuredData } from "../../lib/structured-data";
 import { baseUrl } from "../../lib/constants";
+import { PageContainer } from "../../components/layouts/PageLayout";
 
 const breadcrumbData = createBreadcrumbStructuredData({
   items: [
@@ -44,11 +45,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function ContactPage() {
   return (
-    <div style={{ maxWidth: 1248, margin: "0 auto", padding: "24px 16px" }}>
+    <PageContainer>
       <h1>Contact</h1>
       <p>
         このページは Contact のプレースホルダーです。フォームは後で実装します。
       </p>
-    </div>
+    </PageContainer>
   );
 }

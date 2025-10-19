@@ -3,6 +3,8 @@ import { createBreadcrumbStructuredData } from "../../lib/structured-data";
 import { baseUrl } from "../../lib/constants";
 import { fetchQiitaArticles, fetchQiitaProfile, QiitaArticle } from "../../lib/api/qiita";
 import QiitaArticles from "../../components/features/QiitaArticles";
+import { PageContainer } from "../../components/layouts/PageLayout";
+import { PageSubtitle, PageTitle, SectionHeading } from "../../components/ui/Typography";
 
 const breadcrumbData = createBreadcrumbStructuredData({
   items: [
@@ -58,42 +60,12 @@ export default async function ArticlePage() {
     console.error('Failed to fetch Qiita data:', error);
   }
   return (
-    <div style={{ maxWidth: 1248, margin: "0 auto", padding: "24px 16px" }}>
-      <h1
-        style={{
-          fontFamily: 'Noto Sans JP, sans-serif',
-          fontWeight: 700,
-          fontSize: 28,
-          textAlign: 'center',
-          marginBottom: 8,
-        }}
-      >
-        ■Article
-      </h1>
-      <p
-        style={{
-          textAlign: 'center',
-          marginBottom: 48,
-          fontFamily: 'Noto Sans JP, sans-serif',
-          fontSize: 28,
-          fontWeight: 700,
-        }}
-      >
-        Qiitaに記載した記事です。
-      </p>
+    <PageContainer>
+      <PageTitle>■Article</PageTitle>
+      <PageSubtitle>Qiitaに記載した記事です。</PageSubtitle>
 
       <section>
-        <h2
-          style={{
-            fontFamily: 'Noto Sans JP, sans-serif',
-            fontWeight: 700,
-            fontSize: 28,
-            marginBottom: 24,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-          }}
-        >
+        <SectionHeading $withIcon>
           <svg
             width="40"
             height="40"
@@ -104,13 +76,13 @@ export default async function ArticlePage() {
             <path d="M3.57 8.343a3.653 3.653 0 0 1 1.764-3.8a3.653 3.653 0 0 1 3.8 0a3.653 3.653 0 0 1 1.764 3.8a3.653 3.653 0 0 1-1.764 3.8a3.653 3.653 0 0 1-3.8 0a3.653 3.653 0 0 1-1.764-3.8zm11.428 0a3.653 3.653 0 0 1 1.764-3.8a3.653 3.653 0 0 1 3.8 0a3.653 3.653 0 0 1 1.764 3.8a3.653 3.653 0 0 1-1.764 3.8a3.653 3.653 0 0 1-3.8 0a3.653 3.653 0 0 1-1.764-3.8zm-11.428 7.314a3.653 3.653 0 0 1 1.764-3.8a3.653 3.653 0 0 1 3.8 0a3.653 3.653 0 0 1 1.764 3.8a3.653 3.653 0 0 1-1.764 3.8a3.653 3.653 0 0 1-3.8 0a3.653 3.653 0 0 1-1.764-3.8zm11.428 0a3.653 3.653 0 0 1 1.764-3.8a3.653 3.653 0 0 1 3.8 0a3.653 3.653 0 0 1 1.764 3.8a3.653 3.653 0 0 1-1.764 3.8a3.653 3.653 0 0 1-3.8 0a3.653 3.653 0 0 1-1.764-3.8z" />
           </svg>
           Qiita
-        </h2>
+        </SectionHeading>
         <QiitaArticles
           initialData={articles}
           profile={profile ?? undefined}
           showProfile={true}
         />
       </section>
-    </div>
+    </PageContainer>
   );
 }

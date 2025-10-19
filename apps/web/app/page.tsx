@@ -3,6 +3,8 @@ import Hero from "../components/sections/Hero";
 import { fetchGitHubRepositories } from "../lib/api/github";
 import { GITHUB_PROFILE } from "../lib/data/github-profile";
 import GitHubRepos, { GitHubRepository } from "../components/features/GitHubRepos";
+import { Section, WidePageContainer } from "../components/layouts/PageLayout";
+import { SectionHeading } from "../components/ui/Typography";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -41,20 +43,11 @@ export default async function Home() {
   }
 
   return (
-    <div style={{ maxWidth: 1280, margin: "0 auto", padding: "24px 16px" }}>
+    <WidePageContainer>
       <Hero />
 
-      <section style={{ marginTop: 64 }}>
-        <h2
-          style={{
-            fontFamily: "Noto Sans JP, sans-serif",
-            fontWeight: 700,
-            fontSize: 28,
-            marginBottom: 24,
-          }}
-        >
-          GitHub
-        </h2>
+      <Section $marginTop={64}>
+        <SectionHeading>GitHub</SectionHeading>
         <GitHubRepos
           initialData={repositories}
           profile={GITHUB_PROFILE}
@@ -63,7 +56,7 @@ export default async function Home() {
           showTechTags={true}
           limit={6}
         />
-      </section>
-    </div>
+      </Section>
+    </WidePageContainer>
   );
 }

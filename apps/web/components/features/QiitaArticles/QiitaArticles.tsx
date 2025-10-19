@@ -107,7 +107,7 @@ export default function QiitaArticles({
                         <ArticleCard key={article.id} article={article} />
                     ))}
                 </ArticlesContainer>
-                {profile && (
+                {profile?.websiteUrl && (
                     <MoreLinkContainer>
                         <ChevronIcon
                             viewBox="0 0 24 24"
