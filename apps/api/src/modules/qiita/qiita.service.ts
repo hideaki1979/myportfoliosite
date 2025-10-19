@@ -8,7 +8,7 @@ import {
   DEFAULT_CACHE_TIME,
   DEFAULT_STALE_CACHE_TIME,
   RETRY_TIME,
-} from 'src/constants/constants';
+} from '../../constants/constants';
 
 interface QiitaArticleApiResponse {
   id: string;

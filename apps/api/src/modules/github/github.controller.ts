@@ -1,6 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { GithubService } from './github.service';
-import { DEFAULT_REPOSITORY_LIMIT } from 'src/constants/constants';
+import { DEFAULT_REPOSITORY_LIMIT } from '../../constants/constants';
 
 @Controller('api/github')
 export class GithubController {
