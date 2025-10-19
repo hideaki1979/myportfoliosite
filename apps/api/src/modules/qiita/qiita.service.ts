@@ -38,6 +38,30 @@ export interface QiitaRateLimitInfo {
   resetAt: number; // Unix timestamp (秒単位)
 }
 
+export interface QiitaUserDto {
+  id: string;
+  name: string;
+  profileImageUrl: string;
+  description: string;
+  followersCount: number;
+  followeesCount: number;
+  itemsCount: number;
+  websiteUrl?: string;
+  organization?: string;
+}
+
+interface QiitaUserApiResponse {
+  id: string;
+  name: string;
+  profile_image_url: string;
+  description: string;
+  followers_count: number;
+  followees_count: number;
+  items_count: number;
+  website_url?: string;
+  organization?: string;
+}
+
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 interface FetchResponse<T> {
@@ -154,6 +178,77 @@ export class QiitaService {
       throw new ServiceUnavailableException(
         'Qiita API is currently unavailable',
       );
+    }
+  }
+
+  /**
+   * Qiitaユーザー情報を取得
+   */
+  async getUserInfo(): Promise<QiitaUserDto | null> {
+    if (!this.qiitaUserId) {
+      this.logger.warn(
+        'QIITA_USER_ID is not configured, cannot fetch user info.',
+      );
+      return null;
+    }
+
+    const cacheKey = 'qiita:user-info';
+    const staleCacheKey = `${cacheKey}:stale`;
+
+    // キャッシュから取得を試行
+    const cached = this.cacheService.get<QiitaUserDto>(cacheKey);
+
+    if (cached) {
+      this.logger.log('Qiita user info served from cache');
+      return cached;
+    }
+
+    try {
+      const path = `/users/${encodeURIComponent(this.qiitaUserId)}`;
+
+      const response = await this.request<QiitaUserApiResponse>(
+        path,
+        'GET',
+        undefined,
+        {
+          timeoutMs: 8_000,
+          retries: 2,
+        },
+      );
+
+      const userInfo = this.mapUser(response.data);
+
+      // 通常のキャッシュに保存（1時間）
+      this.cacheService.set(cacheKey, userInfo, 3600);
+
+      // staleキャッシュに保存（24時間、エラー時のフォールバック用）
+      this.cacheService.set(staleCacheKey, userInfo, 86400);
+
+      this.logger.log(
+        `Fetched user info for ${this.qiitaUserId} from Qiita API`,
+      );
+
+      return userInfo;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+
+      this.logger.error(
+        `Failed to fetch Qiita user info: ${errorMessage}`,
+        errorStack,
+      );
+
+      // エラー時はstaleキャッシュから返却を試行
+      const staleCache = this.cacheService.get<QiitaUserDto>(staleCacheKey);
+
+      if (staleCache) {
+        this.logger.warn('Qiita API error, serving stale user info cache');
+        return staleCache;
+      }
+
+      // staleキャッシュも無ければnullを返す（プロフィール情報は必須ではないため）
+      return null;
     }
   }
 
@@ -306,6 +401,20 @@ export class QiitaService {
       lastError as Error,
     );
     throw new ServiceUnavailableException('Qiita API is currently unavailable');
+  }
+
+  private mapUser(user: QiitaUserApiResponse): QiitaUserDto {
+    return {
+      id: user.id,
+      name: user.name,
+      profileImageUrl: user.profile_image_url,
+      description: user.description,
+      followersCount: user.followers_count,
+      followeesCount: user.followees_count,
+      itemsCount: user.items_count,
+      websiteUrl: user.website_url,
+      organization: user.organization,
+    };
   }
 
   /**

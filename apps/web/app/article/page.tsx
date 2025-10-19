@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import { createBreadcrumbStructuredData } from "../../lib/structured-data";
 import { baseUrl } from "../../lib/constants";
+import { fetchQiitaArticles, fetchQiitaProfile, QiitaArticle } from "../../lib/api/qiita";
+import QiitaArticles from "../../components/features/QiitaArticles";
 
 const breadcrumbData = createBreadcrumbStructuredData({
   items: [
@@ -42,13 +44,73 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function ArticlePage() {
+export default async function ArticlePage() {
+  // Qiita記事をサーバーサイドで取得
+  let articles: QiitaArticle[] = [];
+  let profile = null;
+
+  try {
+    [articles, profile] = await Promise.all([
+      fetchQiitaArticles(10),
+      fetchQiitaProfile(),
+    ]);
+  } catch (error) {
+    console.error('Failed to fetch Qiita data:', error);
+  }
   return (
     <div style={{ maxWidth: 1248, margin: "0 auto", padding: "24px 16px" }}>
-      <h1>Article</h1>
-      <p>
-        このページは Article のプレースホルダーです。Qiita連携を後で追加します。
+      <h1
+        style={{
+          fontFamily: 'Noto Sans JP, sans-serif',
+          fontWeight: 700,
+          fontSize: 28,
+          textAlign: 'center',
+          marginBottom: 8,
+        }}
+      >
+        ■Article
+      </h1>
+      <p
+        style={{
+          textAlign: 'center',
+          marginBottom: 48,
+          fontFamily: 'Noto Sans JP, sans-serif',
+          fontSize: 28,
+          fontWeight: 700,
+        }}
+      >
+        Qiitaに記載した記事です。
       </p>
+
+      <section>
+        <h2
+          style={{
+            fontFamily: 'Noto Sans JP, sans-serif',
+            fontWeight: 700,
+            fontSize: 28,
+            marginBottom: 24,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+          }}
+        >
+          <svg
+            width="40"
+            height="40"
+            viewBox="0 0 24 24"
+            fill="#55c500"
+            style={{ flexShrink: 0 }}
+          >
+            <path d="M3.57 8.343a3.653 3.653 0 0 1 1.764-3.8a3.653 3.653 0 0 1 3.8 0a3.653 3.653 0 0 1 1.764 3.8a3.653 3.653 0 0 1-1.764 3.8a3.653 3.653 0 0 1-3.8 0a3.653 3.653 0 0 1-1.764-3.8zm11.428 0a3.653 3.653 0 0 1 1.764-3.8a3.653 3.653 0 0 1 3.8 0a3.653 3.653 0 0 1 1.764 3.8a3.653 3.653 0 0 1-1.764 3.8a3.653 3.653 0 0 1-3.8 0a3.653 3.653 0 0 1-1.764-3.8zm-11.428 7.314a3.653 3.653 0 0 1 1.764-3.8a3.653 3.653 0 0 1 3.8 0a3.653 3.653 0 0 1 1.764 3.8a3.653 3.653 0 0 1-1.764 3.8a3.653 3.653 0 0 1-3.8 0a3.653 3.653 0 0 1-1.764-3.8zm11.428 0a3.653 3.653 0 0 1 1.764-3.8a3.653 3.653 0 0 1 3.8 0a3.653 3.653 0 0 1 1.764 3.8a3.653 3.653 0 0 1-1.764 3.8a3.653 3.653 0 0 1-3.8 0a3.653 3.653 0 0 1-1.764-3.8z" />
+          </svg>
+          Qiita
+        </h2>
+        <QiitaArticles
+          initialData={articles}
+          profile={profile ?? undefined}
+          showProfile={true}
+        />
+      </section>
     </div>
   );
 }
