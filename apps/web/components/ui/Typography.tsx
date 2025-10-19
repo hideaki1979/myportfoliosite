@@ -41,9 +41,9 @@ export const PageDescription = styled.p`
  * ページサブタイトル（中央揃え、太字）
  */
 export const PageSubtitle = styled.p`
-  text-align: center;
-  margin-bottom: 48px;
-  font-family: "Noto Sans JP", sans-serif;
-  font-size: 28px;
-  font-weight: 700;
+    text-align: center;
+    margin-bottom: 48px;
+    font-family: "Noto Sans JP", sans-serif;
+    font-size: 28px;
+    font-weight: 700;
 `;

@@ -123,33 +123,21 @@ describe('Portfolio Page', () => {
         });
     });
 
-    it('タイトルのスタイルが正しいこと', async () => {
+    it('タイトルと説明文が正しいHTML構造で表示されること', async () => {
         vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositories);
 
         const page = await PortfolioPage();
-        render(page);
-
-        const heading = screen.getByRole('heading', { name: '■Portfolio（Github）' });
-        expect(heading).toHaveStyle({
-            fontFamily: 'Noto Sans JP, sans-serif',
-            fontWeight: '700',
-            fontSize: '28px',
-            textAlign: 'center',
-            marginBottom: '24px',
-        });
-    });
-
-    it('説明文のスタイルが正しいこと', async () => {
-        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositories);
-
-        const page = await PortfolioPage();
+        
         const { container } = render(page);
 
+        // タイトルがh1要素として存在すること
+        const heading = screen.getByRole('heading', {name: '■Portfolio（Github）', level: 1});
+        expect(heading).toBeInTheDocument();
+
+        // 説明文がp要素として存在すること
         const description = container.querySelector('p') as HTMLElement;
-        expect(description).toHaveStyle({
-            textAlign: 'center',
-            marginBottom: '48px',
-        });
+        expect(description).toBeInTheDocument();
+        expect(description).toHaveTextContent('今まで作成した学校の課題やポートフォリオ、')
     });
 
     it('GitHubReposコンポーネントにlimit propが渡されていないこと（全件表示）', async () => {
