@@ -2,7 +2,13 @@ import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from 'nestjs-pino';
 import { CacheService } from '../cache/cache.service';
-import { API_TIMEOUT, DEFAULT_ARTICLE_LIMIT, DEFAULT_CACHE_TIME, DEFAULT_STALE_CACHE_TIME, RETRY_TIME } from 'src/constants/constants';
+import {
+  API_TIMEOUT,
+  DEFAULT_ARTICLE_LIMIT,
+  DEFAULT_CACHE_TIME,
+  DEFAULT_STALE_CACHE_TIME,
+  RETRY_TIME,
+} from 'src/constants/constants';
 
 interface QiitaArticleApiResponse {
   id: string;
