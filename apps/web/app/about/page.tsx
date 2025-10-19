@@ -6,6 +6,7 @@ import {
 import { baseUrl } from "../../lib/constants";
 import WorkHistory from "../../components/sections/WorkHistory";
 import AboutMe from "../../components/sections/AboutMe";
+import { PageContainer } from "../../components/layouts/PageLayout";
 
 export async function generateMetadata(): Promise<Metadata> {
   const personData = createPersonStructuredData({
@@ -60,10 +61,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function AboutPage() {
   return (
-    <div style={{ maxWidth: 1248, margin: "0 auto", padding: "24px 16px" }}>
+    <PageContainer>
       <h1>About Me</h1>
       <AboutMe />
       <WorkHistory />
-    </div>
+    </PageContainer>
   );
 }

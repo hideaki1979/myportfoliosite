@@ -4,7 +4,7 @@ import { DEFAULT_ARTICLE_LIMIT } from 'src/constants/constants';
 
 @Controller('api/qiita')
 export class QiitaController {
-  constructor(private readonly qiita: QiitaService) { }
+  constructor(private readonly qiita: QiitaService) {}
 
   @Get('articles')
   async getArticles(@Query('limit') limit?: string) {
@@ -18,6 +18,24 @@ export class QiitaController {
       ...(rateLimit && {
         rateLimit: this.formatRateLimit(rateLimit),
       }),
+    };
+  }
+
+  @Get('profile')
+  async getProfile() {
+    const profile = await this.qiita.getUserInfo();
+
+    if (!profile) {
+      return {
+        success: false,
+        profile: null,
+        message: 'User profile not available',
+      };
+    }
+
+    return {
+      success: true,
+      profile,
     };
   }
 
@@ -39,7 +57,7 @@ export class QiitaController {
     };
   }
 
-    /**
+  /**
    * レート制限情報をフォーマットする
    * @param rateLimit - Qiitaサービスから取得したレート制限情報
    * @returns フォーマット済みのレート制限情報
