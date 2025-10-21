@@ -85,7 +85,7 @@ export default function ArticleCard({ article }: ArticleCardProps) {
     });
 
     return (
-        <Card>
+        <Card role="listitem">
             <CardHeader>
                 <QiitaIcon aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="#55c500">
