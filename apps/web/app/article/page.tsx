@@ -51,13 +51,18 @@ export default async function ArticlePage() {
   let articles: QiitaArticle[] = [];
   let profile = null;
 
-  try {
-    [articles, profile] = await Promise.all([
-      fetchQiitaArticles(10),
-      fetchQiitaProfile(),
-    ]);
-  } catch (error) {
-    console.error('Failed to fetch Qiita data:', error);
+  // CI環境やAPI_URLが設定されていない場合は空のデータでビルドを継続
+  if (process.env.API_URL && !process.env.CI) {
+    try {
+      [articles, profile] = await Promise.all([
+        fetchQiitaArticles(10),
+        fetchQiitaProfile(),
+      ]);
+    } catch (error) {
+      console.error('Failed to fetch Qiita data:', error);
+    }
+  } else {
+    console.log('Skipping Qiita API calls in CI environment or when API_URL is not set');
   }
   return (
     <PageContainer>

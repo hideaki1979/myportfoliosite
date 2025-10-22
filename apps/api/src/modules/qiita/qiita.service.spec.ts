@@ -161,7 +161,7 @@ describe('QiitaService', () => {
       };
 
       const emptyUserService = new QiitaService(
-        emptyConfigService as any,
+        emptyConfigService as unknown as ConfigService,
         logger,
         cacheService,
       );

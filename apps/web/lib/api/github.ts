@@ -4,6 +4,7 @@
  */
 
 import { GitHubRepository } from "../../components/features/GitHubRepos/types";
+import { baseUrl } from "../constants";
 
 interface GitHubApiResponse {
     success: boolean;
@@ -26,10 +27,11 @@ interface GitHubApiResponse {
 export async function fetchGitHubRepositories(
     limit = 20,
 ): Promise<GitHubRepository[]> {
+
     try {
         // Next.js Route Handlerを呼び出し（内部API）
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/github/repositories?limit=${limit}`,
+            `${baseUrl}/api/github/repositories?limit=${limit}`,
             {
                 method: 'GET',
                 headers: {

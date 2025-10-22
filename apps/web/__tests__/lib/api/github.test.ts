@@ -2,6 +2,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { fetchGitHubRepositories, fetchGitHubRepositoriesClient } from '../../../lib/api/github';
 import { mockRepositories } from '../../mocks/github';
 
+// constants.tsのbaseUrlをモック
+vi.mock('../../../lib/constants', () => ({
+    baseUrl: 'http://localhost:3000',
+}));
+
 const mockSuccessResponse = {
     success: true,
     repositories: mockRepositories,
@@ -107,27 +112,7 @@ describe('GitHub API Client', () => {
             expect(consoleErrorSpy).toHaveBeenCalled();
         });
 
-
-        it('環境変数NEXT_PUBLIC_BASE_URLが設定されている場合、そのURLを使用すること', async () => {
-            vi.stubEnv('NEXT_PUBLIC_BASE_URL', 'https://example.com');
-
-            const fetchMock = vi.fn().mockResolvedValue({
-                ok: true,
-                json: async () => mockSuccessResponse,
-            });
-            global.fetch = fetchMock;
-
-            await fetchGitHubRepositories(20);
-
-            expect(fetchMock).toHaveBeenCalledWith(
-                'https://example.com/api/github/repositories?limit=20',
-                expect.any(Object)
-            );
-        });
-
-        it('環境変数NEXT_PUBLIC_BASE_URLが未設定の場合、localhostを使用すること', async () => {
-            vi.stubEnv('NEXT_PUBLIC_BASE_URL', undefined);
-
+        it('baseUrlを使用してAPIを呼び出すこと', async () => {
             const fetchMock = vi.fn().mockResolvedValue({
                 ok: true,
                 json: async () => mockSuccessResponse,

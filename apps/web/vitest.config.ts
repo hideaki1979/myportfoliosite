@@ -6,7 +6,7 @@ export default defineConfig({
     plugins: [react()],
     test: {
         globals: true,
-        environment: 'jsdom',
+        environment: 'happy-dom',
         setupFiles: ['./vitest.setup.ts'],
         coverage: {
             provider: 'v8',
@@ -29,6 +29,17 @@ export default defineConfig({
             '**/tests-examples/**',
             '**/.next/**',
         ],
+        // テストの並列実行を無効化してメモリ問題を回避
+        pool: 'forks',
+        poolOptions: {
+            forks: {
+                singleFork: true,
+            },
+        },
+        // 依存関係のインライン化（Vitest 3.x系の正しい設定）
+        deps: {
+            inline: ['webidl-conversions', 'whatwg-url'],
+        },
     },
     resolve: {
         alias: {
@@ -38,5 +49,8 @@ export default defineConfig({
             '@/app': path.resolve(__dirname, './app'),
             '@/styles': path.resolve(__dirname, './styles'),
         },
+    },
+    define: {
+        global: 'globalThis',
     },
 });
