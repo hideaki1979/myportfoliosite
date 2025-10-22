@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
             try {
                 const errorData = await response.json();
                 message = errorData.error?.message ||
-                errorData?.message || message;
+                    errorData?.message || message;
             } catch {
                 const text = await response.text().catch(() => '');
                 if (text) message = text;

@@ -109,7 +109,7 @@ describe('GitHub API Client', () => {
 
 
         it('環境変数NEXT_PUBLIC_BASE_URLが設定されている場合、そのURLを使用すること', async () => {
-            vi.stubEnv('NEXT_PUBLIC_BASE_URL', 'https://example.com');
+            vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://example.com');
 
             const fetchMock = vi.fn().mockResolvedValue({
                 ok: true,
@@ -126,7 +126,7 @@ describe('GitHub API Client', () => {
         });
 
         it('環境変数NEXT_PUBLIC_BASE_URLが未設定の場合、localhostを使用すること', async () => {
-            vi.stubEnv('NEXT_PUBLIC_BASE_URL', undefined);
+            vi.stubEnv('NEXT_PUBLIC_SITE_URL', undefined);
 
             const fetchMock = vi.fn().mockResolvedValue({
                 ok: true,
