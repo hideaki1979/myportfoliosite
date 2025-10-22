@@ -37,3 +37,6 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          CI: true
+          API_URL: http://localhost:3001
