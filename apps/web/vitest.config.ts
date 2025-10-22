@@ -39,4 +39,10 @@ export default defineConfig({
             '@/styles': path.resolve(__dirname, './styles'),
         },
     },
+    define: {
+        global: 'globalThis',
+    },
+    optimizeDeps: {
+        exclude: ['webidl-conversions', 'whatwg-url'],
+    },
 });
