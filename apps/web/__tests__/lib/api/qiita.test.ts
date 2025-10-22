@@ -95,7 +95,7 @@ describe('Qiita API Client', () => {
 
         it('環境変数API_URLが正しく使用されること', async () => {
             vi.unstubAllEnvs();
-            vi.stubEnv('API_URL', 'https://api.example.com');
+            vi.stubEnv('API_URL', 'http://localhost:3100');
 
             const fetchMock = vi.fn().mockResolvedValue({
                 ok: true,
@@ -106,7 +106,7 @@ describe('Qiita API Client', () => {
             await fetchQiitaArticles(10);
 
             expect(fetchMock).toHaveBeenCalledWith(
-                'https://api.example.com/api/qiita/articles?limit=10',
+                'http://localhost:3100/api/qiita/articles?limit=10',
                 expect.objectContaining({ next: { revalidate: 900 } }),
             );
         });
@@ -189,7 +189,7 @@ describe('Qiita API Client', () => {
 
         it('環境変数API_URLが正しく使用されること', async () => {
             vi.unstubAllEnvs();
-            vi.stubEnv('API_URL', 'https://api.example.com');
+            vi.stubEnv('API_URL', 'http://localhost:3100');
 
             const fetchMock = vi.fn().mockResolvedValue({
                 ok: true,
@@ -200,7 +200,7 @@ describe('Qiita API Client', () => {
             await fetchQiitaArticlesClient(10);
 
             expect(fetchMock).toHaveBeenCalledWith(
-                'https://api.example.com/api/qiita/articles?limit=10',
+                'http://localhost:3100/api/qiita/articles?limit=10',
                 expect.objectContaining({
                     cache: "no-store",
                 }),

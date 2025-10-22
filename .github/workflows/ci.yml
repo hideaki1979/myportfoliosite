@@ -24,7 +24,7 @@ jobs:
         # versionを指定せず、package.jsonのpackageManagerを使用
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install -w --frozen-lockfile
 
       - name: Lint
         run: pnpm lint
