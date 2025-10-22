@@ -6,33 +6,25 @@ on:
   pull_request:
     branches: [main, dev]
 
-permissions:
-  contents: read
-
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  quality:
+  test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: "pnpm"
+          node-version: "18"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        # versionを指定せず、package.jsonのpackageManagerを使用
 
       - name: Install dependencies
-        run: pnpm install -w --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
         run: pnpm lint
@@ -40,8 +32,8 @@ jobs:
       - name: Type check
         run: pnpm check-types
 
-      - name: Unit tests
+      - name: Test
         run: pnpm test
 
-      - name: Build (all)
+      - name: Build
         run: pnpm build

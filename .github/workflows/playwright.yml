@@ -4,13 +4,13 @@ on:
   push:
     branches: [main, dev]
     paths:
-      - 'apps/web/**'
-      - '.github/workflows/playwright.yml'
+      - "apps/web/**"
+      - ".github/workflows/playwright.yml"
   pull_request:
     branches: [main, dev]
     paths:
-      - 'apps/web/**'
-      - '.github/workflows/playwright.yml'
+      - "apps/web/**"
+      - ".github/workflows/playwright.yml"
 
 jobs:
   test:
@@ -19,58 +19,67 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
-        fail-fast: false
-        matrix:
-            # 複数ブラウザでテスト
-            browser: [chromium, firefox, webkit]
-    
-    steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
-        
-        - name: Setup pnpm
-          uses: pnpm/action-setup@v4
-          with:
-            version: 9
-    
-        - name: Setup Node.js
-          uses: actions/setup-node@v4
-          with:
-              node-version: '20'
-              cache: 'pnpm'
-    
-        - name: Install dependencies
-          run: pnpm install --frozen-lockfile
-    
-        - name: Install Playwright browsers
-          run: pnpm exec playwright install --with-deps ${{ matrix.browser }}
-          working-directory: apps/web
-    
-        - name: Build Next.js application
-          run: pnpm --filter web build
-          env:
-            NEXT_PUBLIC_BASE_URL: http://localhost:3000
+      fail-fast: false
+      matrix:
+        # 複数ブラウザでテスト
+        browser: [chromium, firefox, webkit]
 
-        - name: Run Playwright tests
-          run: pnpm --filter web e2e --project=${{ matrix.browser }}
-          env:
-            CI: true
-    
-        - name: Upload Playwright report
-          uses: actions/upload-artifact@v4
-          if: always()
-          with:
-            name: playwright-report-${{ matrix.browser }}
-            path: apps/web/playwright-report/
-            retention-days: 30
-    
-        - name: Upload test results
-          uses: actions/upload-artifact@v4
-          if: always()
-          with:
-              name: test-results-${{ matrix.browser }}
-              path: apps/web/test-results/
-              retention-days: 7
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        # versionを指定せず、package.jsonのpackageManagerを使用
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Debug environment
+        run: |
+          echo "Node version: $(node --version)"
+          echo "pnpm version: $(pnpm --version)"
+          echo "Working directory: $(pwd)"
+          echo "Available files:"
+          ls -la apps/web/
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps ${{ matrix.browser }}
+        working-directory: apps/web
+
+      - name: Build Next.js application
+        run: pnpm --filter web build
+        env:
+          NEXT_PUBLIC_BASE_URL: http://localhost:3000
+
+      - name: Run Playwright tests
+        run: pnpm --filter web e2e --project=${{ matrix.browser }} --reporter=line
+        env:
+          CI: true
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+        timeout-minutes: 10
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-${{ matrix.browser }}
+          path: apps/web/playwright-report/
+          retention-days: 30
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.browser }}
+          path: apps/web/test-results/
+          retention-days: 7
 
       # すべてのブラウザでテストが成功したことを確認
   all-tests-passed:
