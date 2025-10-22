@@ -111,11 +111,13 @@ test.describe("Article ページ - ユーザージャーニー", () => {
         await expect(timeElement).toBeVisible();
 
         // タグが存在する場合は表示されることを確認
-        const tags = firstCard.locator("span").filter({ hasText: /^[A-Za-z0-9ぁ-んァ-ヶー一-龠]+$/ });
+        const tags = firstCard.getByTestId("article-tag");
         const tagCount = await tags.count();
 
-        // タグが存在する可能性を確認（0個以上）
-        expect(tagCount).toBeGreaterThanOrEqual(0);
+        // タグが存在する場合は1つ以上表示されることを確認
+        if (tagCount > 0) {
+            await expect(tags.first()).toBeVisible();
+        }
     });
 
     test("記事リンクが正しく設定されている", async () => {
@@ -408,8 +410,8 @@ test.describe("Article ページ - メタデータとSEO", () => {
         expect(ogImage).toContain("og-article.jpg");
 
         // X Card
-        const XCard = await page.locator('meta[name="og:image"]').getAttribute("content");
-        expect(XCard).toBeTruthy();
+        const twitterCard = await page.locator('meta[name="twitter:card"]').getAttribute("content");
+        expect(twitterCard).toBeTruthy();
     });
 
     test("構造化データが設定されている", async ({page}) => {

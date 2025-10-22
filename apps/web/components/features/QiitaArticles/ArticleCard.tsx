@@ -105,7 +105,7 @@ export default function ArticleCard({ article }: ArticleCardProps) {
             {article.tags.length > 0 && (
                 <TagsContainer>
                     {article.tags.map((tag, index) => (
-                        <Tag key={`${tag.name}-${index}`}>{tag.name}</Tag>
+                        <Tag key={`${tag.name}-${index}`} data-testid="article-tag">{tag.name}</Tag>
                     ))}
                 </TagsContainer>
             )}
