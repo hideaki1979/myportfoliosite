@@ -85,7 +85,7 @@ export default function ArticleCard({ article }: ArticleCardProps) {
     });
 
     return (
-        <Card>
+        <Card role="listitem">
             <CardHeader>
                 <QiitaIcon aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="#55c500">
@@ -105,7 +105,7 @@ export default function ArticleCard({ article }: ArticleCardProps) {
             {article.tags.length > 0 && (
                 <TagsContainer>
                     {article.tags.map((tag, index) => (
-                        <Tag key={`${tag.name}-${index}`}>{tag.name}</Tag>
+                        <Tag key={`${tag.name}-${index}`} data-testid="article-tag">{tag.name}</Tag>
                     ))}
                 </TagsContainer>
             )}
