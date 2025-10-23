@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const API_BASE_URL = process.env.API_URL ||'http://localhost:3100';
+const API_BASE_URL = process.env.API_URL || 'http://localhost:3100';
 
 /**
  * Qiita 記事一覧取得 API Route Handler
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
                 success: false,
                 error: {
                     code: 'INTERNAL_ERROR',
-                    message: 
+                    message:
                         error instanceof Error
                             ? error.message
                             : 'Failed to fetch Qiita articles',
@@ -73,5 +73,5 @@ export async function GET(request: NextRequest) {
             },
             { status: 500 },
         );
-    } 
+    }
 }
