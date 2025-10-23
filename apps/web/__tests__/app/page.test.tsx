@@ -50,7 +50,7 @@ describe('Home Page', () => {
         const page = await Home();
         render(page);
 
-        const heading = screen.getByRole('heading', { name: 'GitHub' });
+        const heading = screen.getByRole('heading', { name: '■GitHub' });
         expect(heading).toBeInTheDocument();
     });
 
