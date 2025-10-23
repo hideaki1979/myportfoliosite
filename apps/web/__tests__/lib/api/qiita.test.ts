@@ -37,8 +37,10 @@ describe('Qiita API Client', () => {
 
             expect(result).toEqual(mockQiitaArticles);
             expect(fetchMock).toHaveBeenCalledWith(
-                'http://localhost:3100/api/qiita/articles?limit=10',
+                'http://localhost:3000/api/qiita/articles?limit=10',
                 expect.objectContaining({
+                    method: 'GET',
+                    cache: 'force-cache',
                     next: { revalidate: 900 },
                 }),
             );
@@ -54,14 +56,14 @@ describe('Qiita API Client', () => {
             await fetchQiitaArticles();
 
             expect(fetchMock).toHaveBeenCalledWith(
-                'http://localhost:3100/api/qiita/articles?limit=10',
+                'http://localhost:3000/api/qiita/articles?limit=10',
                 expect.any(Object)
             );
         });
 
         const errorCases = [
             {
-                description: 'APIがエラーレスポンスを返す',
+                description: 'APIがエラーレスポンスを返す場合、空配列を返すこと',
                 setup: () =>
                     vi.fn().mockResolvedValue({
                         ok: false,
@@ -71,7 +73,7 @@ describe('Qiita API Client', () => {
                     }),
             },
             {
-                description: 'successがfalseの場合',
+                description: 'successがfalseの場合、空配列を返すこと',
                 setup: () =>
                     vi.fn().mockResolvedValue({
                         ok: true,
@@ -79,7 +81,7 @@ describe('Qiita API Client', () => {
                     }),
             },
             {
-                description: 'ネットワークエラーが発生する',
+                description: 'ネットワークエラーが発生する場合、空配列を返すこと',
                 setup: () => vi.fn().mockRejectedValue(new Error('Network error')),
             },
         ];
@@ -93,10 +95,7 @@ describe('Qiita API Client', () => {
             expect(consoleErrorSpy).toHaveBeenCalled();
         });
 
-        it('環境変数API_URLが正しく使用されること', async () => {
-            vi.unstubAllEnvs();
-            vi.stubEnv('API_URL', 'http://localhost:3100');
-
+        it('baseUrlが正しく使用されること', async () => {
             const fetchMock = vi.fn().mockResolvedValue({
                 ok: true,
                 json: async () => mockArticlesSuccessResponse,
@@ -106,17 +105,17 @@ describe('Qiita API Client', () => {
             await fetchQiitaArticles(10);
 
             expect(fetchMock).toHaveBeenCalledWith(
-                'http://localhost:3100/api/qiita/articles?limit=10',
-                expect.objectContaining({ next: { revalidate: 900 } }),
+                'http://localhost:3000/api/qiita/articles?limit=10',
+                expect.objectContaining({
+                    method: 'GET',
+                    cache: 'force-cache',
+                    next: { revalidate: 900 }
+                }),
             );
         });
     });
 
     describe('fetchQiitaArticlesClient (Client-side)', () => {
-        beforeEach(() => {
-            vi.stubEnv('API_URL', 'http://localhost:3100');
-        });
-
         it('正常に記事を取得できること', async () => {
             const fetchMock = vi.fn().mockResolvedValue({
                 ok: true,
@@ -128,8 +127,9 @@ describe('Qiita API Client', () => {
 
             expect(result).toEqual(mockQiitaArticles);
             expect(fetchMock).toHaveBeenCalledWith(
-                'http://localhost:3100/api/qiita/articles?limit=10',
+                '/api/qiita/articles?limit=10',
                 expect.objectContaining({
+                    method: 'GET',
                     cache: 'no-store',
                 })
             );
@@ -145,7 +145,7 @@ describe('Qiita API Client', () => {
             await fetchQiitaArticlesClient();
 
             expect(fetchMock).toHaveBeenCalledWith(
-                'http://localhost:3100/api/qiita/articles?limit=10',
+                '/api/qiita/articles?limit=10',
                 expect.any(Object)
             );
         });
@@ -158,7 +158,13 @@ describe('Qiita API Client', () => {
                         ok: false,
                         status: 500,
                         statusText: 'Internal Server Error',
-                        json: async () => ({ success: false }),
+                        json: async () => ({
+                            success: false,
+                            error: {
+                                code: 'BACKEND_API_ERROR',
+                                message: 'Qiita API error: 500 Internal Server Error'
+                            }
+                        }),
                     }),
                 expectedErrorMessage: 'Qiita API error: 500 Internal Server Error',
             },
@@ -187,10 +193,7 @@ describe('Qiita API Client', () => {
             expect(consoleErrorSpy).toHaveBeenCalled();
         });
 
-        it('環境変数API_URLが正しく使用されること', async () => {
-            vi.unstubAllEnvs();
-            vi.stubEnv('API_URL', 'http://localhost:3100');
-
+        it('相対パスでRoute Handlerを呼び出すこと', async () => {
             const fetchMock = vi.fn().mockResolvedValue({
                 ok: true,
                 json: async () => mockArticlesSuccessResponse,
@@ -200,8 +203,9 @@ describe('Qiita API Client', () => {
             await fetchQiitaArticlesClient(10);
 
             expect(fetchMock).toHaveBeenCalledWith(
-                'http://localhost:3100/api/qiita/articles?limit=10',
+                '/api/qiita/articles?limit=10',
                 expect.objectContaining({
+                    method: 'GET',
                     cache: "no-store",
                 }),
             );
@@ -209,10 +213,6 @@ describe('Qiita API Client', () => {
     });
 
     describe('fetchQiitaProfile (Server-side)', () => {
-        beforeEach(() => {
-            vi.stubEnv('API_URL', 'http://localhost:3100');
-        });
-
         it('正常にプロフィールを取得できること', async () => {
             const fetchMock = vi.fn().mockResolvedValue({
                 ok: true,
@@ -224,8 +224,10 @@ describe('Qiita API Client', () => {
 
             expect(result).toEqual(mockQiitaProfile);
             expect(fetchMock).toHaveBeenCalledWith(
-                'http://localhost:3100/api/qiita/profile',
+                'http://localhost:3000/api/qiita/profile',
                 expect.objectContaining({
+                    method: 'GET',
+                    cache: 'force-cache',
                     next: { revalidate: 3600 },
                 })
             );
@@ -239,6 +241,13 @@ describe('Qiita API Client', () => {
                         ok: false,
                         status: 500,
                         statusText: 'Internal Server Error',
+                        json: async () => ({
+                            success: false,
+                            error: {
+                                code: 'BACKEND_API_ERROR',
+                                message: 'Backend API request failed: 500'
+                            }
+                        }),
                     }),
             },
             {
@@ -278,10 +287,7 @@ describe('Qiita API Client', () => {
             expect(consoleErrorSpy).toHaveBeenCalled();
         });
 
-        it('環境変数API_URLが正しく使用されること', async () => {
-            vi.unstubAllEnvs();
-            vi.stubEnv('API_URL', 'https://api.example.com');
-
+        it('baseUrlが正しく使用されること', async () => {
             const fetchMock = vi.fn().mockResolvedValue({
                 ok: true,
                 json: async () => mockProfileSuccessResponse,
@@ -291,8 +297,12 @@ describe('Qiita API Client', () => {
             await fetchQiitaProfile();
 
             expect(fetchMock).toHaveBeenCalledWith(
-                'https://api.example.com/api/qiita/profile',
-                expect.objectContaining({ next: { revalidate: 3600 } }),
+                'http://localhost:3000/api/qiita/profile',
+                expect.objectContaining({
+                    method: 'GET',
+                    cache: 'force-cache',
+                    next: { revalidate: 3600 }
+                }),
             );
         });
     });
