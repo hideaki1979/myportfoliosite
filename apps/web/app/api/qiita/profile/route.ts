@@ -10,6 +10,10 @@ export async function GET() {
     try {
         const url = `${API_BASE_URL}/api/qiita/profile`;
 
+        console.log('=== Qiita Profile API Debug ===');
+        console.log('API_BASE_URL:', API_BASE_URL);
+        console.log('Target URL:', url);
+
         // バックエンドAPIを呼び出し
         const response = await fetch(
             url,
@@ -22,6 +26,9 @@ export async function GET() {
                 next: { revalidate: 3600 },
             },
         );
+
+        console.log('Render API Response Status:', response.status);
+        console.log('Render API Response Headers:', Object.fromEntries(response.headers.entries()));
 
         if (!response.ok) {
             let message = `Backend API request failed: ${response.status}`;
@@ -46,6 +53,10 @@ export async function GET() {
         }
 
         const data = await response.json();
+
+        console.log('Render API Response Data:', JSON.stringify(data, null, 2));
+        console.log('Data success:', data.success);
+        console.log('Profile data:', data.profile ? 'Present' : 'Missing');
 
         return NextResponse.json(data, {
             headers: {
