@@ -15,6 +15,11 @@ export async function GET(request: NextRequest) {
         const url = new URL(`${API_BASE_URL}/api/qiita/articles`);
         url.searchParams.set('limit', String(safeLimit));
 
+        console.log('=== Qiita Articles API Debug ===');
+        console.log('API_BASE_URL:', API_BASE_URL);
+        console.log('Target URL:', url.toString());
+        console.log('Limit:', safeLimit);
+
         // バックエンドAPIを呼び出し
         const response = await fetch(
             url.toString(),
@@ -27,6 +32,9 @@ export async function GET(request: NextRequest) {
                 next: { revalidate: 900 },
             },
         );
+
+        console.log('Render API Response Status:', response.status);
+        console.log('Render API Response Headers:', Object.fromEntries(response.headers.entries()));
 
         if (!response.ok) {
             let message = `Backend API request failed: ${response.status}`;
@@ -51,6 +59,10 @@ export async function GET(request: NextRequest) {
         }
 
         const data = await response.json();
+
+        console.log('Render API Response Data:', JSON.stringify(data, null, 2));
+        console.log('Data success:', data.success);
+        console.log('Articles count:', data.articles?.length || 0);
 
         return NextResponse.json(data, {
             headers: {
