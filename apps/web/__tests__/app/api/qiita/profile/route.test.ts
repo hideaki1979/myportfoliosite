@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mockQiitaProfile } from '../../../../mocks/qiita';
 import { GET } from '../../../../../app/api/qiita/profile/route';
 
@@ -18,7 +18,7 @@ describe('Qiita Profile Route Handler', () => {
             ok: true,
             json: async () => ({
                 success: true,
-                articles: mockQiitaProfile,
+                profile: mockQiitaProfile,
             }),
         });
         global.fetch = mockFetch;
@@ -28,7 +28,7 @@ describe('Qiita Profile Route Handler', () => {
 
         expect(response.status).toBe(200);
         expect(data.success).toBe(true);
-        expect(data.articles).toEqual(mockQiitaProfile);
+        expect(data.profile).toEqual(mockQiitaProfile);
         expect(mockFetch).toHaveBeenCalledWith(
             'http://localhost:3100/api/qiita/profile',
             expect.objectContaining({

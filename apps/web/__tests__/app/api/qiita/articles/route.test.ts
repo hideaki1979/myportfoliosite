@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mockQiitaArticles } from '../../../../mocks/qiita';
 import { NextRequest } from 'next/server';
 import { GET } from '../../../../../app/api/qiita/articles/route';
