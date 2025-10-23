@@ -1,3 +1,5 @@
+import { baseUrl } from "../constants";
+
 /**
  * Qiita API クライアント
  * バックエンドAPIを経由してQiita記事を取得する
@@ -25,8 +27,13 @@ export interface QiitaRateLimit {
 
 interface QiitaApiResponse {
     success: boolean;
-    articles: QiitaArticle[];
+    articles?: QiitaArticle[];
+    profile?: QiitaUser;
     rateLimit?: QiitaRateLimit;
+    error?: {
+        code: string;
+        message: string;
+    };
 }
 
 export interface QiitaUser {
@@ -41,12 +48,6 @@ export interface QiitaUser {
     organization?: string;
 }
 
-interface QiitaProfileApiResponse {
-    success: boolean;
-    profile: QiitaUser | null;
-    message?: string;
-}
-
 /**
  * Qiita記事を取得（サーバーサイド）
  * Next.jsのキャッシュ機能で15分間キャッシュ
@@ -55,29 +56,41 @@ export async function fetchQiitaArticles(
     limit = 10,
 ): Promise<QiitaArticle[]> {
     try {
-        const url = `${process.env.API_URL}/api/qiita/articles?limit=${limit}`;
+        // Next.js Route Handlerを呼び出し（内部API）
+        const url = `${baseUrl}/api/qiita/articles?limit=${limit}`;
 
-        const response = await fetch(url, {
-            next: {
-                revalidate: 900,    // 15分間キャッシュ
-            },
-        });
+        const response = await fetch(
+            url,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                // サーバーサイドでは自動的にキャッシュされる
+                cache: 'force-cache',
+                next: { revalidate: 900 },   // 15分間キャッシュ
+            });
 
         if (!response.ok) {
-            throw new Error(
-                `Qiita API error: ${response.status} ${response.statusText}`,
-            );
+            const errorData = await response.json().catch(() => ({})) as QiitaApiResponse;
+            const errorMessage = errorData.error?.message ||
+                `Qiita API error: ${response.status} ${response.statusText}`;
+            console.error(errorMessage);
+            throw new Error(errorMessage);
         }
 
-        const data: QiitaApiResponse = await response.json();
+        const result: QiitaApiResponse = await response.json();
 
-        if (!data.success) {
-            throw new Error('Qiita API returned unsuccessful response');
+        if (!result.success || !result.articles) {
+            const errorMessage = 'Qiita API returned unsuccessful response';
+            console.error(errorMessage);
+            throw new Error(errorMessage);
         }
 
-        return data.articles;
+        return result.articles;
     } catch (error) {
         console.error('Failed to fetch Qiita articles:', error);
+        // エラー時は空配列を返す（フォールバック）
         return [];
     }
 }
@@ -95,28 +108,41 @@ export async function fetchQiitaArticlesClient(
     limit = 10,
 ): Promise<QiitaArticle[]> {
     try {
-        const url = `${process.env.API_URL}/api/qiita/articles?limit=${limit}`;
+        // Next.js Route Handlerを呼び出し（内部API）
+        const url = `/api/qiita/articles?limit=${limit}`;
 
-        const response = await fetch(url, {
-            cache: 'no-store',
-        });
+        const response = await fetch(
+            url,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                cache: 'no-store',
+            },
+        );
 
         if (!response.ok) {
+            const errorData = await response.json().catch(() => ({})) as QiitaApiResponse;
             throw new Error(
-                `Qiita API error: ${response.status} ${response.statusText}`,
+                errorData.error?.message ||
+                `Qiita API request failed: ${response.status}`,
             );
         }
 
         const data: QiitaApiResponse = await response.json();
 
-        if (!data.success) {
+        if (!data.success || !data.articles) {
             throw new Error('Qiita API returned unsuccessful response');
         }
 
         return data.articles;
     } catch (error) {
         console.error('Failed to fetch Qiita articles:', error);
-        throw error;
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error('Failed to fetch Qiita articles');
     }
 }
 
@@ -126,9 +152,15 @@ export async function fetchQiitaArticlesClient(
  */
 export async function fetchQiitaProfile(): Promise<QiitaUser | null> {
     try {
-        const url = `${process.env.API_URL}/api/qiita/profile`;
+        const url = `${baseUrl}/api/qiita/profile`;
 
         const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            // サーバーサイドでは自動的にキャッシュされる
+            cache: 'force-cache',
             next: {
                 revalidate: 3600,   // 1時間キャッシュ
             },
@@ -141,10 +173,10 @@ export async function fetchQiitaProfile(): Promise<QiitaUser | null> {
             return null;
         }
 
-        const data: QiitaProfileApiResponse = await response.json();
+        const data: QiitaApiResponse = await response.json();
 
         if (!data.success || !data.profile) {
-            console.error('Qiita profile not available:', data.message);
+            console.error('Qiita profile not available:');
             return null;
         }
 
