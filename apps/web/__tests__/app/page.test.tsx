@@ -14,7 +14,7 @@ vi.mock('../../lib/api/github', () => ({
 }));
 
 // Qiitaモジュールのモック
-vi.mock('../../lib/api/qiita.ts', () => ({
+vi.mock('../../lib/api/qiita', () => ({
     fetchQiitaArticles: vi.fn(),
     fetchQiitaProfile: vi.fn(),
 }));
@@ -87,7 +87,7 @@ describe('Home Page', () => {
 
         const heading = screen.getByRole('heading', { name: '■Qiita' });
         expect(heading).toBeInTheDocument();
-    })
+    });
 
     it('GitHubリポジトリが正常に取得され、GitHubReposコンポーネントに渡されること', async () => {
         vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositories);

@@ -90,6 +90,10 @@ class HomePage {
 
     // 特定のセクション内の要素を取得
     getSectionHeading(sectionName: string) {
+        // 英数字とスペースのみ許可
+        if (!/^[a-zA-Z0-9\s]+$/.test(sectionName)) {
+            throw new Error(`Invalid section name: ${sectionName}`);
+        }
         return this.page.getByRole("heading", { name: new RegExp(sectionName, "i") });
     }
 
@@ -228,7 +232,7 @@ test.describe("Home ページ - レスポンシブデザイン", () => {
     });
 
     test("デスクトップ画面で正しく表示される", async ({ page }) => {
-        await page.setViewportSize({ width: 768, height: 1024 });
+        await page.setViewportSize({ width: 1280, height: 1024 });
 
         const homePage = new HomePage(page);
         await homePage.goto();
@@ -274,7 +278,7 @@ test.describe("Home ページ - キーボードナビゲーション", () => {
             // フォーカスが移動したことを確認（homeLink以外の要素にフォーカス）
             const focusedElement = page.locator(":focus");
             try {
-                await expect(focusedElement).toBeVisible({timeout: 2000});
+                await expect(focusedElement).toBeVisible({ timeout: 2000 });
             } catch (error) {
                 // WebKitでは、フォーカス移動の確認が困難な場合があるため、
                 // フォーカスが移動したことを確認するだけで十分
@@ -551,15 +555,10 @@ test.describe("Home ページ - エラーハンドリング", () => {
         expect(response?.status()).toBe(404);
     });
 
-    test("JavaScriptが無効でも基本的な表示が可能", async ({ page }) => {
-        // JavaScriptを無効化
-        await page.context().addInitScript(() => {
-            // JavaScriptを無効化する処理
-            Object.defineProperty(window, 'location', {
-                value: { href: window.location.href },
-                writable: false
-            });
-        });
+    test("JavaScriptが無効でも基本的な表示が可能", async ({ browser }) => {
+        // JavaScriptを無効化した新しいコンテキストを作成
+        const context = await browser.newContext({javaScriptEnabled: false});
+        const page = await context.newPage();
 
         const homePage = new HomePage(page);
         await homePage.goto();
@@ -567,6 +566,8 @@ test.describe("Home ページ - エラーハンドリング", () => {
         // 基本的なHTMLコンテンツが表示される
         await expect(homePage.pageTitle).toBeVisible();
         await expect(homePage.navigation).toBeVisible();
+
+        await context.close();
     });
 });
 
