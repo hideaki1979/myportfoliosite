@@ -93,7 +93,7 @@ export default function QiitaArticles({
     }
 
     return (
-        <Container>
+        <Container role="region" aria-label="Qiita">
             {showProfile && profile && (
                 <Section>
                     <QiitaProfile profile={profile}></QiitaProfile>

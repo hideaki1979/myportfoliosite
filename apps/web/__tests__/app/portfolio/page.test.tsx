@@ -127,11 +127,11 @@ describe('Portfolio Page', () => {
         vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositories);
 
         const page = await PortfolioPage();
-        
+
         const { container } = render(page);
 
         // タイトルがh1要素として存在すること
-        const heading = screen.getByRole('heading', {name: '■Portfolio（Github）', level: 1});
+        const heading = screen.getByRole('heading', { name: '■Portfolio（Github）', level: 1 });
         expect(heading).toBeInTheDocument();
 
         // 説明文がp要素として存在すること

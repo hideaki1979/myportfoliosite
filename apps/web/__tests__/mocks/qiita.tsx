@@ -68,7 +68,7 @@ export const MockQiitaArticles = ({
 }) => (
     <div data-testid="qiita-articles">
         <span data-testid="articles-count">{initialData?.length || 0}</span>
-        <span data-testid="profile-visible">{showProfile ? "yes" : "no"}</span>
+        <span data-testid="qiita-profile-visible">{showProfile ? "yes" : "no"}</span>
         {profile && <span data-testid="profile-name">{profile.name}</span>}
         {limit !== undefined && <span data-testid="articles-limit">{limit}</span>}
     </div>
