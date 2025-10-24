@@ -47,7 +47,7 @@ export const MockGitHubRepos = ({ initialData, showProfile, showLanguageBar, sho
 }) => (
     <div data-testid="github-repos">
         <span data-testid="repos-count">{initialData?.length || 0}</span>
-        <span data-testid="profile-visible">{showProfile ? 'yes' : 'no'}</span>
+        <span data-testid="github-profile-visible">{showProfile ? 'yes' : 'no'}</span>
         <span data-testid="language-bar-visible">{showLanguageBar ? 'yes' : 'no'}</span>
         <span data-testid="tech-tags-visible">{showTechTags ? 'yes' : 'no'}</span>
         {limit !== undefined && <span data-testid="repos-limit">{limit}</span>}

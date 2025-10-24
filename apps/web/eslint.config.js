@@ -11,4 +11,13 @@ export default [
             "@typescript-eslint/no-empty-object-type": "off",
         },
     },
+    {
+        // Next.js設定ファイル用の特別なルール設定
+        files: ["next.config.js", "next.config.mjs"],
+        languageOptions: {
+            globals: {
+                process: "readonly",
+            },
+        },
+    },
 ];

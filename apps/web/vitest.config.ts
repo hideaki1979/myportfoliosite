@@ -37,8 +37,10 @@ export default defineConfig({
             },
         },
         // 依存関係のインライン化（Vitest 3.x系の正しい設定）
-        deps: {
-            inline: ['webidl-conversions', 'whatwg-url'],
+        server: {
+            deps: {
+                inline: ['webidl-conversions', 'whatwg-url'],
+            },
         },
     },
     resolve: {
