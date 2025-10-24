@@ -557,7 +557,7 @@ test.describe("Home ページ - エラーハンドリング", () => {
 
     test("JavaScriptが無効でも基本的な表示が可能", async ({ browser }) => {
         // JavaScriptを無効化した新しいコンテキストを作成
-        const context = await browser.newContext({javaScriptEnabled: false});
+        const context = await browser.newContext({ javaScriptEnabled: false });
         const page = await context.newPage();
 
         const homePage = new HomePage(page);
