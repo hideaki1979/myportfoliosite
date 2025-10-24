@@ -35,7 +35,7 @@ const nextConfig = {
             "object-src 'none'",
             // 本番のみ自動HTTPS化（任意）
             isProd ? "upgrade-insecure-requests" : null,
-        ].filter(Boolean).join(': ');
+        ].filter(Boolean).join('; ');
 
         const baseHeaders = [
             { key: 'X-Frame-Options', value: 'DENY' },
