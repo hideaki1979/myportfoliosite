@@ -176,9 +176,6 @@ test.describe("Home ページ - ユーザージャーニー", () => {
     });
 
     test("GitHubセクションが表示される", async () => {
-        // CI環境ではAPI接続できないためスキップ
-        test.skip(!!process.env.CI, "CI環境ではAPI接続できないためスキップ");
-
         await expect(homePage.githubSection).toBeVisible();
         await expect(homePage.githubRepositories.first()).toBeVisible();
 
@@ -188,9 +185,6 @@ test.describe("Home ページ - ユーザージャーニー", () => {
     });
 
     test("Qiitaセクションが表示される", async () => {
-        // CI環境ではAPI接続できないためスキップ
-        test.skip(!!process.env.CI, "CI環境ではAPI接続できないためスキップ");
-
         await expect(homePage.qiitaSection).toBeVisible();
         await expect(homePage.qiitaArticles.first()).toBeVisible();
 
@@ -253,12 +247,9 @@ test.describe("Home ページ - レスポンシブデザイン", () => {
         await expect(homePage.githubSection).toBeVisible();
         await expect(homePage.qiitaSection).toBeVisible();
 
-        // CI環境ではAPI接続できないためスキップ
-        if (!process.env.CI) {
-            // GitHubリポジトリの項目数
-            const repositoryCount = await homePage.githubRepositories.count();
-            expect(repositoryCount).toBeGreaterThan(0);
-        }
+        // GitHubリポジトリの項目数
+        const repositoryCount = await homePage.githubRepositories.count();
+        expect(repositoryCount).toBeGreaterThan(0);
     });
 });
 
