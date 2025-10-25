@@ -112,6 +112,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const structuredData = await generateMetadata();
+  
   return (
     <html lang="ja">
       <head>
