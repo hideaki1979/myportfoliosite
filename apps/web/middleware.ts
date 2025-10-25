@@ -24,7 +24,7 @@ export function middleware(request: NextRequest) {
         "object-src 'none'",
         // 本番のみ自動HTTPS化（任意）
         isProd ? "upgrade-insecure-requests" : null,
-    ].join('; ');
+    ].filter(Boolean).join('; ');
 
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set('x-nonce', nonce);

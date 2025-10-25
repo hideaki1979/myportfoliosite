@@ -77,7 +77,7 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: "ja_JP",
       url: new URL(
         process.env.NEXT_PUBLIC_SITE_URL ||
-          "https://mirrorman-portfolio.vercel.app",
+        "https://mirrorman-portfolio.vercel.app",
       ),
       siteName: "Mirrorman Portfolio",
       title: "Mirrorman Portfolio",
@@ -112,7 +112,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const structuredData = await generateMetadata();
-  
+
   return (
     <html lang="ja">
       <head>
