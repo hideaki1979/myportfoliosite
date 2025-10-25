@@ -9,6 +9,7 @@ import {
 } from "../lib/structured-data";
 import { baseUrl } from "../lib/constants";
 import Providers from "../components/Providers";
+import { headers } from "next/headers";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -112,6 +113,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const structuredData = await generateMetadata();
+  const reqHeaders = await headers();
+  const nonce = reqHeaders.get("x-nonce") || undefined;
 
   return (
     <html lang="ja">
@@ -121,6 +124,7 @@ export default async function RootLayout({
             if (key.startsWith("ld+json:")) {
               return (
                 <script
+                  nonce={nonce}
                   key={key}
                   type="application/ld+json"
                   dangerouslySetInnerHTML={{ __html: value as string }}
