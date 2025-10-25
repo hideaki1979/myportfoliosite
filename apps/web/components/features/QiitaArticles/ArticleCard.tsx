@@ -76,12 +76,14 @@ interface ArticleCardProps {
 }
 
 export default function ArticleCard({ article }: ArticleCardProps) {
+    // SSR対応: 固定のロケール設定で一貫性を保つ
     const formattedDate = new Date(article.createdAt).toLocaleString('ja-JP', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
         hour: '2-digit',
         minute: '2-digit',
+        timeZone: 'Asia/Tokyo', // タイムゾーンを明示的に指定
     });
 
     return (
