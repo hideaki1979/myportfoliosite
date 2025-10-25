@@ -80,9 +80,9 @@ export default function GitHubProfile({ profile }: GitHubProfileProps) {
         <Image
           src={profile.avatarUrl}
           alt={profile.displayName}
-          fill
+          width={88}
+          height={88}
           style={{ objectFit: 'cover' }}
-          sizes="88px"
           priority
         />
       </ProfileImageWrapper>
