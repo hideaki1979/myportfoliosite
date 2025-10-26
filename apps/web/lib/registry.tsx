@@ -8,12 +8,14 @@ import { ServerStyleSheet, StyleSheetManager } from "styled-components";
  * styled-components の SSR Registry
  * Next.js App Router でスタイルを適切に注入するために必要
  */
+interface StyleComponentsRegistryProps {
+    children: React.ReactNode;
+};
+
 export default function StyledComponentsRegistry({
     children,
-}: {
-    children: React.ReactNode;
-}) {
-    // クライアント側でのみ一度だけ ServerStyleSheet を初期化
+}: StyleComponentsRegistryProps) {
+    // ServerStyleSheet を初期化（サーバー側のSSR時とクライアント側で各一度）
     const [styledComponentsStyleSheet] = useState(() => new ServerStyleSheet());
 
     useServerInsertedHTML(() => {
