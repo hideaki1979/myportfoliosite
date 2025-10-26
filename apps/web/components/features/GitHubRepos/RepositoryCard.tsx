@@ -140,7 +140,7 @@ export default function RepositoryCard({ repository }: RepositoryCardProps) {
   const languageColor = repository.primaryLanguage
     ? getLanguageColor(repository.primaryLanguage)
     : "#858585";
-  
+
   const [relativeTime, setRelativeTime] = useState("");
 
   useEffect(() => {
