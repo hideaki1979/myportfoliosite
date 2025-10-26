@@ -15,15 +15,16 @@ async function QiitaArticlesData({
 }: QiitaSectionProps) {
     let articles: QiitaArticle[] = [];
     let profile = null;
+    let error: Error | null = null;
 
     try {
         [articles, profile] = await Promise.all([
             fetchQiitaArticles(limit),
             fetchQiitaProfile(),
         ]);
-    } catch (error) {
-        console.error("Failed to fetch Articles Profile data:", error);
-        // エラー時は空配列で表示（ErrorDisplayは次のステップで実装）
+    } catch (err) {
+        console.error("Failed to fetch Articles Profile data:", err);
+        error = err instanceof Error ? err : new Error('Qiita記事の取得に失敗しました');
     }
 
     return (
@@ -32,6 +33,7 @@ async function QiitaArticlesData({
             profile={profile ?? undefined}
             showProfile={showProfile}
             limit={limit}
+            error={error}
         />
     );
 }

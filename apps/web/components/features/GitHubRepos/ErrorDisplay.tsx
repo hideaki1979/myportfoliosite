@@ -50,21 +50,33 @@ const RetryButton = styled.button`
   &:active {
     transform: scale(0.98);
   }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
 `;
 
 interface ErrorDisplayProps {
-    error: Error;
-    onRetry?: () => void;
+  error: Error;
+  onRetry?: () => void;
+  isRetrying?: boolean;
 }
 
-export default function ErrorDisplay({ error, onRetry }: ErrorDisplayProps) {
-    return (
-        <ErrorContainer role="alert">
-            <ErrorTitle>エラーが発生しました</ErrorTitle>
-            <ErrorMessage>{error.message}</ErrorMessage>
-            {onRetry && <RetryButton type="button" onClick={onRetry}>再試行</RetryButton>}
-        </ErrorContainer>
-    )
+export default function ErrorDisplay({ error, onRetry, isRetrying }: ErrorDisplayProps) {
+  return (
+    <ErrorContainer role="alert">
+      <ErrorTitle>エラーが発生しました</ErrorTitle>
+      <ErrorMessage>{error.message}</ErrorMessage>
+      {onRetry && (
+        <RetryButton 
+        type="button" 
+        onClick={onRetry}
+        disabled={isRetrying}
+        >
+          {isRetrying ? '再試行中...' : '再試行'}
+        </RetryButton>
+      )}
+    </ErrorContainer>
+  )
 }
-
-

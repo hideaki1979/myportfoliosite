@@ -2,10 +2,12 @@
 
 import styled from "styled-components"
 import { QiitaArticlesProps } from "./types";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import QiitaProfile from "./QiitaProfile";
 import ArticleCard from "./ArticleCard";
 import SkeletonLoader from "./SkeletonLoader";
+import { fetchQiitaArticlesClient } from "../../../lib/api/qiita";
+import ErrorDisplay from "./ErrorDisplay";
 
 const Container = styled.section`
     width: 100%;
@@ -79,14 +81,35 @@ export default function QiitaArticles({
     showProfile,
     limit,
     isLoading = false,
+    error: initialError = null,
 }: QiitaArticlesProps) {
+    const [articles, setArticles] = useState(initialData);
+    const [error, setError] = useState<Error | null>(initialError);
+    const [isRetrying, setIsRetrying] = useState(false);
+
+    // リトライハンドラー
+    const handleRetry = async () => {
+        setIsRetrying(true);
+        setError(null);
+
+        try {
+            const data = await fetchQiitaArticlesClient(limit || 10);
+            setArticles(data);
+            setError(null);
+        } catch (err) {
+            setError(err instanceof Error ? err : new Error('データの取得に失敗しました'));
+        } finally {
+            setIsRetrying(false);
+        }
+    };
+
     // 記事を制限
-    const articles = useMemo(() => {
-        return limit ? initialData.slice(0, limit) : initialData;
-    }, [initialData, limit]);
+    const displayArticles = useMemo(() => {
+        return limit ? articles.slice(0, limit) : articles;
+    }, [articles, limit]);
 
     // ローディング状態
-    if (isLoading) {
+    if (isLoading || isRetrying) {
         return (
             <Container>
                 <SkeletonLoader
@@ -97,8 +120,21 @@ export default function QiitaArticles({
         )
     }
 
+    // エラー状態
+    if (error) {
+        return (
+            <Container>
+                <ErrorDisplay 
+                    error={error} 
+                    onRetry={handleRetry}
+                    isRetrying={isRetrying}
+                />
+            </Container>
+        );
+    }
+
     // 空チェック
-    if (articles.length === 0) {
+    if (displayArticles.length === 0) {
         return (
             <EmptyState>
                 <EmptyMessage>記事が見つかりませんでした。</EmptyMessage>
@@ -117,7 +153,7 @@ export default function QiitaArticles({
             <Section>
                 <SectionTitle>投稿記事</SectionTitle>
                 <ArticlesContainer role="list" aria-label="Qiita記事一覧">
-                    {articles.map((article) => (
+                    {displayArticles.map((article) => (
                         <ArticleCard key={article.id} article={article} />
                     ))}
                 </ArticlesContainer>
