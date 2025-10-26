@@ -9,6 +9,7 @@ import {
 } from "../lib/structured-data";
 import { baseUrl } from "../lib/constants";
 import Providers from "../components/Providers";
+import StyledComponentsRegistry from "../lib/registry";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -131,15 +132,17 @@ export default async function RootLayout({
           })}
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Providers>
-          <a href="#main" className="skip-link">
-            メインコンテンツへスキップ
-          </a>
-          <Header />
-          <main id="main" tabIndex={-1}>
-            {children}
-          </main>
-        </Providers>
+        <StyledComponentsRegistry>
+          <Providers>
+            <a href="#main" className="skip-link">
+              メインコンテンツへスキップ
+            </a>
+            <Header />
+            <main id="main" tabIndex={-1}>
+              {children}
+            </main>
+          </Providers>
+        </StyledComponentsRegistry>
       </body>
     </html>
   );
