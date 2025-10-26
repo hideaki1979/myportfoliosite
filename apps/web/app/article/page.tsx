@@ -2,9 +2,10 @@ import { Metadata } from "next";
 import { createBreadcrumbStructuredData } from "../../lib/structured-data";
 import { baseUrl } from "../../lib/constants";
 import { fetchQiitaArticles, fetchQiitaProfile, QiitaArticle } from "../../lib/api/qiita";
-import QiitaArticles from "../../components/features/QiitaArticles";
+import QiitaArticles, { SkeletonLoader } from "../../components/features/QiitaArticles";
 import { PageContainer } from "../../components/layouts/PageLayout";
 import { PageSubtitle, PageTitle, SectionHeading } from "../../components/ui/Typography";
+import { Suspense } from "react";
 
 const breadcrumbData = createBreadcrumbStructuredData({
   items: [
@@ -46,7 +47,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function ArticlePage() {
+async function QiitaAritclesData() {
   // Qiita記事をサーバーサイドで取得
   let articles: QiitaArticle[] = [];
   let profile = null;
@@ -60,6 +61,27 @@ export default async function ArticlePage() {
   } catch (error) {
     console.error('Failed to fetch Qiita data:', error);
   }
+
+  return (
+    <QiitaArticles
+      initialData={articles}
+      profile={profile ?? undefined}
+      showProfile={true}
+    />
+
+  );
+}
+
+function QiitaArticlesLoading() {
+  return (
+    <SkeletonLoader
+      count={10}
+      showProfile={true}
+    />
+  )
+}
+
+export default async function ArticlePage() {
   return (
     <PageContainer>
       <PageTitle>■Article</PageTitle>
@@ -78,11 +100,9 @@ export default async function ArticlePage() {
           </svg>
           Qiita
         </SectionHeading>
-        <QiitaArticles
-          initialData={articles}
-          profile={profile ?? undefined}
-          showProfile={true}
-        />
+        <Suspense fallback={<QiitaArticlesLoading />}>
+          <QiitaAritclesData />
+        </Suspense>
       </section>
     </PageContainer>
   );

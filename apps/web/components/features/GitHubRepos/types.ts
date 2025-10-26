@@ -38,5 +38,6 @@ export interface GitHubReposProps {
     showLanguageBar?: boolean;
     showTechTags?: boolean;
     limit?: number;
+    isLoading?: boolean;
 }
 
