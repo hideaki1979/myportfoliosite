@@ -16,7 +16,7 @@ const SkeletonBase = styled.div`
         to right,
         #eeeeee 8%,
         #dddddd 18%,
-        #eeeeee 33%,
+        #eeeeee 33%
     );
     background-size: 800px 104px;
     animation: ${shimmer} 1.5s ease-in-out infinite;
