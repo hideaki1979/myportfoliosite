@@ -80,9 +80,10 @@ export function getLanguageColor(language: string): string {
 
 /**
  * 相対時間を日本語で取得する
+ * @param dateString 対象の日付文字列
+ * @param now 現在時刻（SSR対応のため外部から渡す）
  */
-export function getRelativeTime(dateString: string): string {
-    const now = new Date();
+export function getRelativeTime(dateString: string, now: Date = new Date()): string {
     const date = new Date(dateString);
     const diffMs = now.getTime() - date.getTime();
 

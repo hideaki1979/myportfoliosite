@@ -3,6 +3,7 @@
 import styled from "styled-components"
 import { GitHubRepository } from "./types";
 import { formatNumber, getLanguageColor, getRelativeTime } from "./utils";
+import { useEffect, useState } from "react";
 
 const Card = styled.article`
   border: 1px solid #cacaca;
@@ -140,6 +141,13 @@ export default function RepositoryCard({ repository }: RepositoryCardProps) {
     ? getLanguageColor(repository.primaryLanguage)
     : "#858585";
 
+  const [relativeTime, setRelativeTime] = useState("");
+
+  useEffect(() => {
+    // クライアントサイドでのみ相対時間を計算
+    setRelativeTime(getRelativeTime(repository.updatedAt));
+  }, [repository.updatedAt]);
+
   return (
     <Card role="listitem">
       <RepoTitle
@@ -163,7 +171,7 @@ export default function RepositoryCard({ repository }: RepositoryCardProps) {
           </LanguageInfo>
         )}
 
-        <UpdateAt>Updated: {getRelativeTime(repository.updatedAt)}</UpdateAt>
+        <UpdateAt>Updated: {relativeTime || "計算中..."}</UpdateAt>
 
         <StatsInfo>
           {repository.starCount > 0 && (
