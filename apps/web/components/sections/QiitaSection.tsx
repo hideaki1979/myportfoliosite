@@ -18,7 +18,7 @@ async function QiitaArticlesData({
 
     try {
         [articles, profile] = await Promise.all([
-            fetchQiitaArticles(10),
+            fetchQiitaArticles(limit),
             fetchQiitaProfile(),
         ]);
     } catch (error) {
