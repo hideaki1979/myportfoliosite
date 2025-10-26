@@ -39,7 +39,7 @@ async function QiitaArticlesData({
 function QiitaArticlesLoading({
     showProfile = true,
     limit = 6,
-}: QiitaArticlesProps) {
+}: QiitaSectionProps) {
     return (
         <SkeletonLoader
             count={limit}

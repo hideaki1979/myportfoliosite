@@ -47,7 +47,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-async function QiitaAritclesData() {
+async function QiitaArticlesData() {
   // Qiita記事をサーバーサイドで取得
   let articles: QiitaArticle[] = [];
   let profile = null;
@@ -101,7 +101,7 @@ export default async function ArticlePage() {
           Qiita
         </SectionHeading>
         <Suspense fallback={<QiitaArticlesLoading />}>
-          <QiitaAritclesData />
+          <QiitaArticlesData />
         </Suspense>
       </section>
     </PageContainer>
