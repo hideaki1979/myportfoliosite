@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { Section } from "../layouts/PageLayout";
 import { SectionHeading } from "../ui/Typography";
-import QiitaArticles, { QiitaArticle, QiitaArticlesProps, SkeletonLoader } from "../features/QiitaArticles";
+import QiitaArticles, { QiitaArticle, SkeletonLoader } from "../features/QiitaArticles";
 import { fetchQiitaArticles, fetchQiitaProfile } from "../../lib/api/qiita";
 
 interface QiitaSectionProps {
