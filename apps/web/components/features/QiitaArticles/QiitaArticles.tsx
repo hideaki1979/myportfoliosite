@@ -5,6 +5,7 @@ import { QiitaArticlesProps } from "./types";
 import { useMemo } from "react";
 import QiitaProfile from "./QiitaProfile";
 import ArticleCard from "./ArticleCard";
+import SkeletonLoader from "./SkeletonLoader";
 
 const Container = styled.section`
     width: 100%;
@@ -77,11 +78,24 @@ export default function QiitaArticles({
     profile,
     showProfile,
     limit,
+    isLoading = false,
 }: QiitaArticlesProps) {
     // 記事を制限
     const articles = useMemo(() => {
         return limit ? initialData.slice(0, limit) : initialData;
     }, [initialData, limit]);
+
+    // ローディング状態
+    if (isLoading) {
+        return (
+            <Container>
+                <SkeletonLoader
+                    count={limit || 6}
+                    showProfile={showProfile}
+                />
+            </Container>
+        )
+    }
 
     // 空チェック
     if (articles.length === 0) {

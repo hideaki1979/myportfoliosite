@@ -10,4 +10,5 @@ export interface QiitaArticlesProps {
     profile?: QiitaUser;
     showProfile?: boolean;
     limit?: number;
+    isLoading?: boolean;
 }

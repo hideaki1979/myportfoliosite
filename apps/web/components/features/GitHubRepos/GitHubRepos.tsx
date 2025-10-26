@@ -9,6 +9,7 @@ import LanguageBar from "./LanguageBar";
 import TechTags from "./TechTags";
 import SortControls from "./SortControls";
 import RepositoryCard from "./RepositoryCard";
+import SkeletonLoader from "./SkeletonLoader";
 
 const Container = styled.section`
     width: 100%;
@@ -82,6 +83,7 @@ export default function GitHubRepos({
     showLanguageBar = true,
     showTechTags = true,
     limit,
+    isLoading = false,
 }: GitHubReposProps) {
     const [sortBy, setSortBy] = useState<SortBy>('stars');
 
@@ -102,6 +104,18 @@ export default function GitHubRepos({
         () => extractTechTags(sortedRepos),
         [sortedRepos],
     );
+
+    if (isLoading) {
+        return (
+            <Container>
+                <SkeletonLoader
+                    count={limit || 6}
+                    showProfile={showProfile}
+                    showBar={showLanguageBar}
+                />
+            </Container>
+        )
+    }
 
     // 空チェック
     if (sortedRepos.length === 0) {

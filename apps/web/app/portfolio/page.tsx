@@ -3,8 +3,9 @@ import { createBreadcrumbStructuredData } from "../../lib/structured-data";
 import { baseUrl } from "../../lib/constants";
 import { fetchGitHubRepositories } from "../../lib/api/github";
 import { GITHUB_PROFILE } from "../../lib/data/github-profile";
-import GitHubRepos, { GitHubRepository } from "../../components/features/GitHubRepos";
+import GitHubRepos, { GitHubRepository, SkeletonLoader } from "../../components/features/GitHubRepos";
 import { PageContainer } from "../../components/layouts/PageLayout";
+import { Suspense } from "react";
 import { PageDescription, PageTitle } from "../../components/ui/Typography";
 
 const breadcrumbData = createBreadcrumbStructuredData({
@@ -47,7 +48,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function PortfolioPage() {
+async function GitHubReposData() {
   // GitHubリポジトリをサーバーサイドで取得
   let repositories: GitHubRepository[] = [];
 
@@ -58,6 +59,29 @@ export default async function PortfolioPage() {
   }
 
   return (
+    <GitHubRepos
+      initialData={repositories}
+      profile={GITHUB_PROFILE}
+      showProfile={true}
+      showLanguageBar={true}
+      showTechTags={true}
+    />
+  );
+}
+
+function GitHubReposLoading() {
+  return (
+    <SkeletonLoader
+      count={20}
+      showProfile={true}
+      showBar={true}
+    />
+  );
+}
+
+export default async function PortfolioPage() {
+
+  return (
     <PageContainer>
       <PageTitle>■Portfolio（Github）</PageTitle>
       <PageDescription>
@@ -65,14 +89,9 @@ export default async function PortfolioPage() {
         <br />
         Udemyや学習のために作成したアプリとなります。
       </PageDescription>
-
-      <GitHubRepos
-        initialData={repositories}
-        profile={GITHUB_PROFILE}
-        showProfile={true}
-        showLanguageBar={true}
-        showTechTags={true}
-      />
+      <Suspense fallback={<GitHubReposLoading />}>
+        <GitHubReposData />
+      </Suspense>
     </PageContainer>
   );
 }
