@@ -47,7 +47,7 @@ export async function fetchGitHubContributions(): Promise<GitHubContributionCale
         });
 
         if (!response.ok) {
-            const errorData = (await response.json().catch(() => { })) as GitHubContributionsApiResponse;
+            const errorData = (await response.json().catch(() => {})) as GitHubContributionsApiResponse;
             throw new Error(
                 errorData.error?.message ||
                 `GitHub contributions API error: ${response.status}`,
@@ -85,7 +85,7 @@ export async function fetchGitHubContributionsClient(): Promise<GitHubContributi
         });
 
         if (!response.ok) {
-            const errorData = (await response.json().catch(() => { })) as GitHubContributionsApiResponse;
+            const errorData = (await response.json().catch(() => {})) as GitHubContributionsApiResponse;
             throw new Error(
                 errorData.error?.message ||
                 `GitHub contributions request failed: ${response.status}`,
@@ -132,7 +132,7 @@ export async function fetchGitHubRepositories(
         );
 
         if (!response.ok) {
-            const errorData = (await response.json().catch(() => { })) as GitHubApiResponse;
+            const errorData = (await response.json().catch(() => {})) as GitHubApiResponse;
             throw new Error(
                 errorData.error?.message ||
                 `GitHub API error: ${response.status} ${response.statusText}`
@@ -174,7 +174,7 @@ export async function fetchGitHubRepositoriesClient(
         );
 
         if (!response.ok) {
-            const errorData = (await response.json().catch(() => { })) as GitHubApiResponse;
+            const errorData = (await response.json().catch(() => {})) as GitHubApiResponse;
             throw new Error(
                 errorData.error?.message ||
                 `GitHub API request failed: ${response.status}`,

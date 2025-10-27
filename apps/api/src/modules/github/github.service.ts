@@ -62,7 +62,7 @@ interface FetchResponse<T> {
 interface GitHubContributionQueryResponse {
   user: {
     contributionsCollection: {
-      contributionsCalendar: GitHubContributionCalendar;
+      contributionCalendar: GitHubContributionCalendar;
     };
   };
 }
@@ -253,7 +253,7 @@ export class GithubService {
         );
 
       const calendar =
-        response.data.user.contributionsCollection.contributionsCalendar;
+        response.data.user.contributionsCollection.contributionCalendar;
 
       // 通常のキャッシュに保存（15分）
       this.cacheService.set(cacheKey, calendar, CACHE_TTL);
