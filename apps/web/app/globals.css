@@ -94,6 +94,15 @@ main:focus {
   border-width: 0;
 }
 
+.contribution-skeleton-loader {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(90deg, var(--skeleton-start-color) 0%, var(--skeleton-end-color) 50%, var(--skeleton-start-color) 100%);
+  background-size: 200% 100%;
+  animation: loading 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
@@ -106,12 +115,4 @@ main:focus {
     display: unset;
   }
 
-  .contribution-skeleton-loader {
-    width: 100%;
-    height: 200px;
-    background: linear-gradient(90deg, var(--skeleton-start-color) 0%, var(--skeleton-end-color) 50%, var(--skeleton-start-color) 100%);
-    background-size: 200% 100%;
-    animation: loading 1.5s ease-in-out infinite;
-    border-radius: 8px;
-  }
 }
