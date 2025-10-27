@@ -2,6 +2,7 @@ import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from 'nestjs-pino';
 import { CacheService } from '../cache/cache.service';
+import { API_TIMEOUT, GITHUB_GRAPHQL_URL } from 'src/constants/constants';
 
 interface GitHubRepositoryApiResponse {
   id: number;
@@ -29,6 +30,26 @@ export interface GitHubRateLimitInfo {
   limit: number;
   remaining: number;
   resetAt: number; // Unix timestamp (秒単位)
+}
+
+export interface ContributionDay {
+  date: string; // ISO 8601形式 (YYYY-MM-DD)
+  contributionCount: number;
+  color: string; // GitHub の色レベル
+}
+
+export interface ContributionWeek {
+  contributionDays: ContributionDay[];
+}
+
+export interface GitHubContributionCalendar {
+  totalContributions: number;
+  weeks: ContributionWeek[];
+}
+
+interface GitHubGraphQLResponse<T> {
+  data: T;
+  errors?: Array<{ message: string }>;
 }
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -156,6 +177,177 @@ export class GithubService {
    */
   getRateLimitInfo(): GitHubRateLimitInfo | null {
     return this.cacheService.get<GitHubRateLimitInfo>('github:rate-limit');
+  }
+
+  /**
+   * GitHub GraphQL APIを使用してコントリビューションカレンダーを取得
+   * 過去1年間のコントリビューション履歴を取得
+   */
+  async getContributionCalendar(): Promise<GitHubContributionCalendar> {
+    if (!this.githubUsername) {
+      this.logger.warn(
+        'GITHUB_USERNAME is not configured, returning empty contribution calendar.',
+      );
+      return {
+        totalContributions: 0,
+        weeks: [],
+      };
+    }
+
+    const cacheKey = 'github:contributions';
+    const staleCacheKey = `${cacheKey}:stale`;
+
+    // キャッシュから取得を試行
+    const cached = this.cacheService.get<GitHubContributionCalendar>(cacheKey);
+    if (cached) {
+      this.logger.log('GitHub contributions served from cache');
+      return cached;
+    }
+
+    try {
+      // 過去1年間のコントリビューションを取得するGraphQLクエリ
+      const fromDate = new Date();
+      fromDate.setFullYear(fromDate.getFullYear() - 1);
+      const toDate = new Date();
+
+      const query = `
+        query($username: String!, $from: DateTime!, $to: DateTime!) {
+          user(login: $username) {
+            contributionsCollection(from: $from, to: $to) {
+              contributionsCalendar {
+                totalContributions
+                weeks {
+                  contributionDays {
+                    date
+                    contributionCount
+                    color
+                  }
+                }
+              }
+            }
+          }
+        }
+      `;
+
+      const variables = {
+        username: this.githubUsername,
+        from: fromDate.toISOString(),
+        to: toDate.toISOString(),
+      };
+
+      const response = await this.graphqlReqest<{
+        user: {
+          contributionsCollection: {
+            contributionsCalendar: GitHubContributionCalendar;
+          };
+        };
+      }>(query, variables);
+
+      const calendar =
+        response.data.user.contributionsCollection.contributionsCalendar;
+
+      // 通常のキャッシュに保存（15分）
+      this.cacheService.set(cacheKey, calendar, CACHE_TTL);
+
+      // staleキャッシュに保存（1時間、エラー時のフォールバック用）
+      this.cacheService.set(staleCacheKey, calendar, STALE_CACHE_TTL);
+
+      this.logger.log(
+        `Fetched ${calendar.totalContributions} contributions from GitHub GraphQL API`,
+      );
+
+      return calendar;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+
+      this.logger.error(
+        `Failed to fetch GitHub contributions: ${errorMessage}`,
+        errorStack,
+      );
+
+      // エラー時はstaleキャッシュから返却を試行
+      const staleCache =
+        this.cacheService.get<GitHubContributionCalendar>(staleCacheKey);
+
+      if (staleCache) {
+        this.logger.warn('GitHub GraphQL API error, serving stale cache');
+        return staleCache;
+      }
+
+      // staleキャッシュも無ければ例外をスロー
+      throw new ServiceUnavailableException(
+        'GitHub GraphQL API is currently unavailable',
+      );
+    }
+  }
+
+  /**
+   * GitHub GraphQL APIにリクエストを送信
+   */
+  private async graphqlReqest<T>(
+    query: string,
+    variables: Record<string, unknown>,
+  ): Promise<GitHubGraphQLResponse<T>> {
+    if (!this.githubToken) {
+      throw new ServiceUnavailableException(
+        'GitHub token is not configured for GraphQL API',
+      );
+    }
+
+    const controller = new AbortController();
+    const abortTimeout = setTimeout(() => controller.abort, API_TIMEOUT);
+
+    try {
+      const res = await fetch(GITHUB_GRAPHQL_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.githubToken}`,
+          'User-Agent': 'myportfoliosite-api',
+        },
+        body: JSON.stringify({ query, variables }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(abortTimeout);
+
+      if (!res.ok) {
+        const errorBody = await this.safeReadText(res);
+        this.logger.error(
+          `GitHub GraphQL API error: ${res.status} ${res.statusText} - ${errorBody}`,
+        );
+        throw new ServiceUnavailableException('GitHub GraphQL API error');
+      }
+
+      const result = (await res.json()) as GitHubGraphQLResponse<T>;
+
+      // GraphQLエラーのチェック
+      if (result.errors && result.errors.length > 0) {
+        const errorMessages = result.errors.map((e) => e.message).join(', ');
+        this.logger.error(
+          `GitHub GraphQL API returned errors: ${errorMessages}`,
+        );
+        throw new ServiceUnavailableException(
+          'GitHub GraphQL API returned errors',
+        );
+      }
+
+      return result;
+    } catch (err) {
+      clearTimeout(abortTimeout);
+
+      if (err instanceof ServiceUnavailableException) {
+        throw err;
+      }
+
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      this.logger.error(`GitHub GraphQL request failed: ${errorMessage}`);
+      throw new ServiceUnavailableException(
+        'GitHub GraphQL API is currently unavailable',
+      );
+    }
   }
 
   private mapRepository(

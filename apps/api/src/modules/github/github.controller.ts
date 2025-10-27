@@ -48,4 +48,13 @@ export class GithubController {
       },
     };
   }
+
+  @Get('contributions')
+  async getContributions() {
+    const contributions = await this.github.getContributionCalendar();
+    return {
+      success: true,
+      contributions,
+    };
+  }
 }
