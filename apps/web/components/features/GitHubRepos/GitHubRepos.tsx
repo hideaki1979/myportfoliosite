@@ -10,6 +10,8 @@ import TechTags from "./TechTags";
 import SortControls from "./SortControls";
 import RepositoryCard from "./RepositoryCard";
 import SkeletonLoader from "./SkeletonLoader";
+import { fetchGitHubRepositoriesClient } from "../../../lib/api/github";
+import ErrorDisplay from "./ErrorDisplay";
 
 const Container = styled.section`
     width: 100%;
@@ -84,14 +86,34 @@ export default function GitHubRepos({
     showTechTags = true,
     limit,
     isLoading = false,
+    error: initialError = null,
 }: GitHubReposProps) {
     const [sortBy, setSortBy] = useState<SortBy>('stars');
+    const [repositories, setRepositories] = useState(initialData);
+    const [error, setError] = useState<{message: string} | null>(initialError);
+    const [isRetrying, setIsRetrying] = useState(false);
+
+    // リトライハンドラー
+    const handleRetry = async () => {
+        setIsRetrying(true);
+        setError(null);
+
+        try {
+            const data = await fetchGitHubRepositoriesClient(20);
+            setRepositories(data);
+            setError(null)
+        } catch (err) {
+            setError(err instanceof Error ? err : new Error('Githubレポジトリデータの取得に失敗しました'));
+        } finally {
+            setIsRetrying(false)
+        }
+    };
 
     // リポジトリをソート
     const sortedRepos = useMemo(() => {
-        const sorted = sortRepositories(initialData, sortBy);
+        const sorted = sortRepositories(repositories, sortBy);
         return limit ? sorted.slice(0, limit) : sorted;
-    }, [initialData, sortBy, limit]);
+    }, [repositories, sortBy, limit]);
 
     // 言語統計を計算
     const languageStats = useMemo(
@@ -105,13 +127,26 @@ export default function GitHubRepos({
         [sortedRepos],
     );
 
-    if (isLoading) {
+    if (isLoading || isRetrying) {
         return (
             <Container>
                 <SkeletonLoader
                     count={limit || 6}
                     showProfile={showProfile}
                     showBar={showLanguageBar}
+                />
+            </Container>
+        )
+    }
+
+    // エラー状態
+    if (error) {
+        return (
+            <Container>
+                <ErrorDisplay
+                error={error}
+                onRetry={handleRetry}
+                isRetrying={isRetrying}
                 />
             </Container>
         )

@@ -19,12 +19,13 @@ async function GitHubReposData({
     limit = 6,
 }: GitHubSectionProps) {
     let repositories: GitHubRepository[] = [];
+    let error: { message: string } | null = null;
 
     try {
-        repositories = await fetchGitHubRepositories(20);
-    } catch (error) {
-        console.error("Failed to fetch GitHub repositories:", error);
-        // エラー時は空配列で表示（ErrorDisplayは次のステップで実装）
+        repositories = await fetchGitHubRepositories(limit ?? 20);
+    } catch (err) {
+        console.error("Failed to fetch GitHub repositories:", err);
+        error = { message: err instanceof Error ? err.message : 'GitHubリポジトリの取得に失敗しました' };
     }
 
     return (
@@ -35,6 +36,7 @@ async function GitHubReposData({
             showLanguageBar={showLanguageBar}
             showTechTags={showTechTags}
             limit={limit}
+            error={error}
         />
     );
 }

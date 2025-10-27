@@ -39,5 +39,5 @@ export interface GitHubReposProps {
     showTechTags?: boolean;
     limit?: number;
     isLoading?: boolean;
+    error?: { message: string } | null;
 }
-
