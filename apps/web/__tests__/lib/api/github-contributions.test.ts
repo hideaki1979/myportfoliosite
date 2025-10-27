@@ -44,8 +44,8 @@ describe('GitHub Contributions API', () => {
             );
         });
 
-        it('APIエラー時に空のデータを返す', async () => {
-            (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce({
+        it('APIが非OKレスポンスを返した時に空のデータを返す', async () => {
+            (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
                 ok: false,
                 status: 500,
                 json: async () => ({

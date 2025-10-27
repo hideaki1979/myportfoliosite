@@ -3,4 +3,4 @@ export type {
     GitHubContributionCalendar,
     ContributionDay,
     ContributionWeek,
-} from './types';
+} from '../../../types/github';

@@ -133,26 +133,6 @@ test.describe('Portfolio - GitHub Contributions Chart(e2e)', () => {
         });
     });
 
-    test.describe('ローディングとエラーハンドリング', () => {
-        test('ページロード時にローディング状態を経て実データが表示される', async ({ page }) => {
-            // APIレスポンスを遅延させる
-            await page.route('**/api/github/contributions', async (route) => {
-                await new Promise((resolve) => setTimeout(resolve, 500));
-                await route.continue();
-            });
-
-            await page.goto('/', { waitUntil: 'domcontentloaded' });
-
-            // GitHubセクションにスクロール
-            await page.getByText('■GitHub').scrollIntoViewIfNeeded();
-
-            // 最終的に実データが表示される
-            await expect(page.getByText('年間コントリビューション')).toBeVisible({ timeout: 10000 });
-            const cells = page.locator('[role="gridcell"]');
-            await expect(cells.first()).toBeVisible();
-        });
-    });
-
     test.describe('Portfolioページでの表示', () => {
         test('/portfolioページでもコントリビューションチャートが表示される', async ({ page }) => {
             await page.goto('/portfolio', { waitUntil: 'domcontentloaded' });

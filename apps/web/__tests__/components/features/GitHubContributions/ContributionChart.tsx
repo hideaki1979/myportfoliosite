@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { GitHubContributionCalendar } from '../../../../lib/api/github';
+import { GitHubContributionCalendar } from '../../../../types/github';
 import { ThemeProvider } from 'styled-components';
 import { theme } from '../../../../styles/theme';
 import { ContributionChart } from '../../../../components/features/GitHubContributions';

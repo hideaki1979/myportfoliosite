@@ -77,16 +77,7 @@ function GitHubReposLoading({
 
 function GitHubContributionsLoading() {
     return (
-        <div
-            style={{
-                width: '100%',
-                height: '200px',
-                background: 'linear-gradient(90deg, #f5f7fb 0%, #fff 50%, #f5f7fb 100%)',
-                backgroundSize: '200% 100%',
-                animation: 'loading 1.5s ease-in-out infinite',
-                borderRadius: '8px',
-            }}
-        />
+        <div className="contribution-skeleton-loader" />
     );
 }
 

@@ -4,25 +4,8 @@
  */
 
 import { GitHubRepository } from "../../components/features/GitHubRepos/types";
+import { GitHubContributionCalendar } from "../../types/github";
 import { baseUrl } from "../constants";
-
-/**
- * GitHub コントリビューションカレンダーの型定義
- */
-export interface ContributionDay {
-    date: string; // ISO 8601形式 (YYYY-MM-DD)
-    contributionCount: number;
-    color: string; // GitHub の色レベル
-}
-
-export interface ContributionWeek {
-    contributionDays: ContributionDay[];
-}
-
-export interface GitHubContributionCalendar {
-    totalContributions: number;
-    weeks: ContributionWeek[];
-}
 
 interface GitHubContributionsApiResponse {
     success: boolean;

@@ -1,12 +1,20 @@
 'use client'
 
 import styled from "styled-components";
-import { ContributionDay, GitHubContributionCalendar } from "./types";
-import { useState } from "react";
+import { ContributionDay, GitHubContributionCalendar } from "./index";
+import { useMemo, useState } from "react";
 
 interface ContributionChartProps {
     data: GitHubContributionCalendar;
 }
+
+const LEGEND_ITEMS = [
+    { color: '#ebedf0', title: 'コントリビューションなし' },
+    { color: '#9be9a8', title: '1-3件のコントリビューション' },
+    { color: '#40c463', title: '4-6件のコントリビューション' },
+    { color: '#30a14e', title: '7-9件のコントリビューション' },
+    { color: '#216e39', title: '10件以上のコントリビューション' },
+]
 
 // Styled Components
 const Container = styled.div`
@@ -72,7 +80,7 @@ const WeekdayLabels = styled.div`
     min-width: 32px;
 `;
 
-const WeekdayLabel = styled.span<{ row: number }>`
+const WeekdayLabel = styled.span`
     font-size: 12px;
     color: ${({ theme }) => theme.colors.subText};
     height: 12px;
@@ -93,9 +101,9 @@ const MonthLabels = styled.div`
     position: relative;
 `;
 
-const MonthLabel = styled.span<{ offset: number }>`
+const MonthLabel = styled.span<{ $offset: number }>`
     position: absolute;
-    left: ${({ offset }) => offset * 16}px;
+    left: ${({ $offset }) => $offset * 16}px;
     font-size: 12px;
     color: ${({ theme }) => theme.colors.subText};
     white-space: nowrap;
@@ -113,10 +121,10 @@ const Week = styled.div`
     gap: 4px;
 `;
 
-const DayCell = styled.div<{ color: string }>`
+const DayCell = styled.div<{ $color: string }>`
     width: 12px;
     height: 12px;
-    background-color: ${({ color }) => color};
+    background-color: ${({ $color }) => $color};
     border-radius: 4px;
     cursor: pointer;
     transition: transform 0.1s ease;
@@ -177,10 +185,10 @@ const LegendScale = styled.div`
     gap: 4px;
 `;
 
-const LegendCell = styled.div<{ color: string }>`
+const LegendCell = styled.div<{ $color: string }>`
     width: 12px;
     height: 12px;
-    background-color: ${({ color }) => color};
+    background-color: ${({ $color }) => $color};
     border-radius: 4px;
 `;
 
@@ -209,7 +217,7 @@ export default function ContributionChart({ data }: ContributionChartProps) {
     };
 
     // 月のラベルを生成
-    const getMonthLabels = () => {
+    const monthLabels = useMemo(() => {
         const labels: Array<{ month: string, offset: number }> = [];
         let currentMonth = '';
 
@@ -231,9 +239,8 @@ export default function ContributionChart({ data }: ContributionChartProps) {
         });
 
         return labels;
-    };
+    }, [data.weeks]);
 
-    const monthLabels = getMonthLabels();
 
     // 曜日のラベル
     const weekDayLabels = ['月', '水', '金'];
@@ -250,7 +257,7 @@ export default function ContributionChart({ data }: ContributionChartProps) {
             <ChartWrapper>
                 <WeekdayLabels>
                     {weekDayLabels.map((label, index) => (
-                        <WeekdayLabel key={index} row={index * 2 + 1}>
+                        <WeekdayLabel key={index}>
                             {label}
                         </WeekdayLabel>
                     ))}
@@ -259,7 +266,7 @@ export default function ContributionChart({ data }: ContributionChartProps) {
                 <GraphContainer>
                     <MonthLabels>
                         {monthLabels.map((label, index) => (
-                            <MonthLabel key={index} offset={label.offset}>
+                            <MonthLabel key={index} $offset={label.offset}>
                                 {label.month}
                             </MonthLabel>
                         ))}
@@ -271,7 +278,7 @@ export default function ContributionChart({ data }: ContributionChartProps) {
                                 {week.contributionDays.map((day, dayIndex) => (
                                     <DayCell
                                         key={`${weekIndex}-${dayIndex}`}
-                                        color={day.color}
+                                        $color={day.color}
                                         onMouseEnter={(e) => handleMouseEnter(day, e)}
                                         onMouseLeave={handleMouseLeave}
                                         role="gridcell"
@@ -310,11 +317,9 @@ export default function ContributionChart({ data }: ContributionChartProps) {
             <Legend role="img" aria-label="コントリビューション数の凡例">
                 <LegendText>少ない</LegendText>
                 <LegendScale>
-                    <LegendCell color="#ebedf0" title="コントリビューションなし" />
-                    <LegendCell color="#9be9a8" title="1-3件のコントリビューション" />
-                    <LegendCell color="#40c463" title="4-6件のコントリビューション" />
-                    <LegendCell color="#30a14e" title="7-9件のコントリビューション" />
-                    <LegendCell color="#216e39" title="10件以上のコントリビューション" />
+                    {LEGEND_ITEMS.map(item => (
+                        <LegendCell key={item.color} $color={item.color} title={item.title} />
+                    ))}
                 </LegendScale>
                 <LegendText>多い</LegendText>
             </Legend>

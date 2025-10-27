@@ -1,5 +1,5 @@
 /**
- * GitHub コントリビューション関連の型定義
+ * GitHub コントリビューションカレンダーの型定義
  */
 
 export interface ContributionDay {
