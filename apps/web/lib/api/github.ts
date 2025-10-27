@@ -43,11 +43,11 @@ export async function fetchGitHubContributions(): Promise<GitHubContributionCale
             },
             // サーバーサイドでは自動的にキャッシュされる
             cache: 'force-cache',
-            next: {revalidate: 900},
+            next: { revalidate: 900 },
         });
 
         if (!response.ok) {
-            const errorData = (await response.json().catch(() => {})) as GitHubContributionsApiResponse;
+            const errorData = (await response.json().catch(() => { })) as GitHubContributionsApiResponse;
             throw new Error(
                 errorData.error?.message ||
                 `GitHub contributions API error: ${response.status}`,
@@ -85,7 +85,7 @@ export async function fetchGitHubContributionsClient(): Promise<GitHubContributi
         });
 
         if (!response.ok) {
-            const errorData = (await response.json().catch(() => {})) as GitHubContributionsApiResponse;
+            const errorData = (await response.json().catch(() => { })) as GitHubContributionsApiResponse;
             throw new Error(
                 errorData.error?.message ||
                 `GitHub contributions request failed: ${response.status}`,

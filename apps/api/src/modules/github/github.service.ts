@@ -77,7 +77,7 @@ const GITHUB_CONTRIBUTIONS_QUERY = `
         query($username: String!, $from: DateTime!, $to: DateTime!) {
           user(login: $username) {
             contributionsCollection(from: $from, to: $to) {
-              contributionsCalendar {
+              contributionCalendar {
                 totalContributions
                 weeks {
                   contributionDays {
