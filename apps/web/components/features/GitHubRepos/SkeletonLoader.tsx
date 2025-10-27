@@ -49,27 +49,30 @@ const GridContainer = styled.div`
 `;
 
 interface SkeletonLoaderProps {
-    count?: number;
-    showProfile?: boolean;
-    showBar?: boolean;
+  count?: number;
+  showProfile?: boolean;
+  showBar?: boolean;
+  betweenContent?: React.ReactNode;
 }
 
 export default function SkeletonLoader({
-    count = 6,
-    showProfile = false,
-    showBar = false,
+  count = 6,
+  showProfile = false,
+  showBar = false,
+  betweenContent,
 }: SkeletonLoaderProps) {
-    return (
-        <div role="status" aria-label="読み込み中">
-            {showProfile && <ProfileSkeleton />}
-            {showBar && <BarSkeleton />}
-            <GridContainer>
-                {Array.from({ length: count }).map((_, index) => (
-                    <CardSkeleton key={index} />
-                ))}
-            </GridContainer>
-            <span className="sr-only">リポジトリを読み込む中...</span>
-        </div>
-    );
+  return (
+    <div role="status" aria-label="読み込み中">
+      {showProfile && <ProfileSkeleton />}
+      {showBar && <BarSkeleton />}
+      {betweenContent}
+      <GridContainer>
+        {Array.from({ length: count }).map((_, index) => (
+          <CardSkeleton key={index} />
+        ))}
+      </GridContainer>
+      <span className="sr-only">リポジトリを読み込み中...</span>
+    </div>
+  );
 }
 

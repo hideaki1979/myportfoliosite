@@ -87,10 +87,11 @@ export default function GitHubRepos({
     limit,
     isLoading = false,
     error: initialError = null,
+    betweenContent,
 }: GitHubReposProps) {
     const [sortBy, setSortBy] = useState<SortBy>('stars');
     const [repositories, setRepositories] = useState(initialData);
-    const [error, setError] = useState<{message: string} | null>(initialError);
+    const [error, setError] = useState<{ message: string } | null>(initialError);
     const [isRetrying, setIsRetrying] = useState(false);
 
     // リトライハンドラー
@@ -134,6 +135,7 @@ export default function GitHubRepos({
                     count={limit || 6}
                     showProfile={showProfile}
                     showBar={showLanguageBar}
+                    betweenContent={betweenContent}
                 />
             </Container>
         )
@@ -144,9 +146,9 @@ export default function GitHubRepos({
         return (
             <Container>
                 <ErrorDisplay
-                error={error}
-                onRetry={handleRetry}
-                isRetrying={isRetrying}
+                    error={error}
+                    onRetry={handleRetry}
+                    isRetrying={isRetrying}
                 />
             </Container>
         )
@@ -178,6 +180,11 @@ export default function GitHubRepos({
             {showTechTags && techTags.length > 0 && (
                 <Section>
                     <TechTags tags={techTags} />
+                </Section>
+            )}
+            {betweenContent && (
+                <Section>
+                    {betweenContent}
                 </Section>
             )}
 

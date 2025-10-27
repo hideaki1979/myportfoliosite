@@ -4,7 +4,17 @@
  */
 
 import { GitHubRepository } from "../../components/features/GitHubRepos/types";
+import { GitHubContributionCalendar } from "../../types/github";
 import { baseUrl } from "../constants";
+
+interface GitHubContributionsApiResponse {
+    success: boolean;
+    contributions?: GitHubContributionCalendar;
+    error?: {
+        code: string;
+        message: string;
+    };
+}
 
 interface GitHubApiResponse {
     success: boolean;
@@ -19,6 +29,84 @@ interface GitHubApiResponse {
         resetAt: string;
     };
 }
+
+/**
+ * GitHubコントリビューションカレンダーを取得（サーバーサイド用）
+ * Next.js Route Handlerを経由
+ */
+export async function fetchGitHubContributions(): Promise<GitHubContributionCalendar> {
+    try {
+        const response = await fetch(`${baseUrl}/api/github/contributions`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            // サーバーサイドでは自動的にキャッシュされる
+            cache: 'force-cache',
+            next: {revalidate: 900},
+        });
+
+        if (!response.ok) {
+            const errorData = (await response.json().catch(() => {})) as GitHubContributionsApiResponse;
+            throw new Error(
+                errorData.error?.message ||
+                `GitHub contributions API error: ${response.status}`,
+            );
+        }
+        const result = (await response.json()) as GitHubContributionsApiResponse;
+
+        if (!result.success || !result.contributions) {
+            throw new Error('GitHub contributions API returned invalid response');
+        }
+
+        return result.contributions;
+    } catch (error) {
+        console.error('Failed to fetch GitHub contributions:', error);
+        // エラー時は空のデータを返す（フォールバック）
+        return {
+            totalContributions: 0,
+            weeks: [],
+        };
+    }
+}
+
+/**
+ * クライアントサイドでGitHubコントリビューションカレンダーを取得
+ * Next.js Route Handlerを経由
+ */
+export async function fetchGitHubContributionsClient(): Promise<GitHubContributionCalendar> {
+    try {
+        const response = await fetch('/api/github/contributions', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            cache: 'no-store',
+        });
+
+        if (!response.ok) {
+            const errorData = (await response.json().catch(() => {})) as GitHubContributionsApiResponse;
+            throw new Error(
+                errorData.error?.message ||
+                `GitHub contributions request failed: ${response.status}`,
+            );
+        }
+
+        const result = await response.json() as GitHubContributionsApiResponse;
+
+        if (!result.success || !result.contributions) {
+            throw new Error('GitHub contributions API returned invalid response');
+        }
+
+        return result.contributions;
+    } catch (error) {
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error('Failed to fetch GitHub contributions');
+    }
+}
+
 
 /**
  * GitHubリポジトリ一覧を取得（サーバーサイド用）

@@ -40,4 +40,5 @@ export interface GitHubReposProps {
     limit?: number;
     isLoading?: boolean;
     error?: { message: string } | null;
+    betweenContent?: React.ReactNode;
 }
