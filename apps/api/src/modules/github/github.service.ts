@@ -59,10 +59,38 @@ interface FetchResponse<T> {
   rateLimit?: GitHubRateLimitInfo;
 }
 
+interface GitHubContributionQueryResponse {
+  user: {
+    contributionsCollection: {
+      contributionsCalendar: GitHubContributionCalendar;
+    };
+  };
+}
+
 // キャッシュ戦略の定数
 const CACHE_TTL = 900; // 15分
 const STALE_CACHE_TTL = 3600; // 1時間（エラー時のフォールバック用）
 const CACHE_KEY_PREFIX = 'github:repositories';
+
+// GitHubContributionsQuery
+const GITHUB_CONTRIBUTIONS_QUERY = `
+        query($username: String!, $from: DateTime!, $to: DateTime!) {
+          user(login: $username) {
+            contributionsCollection(from: $from, to: $to) {
+              contributionsCalendar {
+                totalContributions
+                weeks {
+                  contributionDays {
+                    date
+                    contributionCount
+                    color
+                  }
+                }
+              }
+            }
+          }
+        }
+      `;
 
 @Injectable()
 export class GithubService {
@@ -210,24 +238,7 @@ export class GithubService {
       fromDate.setFullYear(fromDate.getFullYear() - 1);
       const toDate = new Date();
 
-      const query = `
-        query($username: String!, $from: DateTime!, $to: DateTime!) {
-          user(login: $username) {
-            contributionsCollection(from: $from, to: $to) {
-              contributionsCalendar {
-                totalContributions
-                weeks {
-                  contributionDays {
-                    date
-                    contributionCount
-                    color
-                  }
-                }
-              }
-            }
-          }
-        }
-      `;
+      const query = GITHUB_CONTRIBUTIONS_QUERY;
 
       const variables = {
         username: this.githubUsername,
@@ -235,13 +246,11 @@ export class GithubService {
         to: toDate.toISOString(),
       };
 
-      const response = await this.graphqlReqest<{
-        user: {
-          contributionsCollection: {
-            contributionsCalendar: GitHubContributionCalendar;
-          };
-        };
-      }>(query, variables);
+      const response =
+        await this.graphqlRequest<GitHubContributionQueryResponse>(
+          query,
+          variables,
+        );
 
       const calendar =
         response.data.user.contributionsCollection.contributionsCalendar;
@@ -286,7 +295,7 @@ export class GithubService {
   /**
    * GitHub GraphQL APIにリクエストを送信
    */
-  private async graphqlReqest<T>(
+  private async graphqlRequest<T>(
     query: string,
     variables: Record<string, unknown>,
   ): Promise<GitHubGraphQLResponse<T>> {
@@ -297,7 +306,7 @@ export class GithubService {
     }
 
     const controller = new AbortController();
-    const abortTimeout = setTimeout(() => controller.abort, API_TIMEOUT);
+    const abortTimeout = setTimeout(() => controller.abort(), API_TIMEOUT);
 
     try {
       const res = await fetch(GITHUB_GRAPHQL_URL, {
