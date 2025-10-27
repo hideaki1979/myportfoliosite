@@ -75,7 +75,6 @@ export async function fetchQiitaArticles(
             const errorData = await response.json().catch(() => ({})) as QiitaApiResponse;
             const errorMessage = errorData.error?.message ||
                 `Qiita API error: ${response.status} ${response.statusText}`;
-            console.error(errorMessage);
             throw new Error(errorMessage);
         }
 

@@ -19,13 +19,13 @@ async function GitHubReposData({
     limit = 6,
 }: GitHubSectionProps) {
     let repositories: GitHubRepository[] = [];
-    let error: Error | null = null;
+    let error: { message: string } | null = null;
 
     try {
-        repositories = await fetchGitHubRepositories(20);
+        repositories = await fetchGitHubRepositories(limit ?? 20);
     } catch (err) {
         console.error("Failed to fetch GitHub repositories:", err);
-        error = err instanceof Error ? err : new Error('GitHubリポジトリの取得に失敗しました');
+        error = { message: err instanceof Error ? err.message : 'GitHubリポジトリの取得に失敗しました' };
     }
 
     return (

@@ -90,7 +90,7 @@ export default function GitHubRepos({
 }: GitHubReposProps) {
     const [sortBy, setSortBy] = useState<SortBy>('stars');
     const [repositories, setRepositories] = useState(initialData);
-    const [error, setError] = useState<Error | null>(initialError);
+    const [error, setError] = useState<{message: string} | null>(initialError);
     const [isRetrying, setIsRetrying] = useState(false);
 
     // リトライハンドラー

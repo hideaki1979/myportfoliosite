@@ -58,7 +58,7 @@ const RetryButton = styled.button`
 `;
 
 interface ErrorDisplayProps {
-  error: Error;
+  error: {message: string};
   onRetry?: () => void;
   isRetrying?: boolean;
 }

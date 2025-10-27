@@ -84,7 +84,7 @@ export default function QiitaArticles({
     error: initialError = null,
 }: QiitaArticlesProps) {
     const [articles, setArticles] = useState(initialData);
-    const [error, setError] = useState<Error | null>(initialError);
+    const [error, setError] = useState<{message: string} | null>(initialError);
     const [isRetrying, setIsRetrying] = useState(false);
 
     // リトライハンドラー

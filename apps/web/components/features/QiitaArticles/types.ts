@@ -11,5 +11,5 @@ export interface QiitaArticlesProps {
     showProfile?: boolean;
     limit?: number;
     isLoading?: boolean;
-    error?: Error | null;
+    error?: { message: string } | null;
 }
