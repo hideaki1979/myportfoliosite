@@ -62,7 +62,7 @@ interface FetchResponse<T> {
 interface GitHubContributionQueryResponse {
   user: {
     contributionsCollection: {
-      contributionsCalendar: GitHubContributionCalendar;
+      contributionCalendar: GitHubContributionCalendar;
     };
   };
 }
@@ -77,7 +77,7 @@ const GITHUB_CONTRIBUTIONS_QUERY = `
         query($username: String!, $from: DateTime!, $to: DateTime!) {
           user(login: $username) {
             contributionsCollection(from: $from, to: $to) {
-              contributionsCalendar {
+              contributionCalendar {
                 totalContributions
                 weeks {
                   contributionDays {
@@ -253,7 +253,7 @@ export class GithubService {
         );
 
       const calendar =
-        response.data.user.contributionsCollection.contributionsCalendar;
+        response.data.user.contributionsCollection.contributionCalendar;
 
       // 通常のキャッシュに保存（15分）
       this.cacheService.set(cacheKey, calendar, CACHE_TTL);
