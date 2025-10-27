@@ -1,12 +1,9 @@
 import { Metadata } from "next";
 import { createBreadcrumbStructuredData } from "../../lib/structured-data";
 import { baseUrl } from "../../lib/constants";
-import { fetchGitHubRepositories } from "../../lib/api/github";
-import { GITHUB_PROFILE } from "../../lib/data/github-profile";
-import GitHubRepos, { GitHubRepository, SkeletonLoader } from "../../components/features/GitHubRepos";
 import { PageContainer } from "../../components/layouts/PageLayout";
-import { Suspense } from "react";
 import { PageDescription, PageTitle } from "../../components/ui/Typography";
+import GitHubSection from "../../components/sections/GitHubSection";
 
 const breadcrumbData = createBreadcrumbStructuredData({
   items: [
@@ -48,37 +45,6 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-async function GitHubReposData() {
-  // GitHubリポジトリをサーバーサイドで取得
-  let repositories: GitHubRepository[] = [];
-
-  try {
-    repositories = await fetchGitHubRepositories(20);
-  } catch (error) {
-    console.error("Failed to fetch GitHub repositories:", error);
-  }
-
-  return (
-    <GitHubRepos
-      initialData={repositories}
-      profile={GITHUB_PROFILE}
-      showProfile={true}
-      showLanguageBar={true}
-      showTechTags={true}
-    />
-  );
-}
-
-function GitHubReposLoading() {
-  return (
-    <SkeletonLoader
-      count={20}
-      showProfile={true}
-      showBar={true}
-    />
-  );
-}
-
 export default async function PortfolioPage() {
 
   return (
@@ -89,9 +55,14 @@ export default async function PortfolioPage() {
         <br />
         Udemyや学習のために作成したアプリとなります。
       </PageDescription>
-      <Suspense fallback={<GitHubReposLoading />}>
-        <GitHubReposData />
-      </Suspense>
+      <GitHubSection
+      showTitle={false}
+      showProfile={true}
+      showLanguageBar={true}
+      showTechTags={true}
+      showContributions={true}
+      limit={20}
+      />
     </PageContainer>
   );
 }
