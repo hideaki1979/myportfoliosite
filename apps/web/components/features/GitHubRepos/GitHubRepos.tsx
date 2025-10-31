@@ -61,9 +61,9 @@ const MoreLink = styled.a`
     align-items: center;
     gap: 8px;
     font-family: 'Noto Sans JP', sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    color: #858383;
+    font-weight: bold;
+    font-size: 16px;
+    color: #b7b6b6;
     margin-top: 16px;
     transition: color 0.2s;
 

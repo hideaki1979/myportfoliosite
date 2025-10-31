@@ -48,7 +48,7 @@ const LegendText = styled.span`
   font-weight: 400;
   font-size: 14px;
   line-height: 1.1;
-  color: #585757;
+  color: #c7c7c7;
   white-space: nowrap;
 `;
 

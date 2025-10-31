@@ -95,7 +95,7 @@ const SiteHeader = styled.header`
   top: 0;
   z-index: 50;
   width: 100%;
-  background: ${({ theme }) => theme.colors.background};
+  background: ${({ theme }) => theme.colors.background.primary};
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
@@ -103,19 +103,19 @@ const HeaderInner = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: ${({ theme }) => theme.breakpoints.xl}px;
+  max-width: ${({ theme }) => theme.breakpoints.wide}px;
   margin: 0 auto;
   padding: 12px 16px;
 `;
 
 const Brand = styled(Link)`
   font-weight: 700;
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 const DesktopNav = styled.nav`
   display: none;
-  @media (min-width: ${({ theme }) => theme.breakpoints.md}px) {
+  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}px) {
     display: block;
   }
 `;
@@ -130,7 +130,7 @@ const NavList = styled.ul`
 `;
 
 const StyledLink = styled(Link)`
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme }) => theme.colors.text.primary};
   &:hover {
     color: ${({ theme }) => theme.colors.primary};
   }
@@ -147,9 +147,9 @@ const MenuButton = styled.button`
   display: grid;
   place-items: center;
   border: 1px solid ${({ theme }) => theme.colors.border};
-  background: ${({ theme }) => theme.colors.background};
+  background: ${({ theme }) => theme.colors.background.primary};
   border-radius: 8px;
-  @media (min-width: ${({ theme }) => theme.breakpoints.md}px) {
+  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}px) {
     display: none;
   }
 `;
@@ -163,7 +163,7 @@ const Bar = styled.span<{
   position: absolute;
   width: 24px;
   height: 2px;
-  background: ${({ theme }) => theme.colors.text};
+  background: ${({ theme }) => theme.colors.text.primary};
   ${({ $top, $open }) =>
     $top &&
     css`
@@ -199,7 +199,7 @@ const MobileOverlay = styled.div<{ $open: boolean }>`
       opacity: 1;
       pointer-events: auto;
     `}
-  @media (min-width: ${({ theme }) => theme.breakpoints.md}px) {
+  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}px) {
     display: none;
   }
 `;
@@ -210,7 +210,7 @@ const MobilePanel = styled.div<{ $open: boolean }>`
   right: 0;
   width: min(80vw, 320px);
   height: 100dvh;
-  background: ${({ theme }) => theme.colors.background};
+  background: ${({ theme }) => theme.colors.background.primary};
   border-left: 1px solid ${({ theme }) => theme.colors.border};
   box-shadow: -8px 0 24px rgba(0, 0, 0, 0.12);
   transform: translateX(100%);
@@ -222,7 +222,7 @@ const MobilePanel = styled.div<{ $open: boolean }>`
     css`
       transform: translateX(0);
     `}
-  @media (min-width: ${({ theme }) => theme.breakpoints.md}px) {
+  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}px) {
     display: none;
   }
 `;

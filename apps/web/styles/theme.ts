@@ -1,13 +1,25 @@
 // Design tokens for styled-components ThemeProvider
 export const theme = {
   colors: {
-    text: "#111",
-    subText: "#666",
-    background: "#fff",
+    text: {
+      primary: "#111",
+      secondary: "#666",
+      tertiary: "#999",
+    },
+    background: {
+      primary: "#fff",
+      secondary: "#f5f7fb",
+      tertiary: "#e5e7eb",
+    },
     primary: "#0070f3",
+    primaryDark: "#0051c7",
     surface: "#f5f7fb",
     border: "#e5e7eb",
     onPrimary: "#fff",
+    success: "#10b981",
+    error: "#ef4444",
+    warning: "#f59e0b",
+    info: "#3b82f6",
   },
   spacing: {
     xs: 4,
@@ -28,10 +40,10 @@ export const theme = {
     small: 14,
   },
   breakpoints: {
-    sm: 576,
-    md: 768,
-    lg: 1024,
-    xl: 1200,
+    mobile: 480,
+    tablet: 768,
+    desktop: 1024,
+    wide: 1280,
   },
 } as const;
 
