@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { createBreadcrumbStructuredData } from "../../lib/structured-data";
 import { baseUrl } from "../../lib/constants";
 import { PageContainer } from "../../components/layouts/PageLayout";
+import { ContactSection } from "../../components/sections/ContactSection";
 
 const breadcrumbData = createBreadcrumbStructuredData({
   items: [
@@ -44,12 +45,16 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function ContactPage() {
+  const recaptchaSiteKey = process.env.RECAPTCHA_SITE_KEY;
+
+  if (!recaptchaSiteKey) {
+    // サーバーサイドコンポーネントなので、ビルド時またはリクエスト時にエラーをスローして問題を明確にします
+    throw new Error("RECAPTCHA_SITE_KEY is not configured in environment variables.");
+  }
+
   return (
     <PageContainer>
-      <h1>Contact</h1>
-      <p>
-        このページは Contact のプレースホルダーです。フォームは後で実装します。
-      </p>
+      <ContactSection recaptchaSiteKey={recaptchaSiteKey} />
     </PageContainer>
   );
 }

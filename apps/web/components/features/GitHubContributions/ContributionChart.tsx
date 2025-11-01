@@ -32,17 +32,17 @@ const Header = styled.div`
 const Title = styled.h3`
     font-size: ${({ theme }) => `${theme.typography.headings.h3}px`};
     font-weight: 700;
-    color: ${({ theme }) => theme.colors.text};
+    color: ${({ theme }) => theme.colors.text.primary};
     margin-bottom: ${({ theme }) => `${theme.spacing.xs}px`};
 `;
 
 const Stats = styled.p`
     font-size: ${({ theme }) => `${theme.typography.small}px`};
-    color: ${({ theme }) => theme.colors.subText};
+    color: ${({ theme }) => theme.colors.text.secondary};
 
     strong {
         font-weight: 600;
-        color: ${({ theme }) => theme.colors.text};
+        color: ${({ theme }) => theme.colors.text.primary};
     }
 `;
 
@@ -58,7 +58,7 @@ const ChartWrapper = styled.div`
     }
 
     &::-webkit-scrollbar-track {
-        background: ${({ theme }) => theme.colors.background};
+        background: ${({ theme }) => theme.colors.background.primary};
         border-radius: 8px;
     }
 
@@ -67,7 +67,7 @@ const ChartWrapper = styled.div`
         border-radius: 8px;
 
         &:hover {
-            background: ${({ theme }) => theme.colors.subText};
+            background: ${({ theme }) => theme.colors.text.secondary};
         }
     }
 `;
@@ -82,7 +82,7 @@ const WeekdayLabels = styled.div`
 
 const WeekdayLabel = styled.span`
     font-size: 12px;
-    color: ${({ theme }) => theme.colors.subText};
+    color: ${({ theme }) => theme.colors.text.secondary};
     height: 12px;
     line-height: 12px;
     text-align: right;
@@ -105,7 +105,7 @@ const MonthLabel = styled.span<{ $offset: number }>`
     position: absolute;
     left: ${({ $offset }) => $offset * 16}px;
     font-size: 12px;
-    color: ${({ theme }) => theme.colors.subText};
+    color: ${({ theme }) => theme.colors.text.secondary};
     white-space: nowrap;
 `;
 
@@ -177,7 +177,7 @@ const Legend = styled.div`
 
 const LegendText = styled.span`
     font-size: 12px;
-    color: ${({ theme }) => theme.colors.subText};
+    color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 const LegendScale = styled.div`

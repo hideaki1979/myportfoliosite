@@ -60,18 +60,18 @@ const fadeIn = keyframes`
 `;
 
 const Section = styled.section`
-  background: ${({ theme }) => theme.colors.background};
+  background: ${({ theme }) => theme.colors.background.primary};
   border-top: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const Inner = styled.div`
-  max-width: ${({ theme }) => theme.breakpoints.lg}px;
+  max-width: ${({ theme }) => theme.breakpoints.desktop}px;
   margin: 0 auto;
   padding: 40px 16px;
   display: grid;
   gap: 24px;
 
-  @media (min-width: ${({ theme }) => theme.breakpoints.md}px) {
+  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}px) {
     padding: 56px 16px;
     gap: 32px;
   }
@@ -85,11 +85,11 @@ const Header = styled.div`
 const Title = styled.h2`
   font-size: ${({ theme }) => theme.typography.headings.h2}px;
   line-height: 1.5;
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 const Subtitle = styled.p`
-  color: ${({ theme }) => theme.colors.subText};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 const Timeline = styled.ol`
@@ -143,21 +143,21 @@ const ItemHeader = styled.div`
 
 const Company = styled.span`
   font-weight: bold;
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 const Period = styled.time`
-  color: ${({ theme }) => theme.colors.subText};
+  color: ${({ theme }) => theme.colors.text.primary};
   font-size: ${({ theme }) => theme.typography.small}px;
 `;
 
 const Role = styled.span`
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme }) => theme.colors.text.primary};
   font-size: ${({ theme }) => theme.typography.small}px;
 `;
 
 const Description = styled.p`
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme }) => theme.colors.text.primary};
   font-size: ${({ theme }) => theme.typography.small}px;
   white-space: pre-line;
 `;

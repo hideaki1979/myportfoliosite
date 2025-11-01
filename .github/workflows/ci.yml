@@ -40,3 +40,4 @@ jobs:
         env:
           CI: true
           API_URL: http://localhost:3100
+          RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}

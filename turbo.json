@@ -1,7 +1,13 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
-  "globalEnv": ["API_URL", "CI", "NODE_ENV"],
+  "globalEnv": [
+    "API_URL",
+    "CI",
+    "NODE_ENV",
+    "RECAPTCHA_SITE_KEY",
+    "RECAPTCHA_SECRET_KEY"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

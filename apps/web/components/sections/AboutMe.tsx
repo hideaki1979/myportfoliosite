@@ -79,13 +79,13 @@ const Section = styled.section`
 `;
 
 const Inner = styled.div`
-  max-width: ${({ theme }) => theme.breakpoints.lg}px;
+  max-width: ${({ theme }) => theme.breakpoints.desktop}px;
   margin: 0 auto;
   padding: 40px 16px;
   display: grid;
   gap: 24px;
 
-  @media (min-width: ${({ theme }) => theme.breakpoints.md}px) {
+  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}px) {
     padding: 56px 16px;
     gap: 32px;
   }
@@ -99,7 +99,7 @@ const Header = styled.div`
 const Title = styled.h2`
   font-size: ${({ theme }) => theme.typography.headings.h2}px;
   line-height: 1.5;
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme }) => theme.colors.text.primary};
 
   &::before {
     content: "■";
@@ -108,7 +108,7 @@ const Title = styled.h2`
 `;
 
 const Subtitle = styled.p`
-  color: ${({ theme }) => theme.colors.subText};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 const Grid = styled.div`
@@ -116,14 +116,14 @@ const Grid = styled.div`
   grid-template-columns: 1fr;
   gap: 16px;
 
-  @media (min-width: ${({ theme }) => theme.breakpoints.md}px) {
+  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}px) {
     grid-template-columns: 1fr 1fr 1fr;
     gap: 24px;
   }
 `;
 
 const Block = styled.section`
-  background-color: ${({ theme }) => theme.colors.background};
+  background-color: ${({ theme }) => theme.colors.background.primary};
   padding: 16px;
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 8px;
@@ -132,7 +132,7 @@ const Block = styled.section`
 const BlockTitle = styled.h3`
   font-size: ${({ theme }) => theme.typography.headings.h3}px;
   margin-bottom: 12px;
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 const BlockList = styled.ul`
@@ -140,6 +140,6 @@ const BlockList = styled.ul`
   padding-left: 16px;
   display: grid;
   gap: 8px;
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme }) => theme.colors.text.primary};
   font-size: ${({ theme }) => theme.typography.body}px;
 `;

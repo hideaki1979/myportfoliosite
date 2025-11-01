@@ -80,10 +80,10 @@ const Inner = styled.div`
   grid-template-columns: 1fr;
   align-items: center;
   gap: 24px;
-  max-width: ${({ theme }) => theme.breakpoints.lg}px;
+  max-width: ${({ theme }) => theme.breakpoints.desktop}px;
   margin: 0 auto;
   padding: 40px 16px;
-  @media (min-width: ${({ theme }) => theme.breakpoints.md}px) {
+  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}px) {
     grid-template-columns: 240px 1fr;
     gap: 32px;
     padding: 56px 16px;
@@ -111,16 +111,16 @@ const Content = styled.div`
 const Title = styled.h1`
   font-size: ${({ theme }) => theme.typography.headings.h1}px;
   line-height: 1.25;
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 const Subtitle = styled.p`
   font-size: ${({ theme }) => theme.typography.headings.h3}px;
-  color: ${({ theme }) => theme.colors.subText};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 const Description = styled.p`
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 const CTA = styled(Link)`
@@ -151,7 +151,7 @@ const Carat = styled.span`
   display: inline-block;
   width: 1ch;
   margin-left: 2px;
-  border-left: 2px solid ${({ theme }) => theme.colors.text};
+  border-left: 2px solid ${({ theme }) => theme.colors.text.primary};
   animation: ${blink} 1s steps(1, end) infinite;
 `;
 
