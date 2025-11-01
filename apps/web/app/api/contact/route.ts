@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 import { contactFormSchema } from "../../../components/features/ContactForm";
 import { NextRequest, NextResponse } from "next/server";
 
