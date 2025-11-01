@@ -7,13 +7,14 @@ export function middleware(request: NextRequest) {
 
     const cspHeader = [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+        "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.google.com https://www.gstatic.com",
         // styled-components考慮でinline styleは許容
         "style-src 'self' 'unsafe-inline'",
         "img-src 'self' data: https:",
         "font-src 'self' data:",
         // devは HMR 等で ws/wss/http/https を許容。prodは https と API のみ
         `connect-src 'self' ${apiDomain} ${isProd ? "https:" : "http: https: ws: wss:"}`,
+        "frame-src https://www.google.com",
         "frame-ancestors 'none'",
         "base-uri 'self'",
         "form-action 'self'",

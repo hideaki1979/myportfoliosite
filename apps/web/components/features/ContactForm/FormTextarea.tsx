@@ -44,7 +44,7 @@ const Textarea = styled.textarea<{ $hasError?: boolean }>`
     resize: vertical;
     font-family: inherit;
 
-    &hover:not(:disabled) {
+    &:hover:not(:disabled) {
         border-color: ${({theme, $hasError}) =>
         $hasError ? theme.colors.error : theme.colors.primary};
     }

@@ -123,7 +123,7 @@ const Grid = styled.div`
 `;
 
 const Block = styled.section`
-  background-color: ${({ theme }) => theme.colors.background};
+  background-color: ${({ theme }) => theme.colors.background.primary};
   padding: 16px;
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 8px;

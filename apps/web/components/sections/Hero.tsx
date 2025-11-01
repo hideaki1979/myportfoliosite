@@ -151,7 +151,7 @@ const Carat = styled.span`
   display: inline-block;
   width: 1ch;
   margin-left: 2px;
-  border-left: 2px solid ${({ theme }) => theme.colors.text};
+  border-left: 2px solid ${({ theme }) => theme.colors.text.primary};
   animation: ${blink} 1s steps(1, end) infinite;
 `;
 

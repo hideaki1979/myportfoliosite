@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import styled from "styled-components"
 import { ContactFormData, contactFormSchema, SubmitStatus } from "./types";
 import { useForm } from "react-hook-form";
@@ -14,10 +14,10 @@ const FormContainer = styled.div`
     max-width: 768px;
     margin: 0 auto;
     padding: 2rem;
-    background-color: ${({theme}) => theme.colors.background.secondary};
+    background-color: ${({ theme }) => theme.colors.background.secondary};
     border-radius: 0 4px 6px rgba(0, 0, 0, 0.1);
 
-    @media (max-width: ${({theme}) => theme.breakpoints.tablet}) {
+    @media (max-width: ${({ theme }) => theme.breakpoints.tablet}px) {
         padding: 1.5rem;
     }
 `;
@@ -25,11 +25,11 @@ const FormContainer = styled.div`
 const FormTitle = styled.h2`
     font-size: 2rem;
     font-weight: 700;
-    color: ${({theme}) => theme.colors.text.primary};
+    color: ${({ theme }) => theme.colors.text.primary};
     text-align: center;
     margin-bottom: 2rem;
 
-    @media (max-width: ${({theme}) => theme.breakpoints.tablet}px) {
+    @media (max-width: ${({ theme }) => theme.breakpoints.tablet}px) {
         font-size: 1.75rem;
     }
 `;
@@ -53,10 +53,10 @@ const SubmitButton = styled.button<{ $isLoading: boolean }>`
     font-weight: 600;
     color: #ffffff;
     background-color: ${({ theme, $isLoading }) =>
-    $isLoading ? theme.colors.text.tertiary : theme.colors.primary};
+        $isLoading ? theme.colors.text.tertiary : theme.colors.primary};
     border: none;
     border-radius: 0.5rem;
-    cursor: ${({$isLoading}) => ($isLoading ? "not-allowed" : "pointer")};
+    cursor: ${({ $isLoading }) => ($isLoading ? "not-allowed" : "pointer")};
     transition: all 0.2s ease-in-out;
     display: flex;
     align-items: center;
@@ -64,8 +64,8 @@ const SubmitButton = styled.button<{ $isLoading: boolean }>`
     gap: 0.5rem;
 
     &:hover:not(:disabled) {
-        background-color: ${({theme}) => theme.colors.primaryDark};
-        transform: 0 4px 8px rgba(0, 0, 0, 0.2);
+        background-color: ${({ theme }) => theme.colors.primaryDark};
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
     &:active:not(:disabled) {
@@ -79,7 +79,7 @@ const SubmitButton = styled.button<{ $isLoading: boolean }>`
 
     &:focus {
         outline: none;
-        box-shadow: 0 0 0 3px ${({theme}) => `${theme.colors.primary}33`};
+        box-shadow: 0 0 0 3px ${({ theme }) => `${theme.colors.primary}33`};
     }
 `;
 
@@ -104,14 +104,14 @@ const StatusMessage = styled.div<{ $status: "success" | "error" }>`
     border-radius: 0.5rem;
     font-weight: 500;
     text-align: center;
-    background-color: ${({theme, $status}) =>
+    background-color: ${({ theme, $status }) =>
         $status === "success"
             ? `${theme.colors.success}22`
             : `${theme.colors.error}22`};
-    color: ${({theme, $status}) => 
+    color: ${({ theme, $status }) =>
         $status === "success" ? theme.colors.success : theme.colors.error};
     border: 1px solid
-        ${({theme, $status}) => 
+        ${({ theme, $status }) =>
         $status === "success" ? theme.colors.success : theme.colors.error};
 `;
 
@@ -123,6 +123,7 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
     const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
     const [submitStatus, setSubmitStatus] = useState<SubmitStatus>("idle");
     const [statusMessage, setStatusMessage] = useState<string>("");
+    const recaptchaRef = useRef<ReCAPTCHA>(null);
 
     const {
         register,
@@ -169,6 +170,7 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
                 );
                 reset();
                 setRecaptchaToken(null);
+                recaptchaRef.current?.reset();
             } else {
                 setSubmitStatus("error");
                 setStatusMessage(
@@ -216,13 +218,13 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
                 <FormTextarea
                     label="Message"
                     placeholder="お問い合わせ内容をご記入ください"
-                    error={errors.subject?.message}
+                    error={errors.message?.message}
                     disabled={isFormDisabled}
                     {...register("message")}
                 />
 
                 <RecaptchaWrapper>
-                    <ReCAPTCHA sitekey={recaptchaSiteKey} onChange={onRecaptchaChange} />
+                    <ReCAPTCHA ref={recaptchaRef} sitekey={recaptchaSiteKey} onChange={onRecaptchaChange} />
                 </RecaptchaWrapper>
 
                 {(submitStatus === "success" || submitStatus === "error") && (

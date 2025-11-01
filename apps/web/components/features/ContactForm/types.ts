@@ -6,7 +6,6 @@ import { z } from "zod";
 export const contactFormSchema = z.object({
     name: z
         .string()
-        .min(1, "名前は必須です")
         .min(2, "名前は2文字以上入力してください")
         .max(20, "名前は20文字以内で入力してください"),
     email: z
@@ -15,7 +14,6 @@ export const contactFormSchema = z.object({
         .pipe(z.email({ message: "正しいメール形式で入力してください" })),
     subject: z
         .string()
-        .min(1, "件名は必須です")
         .min(5, "件名は5文字以上で入力してください")
         .max(50, "件名は50文字以内で入力してください"),
     message: z
