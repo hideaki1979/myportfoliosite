@@ -45,7 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function ContactPage() {
-  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+  const recaptchaSiteKey = process.env.RECAPTCHA_SITE_KEY;
 
   if (!recaptchaSiteKey) {
     // サーバーサイドコンポーネントなので、ビルド時またはリクエスト時にエラーをスローして問題を明確にします
