@@ -64,12 +64,7 @@ export class ContactController {
     } catch (error) {
       // BadRequestExceptionはそのまま返す（reCAPTCHA検証エラー等）
       if (error instanceof BadRequestException) {
-        throw new BadRequestException({
-          success: false,
-          message:
-            error.message ||
-            'reCAPTCHA認証に失敗しました。もう一度お試しください。',
-        });
+        throw error;
       }
 
       // その他のエラーは500エラー
