@@ -9,6 +9,7 @@ import { MetricsModule } from './modules/metrics/metrics.module';
 import { GithubModule } from './modules/github/github.module';
 import { CacheModule } from './modules/cache/cache.module';
 import { QiitaModule } from './modules/qiita/qiita.module';
+import { ContactModule } from './modules/contact/contact.module';
 
 @Module({
   imports: [
@@ -24,6 +25,10 @@ import { QiitaModule } from './modules/qiita/qiita.module';
         GITHUB_USERNAME: Joi.string().trim().min(1).required(),
         QIITA_TOKEN: Joi.string().allow('').default(''),
         QIITA_USER_ID: Joi.string().trim().min(1).required(),
+        RECAPTCHA_SECRET_KEY: Joi.string().allow('').default(''),
+        RESEND_API_KEY: Joi.string().allow('').default(''),
+        RESEND_FROM: Joi.string().email().default('noreply@example.com'),
+        RESEND_TO: Joi.string().email().default('admin@example.com'),
       }),
     }),
     LoggerModule.forRootAsync({
@@ -49,6 +54,7 @@ import { QiitaModule } from './modules/qiita/qiita.module';
     MetricsModule,
     GithubModule,
     QiitaModule,
+    ContactModule,
   ],
   controllers: [AppController],
   providers: [AppService],
