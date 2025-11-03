@@ -2,8 +2,6 @@ import {
   BadRequestException,
   Body,
   Controller,
-  HttpCode,
-  HttpStatus,
   InternalServerErrorException,
   Post,
   Req,
@@ -12,6 +10,7 @@ import { ContactService } from './contact.service';
 import { Logger } from 'nestjs-pino';
 import type { Request } from 'express';
 import { contactRequestSchema, ContactResponseDto } from './contact.dto';
+import { z } from 'zod';
 
 /**
  * Contact Controller
@@ -29,7 +28,6 @@ export class ContactController {
    * POST /api/contact
    */
   @Post()
-  @HttpCode(HttpStatus.OK)
   async submitContactForm(
     @Body() body: unknown,
     @Req() request: Request,
@@ -38,7 +36,7 @@ export class ContactController {
     const validationResult = contactRequestSchema.safeParse(body);
 
     if (!validationResult.success) {
-      const errors = validationResult.error.flatten().fieldErrors;
+      const errors = z.flattenError(validationResult.error).fieldErrors;
       this.logger.warn('Contact form validation failed', { errors });
 
       return {
@@ -66,12 +64,12 @@ export class ContactController {
     } catch (error) {
       // BadRequestExceptionはそのまま返す（reCAPTCHA検証エラー等）
       if (error instanceof BadRequestException) {
-        return {
+        throw new BadRequestException({
           success: false,
           message:
             error.message ||
             'reCAPTCHA認証に失敗しました。もう一度お試しください。',
-        };
+        });
       }
 
       // その他のエラーは500エラー

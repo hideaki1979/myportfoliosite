@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from 'nestjs-pino';
 
@@ -43,7 +48,9 @@ export class RecaptchaService {
   async verifyToken(token: string, remoteIp?: string): Promise<boolean> {
     if (!this.secretKey) {
       this.logger.error('RECAPTCHA_SECRET_KEY is not configured');
-      throw new BadRequestException('reCAPTCHA認証が正しく設定されていません');
+      throw new InternalServerErrorException(
+        'reCAPTCHA認証が正しく設定されていません',
+      );
     }
 
     if (!token || token.trim() === '') {
@@ -78,7 +85,9 @@ export class RecaptchaService {
         this.logger.error(
           `reCAPTCHA API returned non-OK status: ${response.status}`,
         );
-        throw new BadRequestException('reCAPTCHA検証サーバーに接続できません');
+        throw new ServiceUnavailableException(
+          'reCAPTCHA検証サーバーに接続できません',
+        );
       }
 
       const data = (await response.json()) as RecaptchaVerifyResponse;
@@ -116,7 +125,7 @@ export class RecaptchaService {
       // タイムアウトやネットワークエラー
       if (error instanceof Error && error.name === 'AbortError') {
         this.logger.error('reCAPTCHA verification timeout');
-        throw new BadRequestException(
+        throw new ServiceUnavailableException(
           'reCAPTCHA検証がタイムアウトしました。もう一度お試しください。',
         );
       }
@@ -125,7 +134,9 @@ export class RecaptchaService {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`reCAPTCHA verification error: ${errorMessage}`);
-      throw new BadRequestException('reCAPTCHA検証中にエラーが発生しました');
+      throw new ServiceUnavailableException(
+        'reCAPTCHA検証中にエラーが発生しました',
+      );
     }
   }
 }

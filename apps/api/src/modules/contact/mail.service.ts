@@ -48,7 +48,7 @@ export class MailService {
     formData: ContactFormDto,
     metadata: {
       ip?: string;
-      userAgenet?: string;
+      userAgent?: string;
       timestamp?: string;
     },
   ): Promise<void> {
@@ -152,6 +152,7 @@ export class MailService {
                         <div class="field">
                             <div class="label">お名前：</div>
                             <div class="value">${this.escapeHtml(formData.name)}</div>
+                        </div>
                         <div class="field">
                             <div class="label">メールアドレス：</div>
                             <div class="value">${this.escapeHtml(formData.email)}</div>
@@ -166,8 +167,8 @@ export class MailService {
                     ? `
                     <div class= "metadata">
                         <div><strong>メタデータ:</strong></div>
-                        ${metadata.timestamp ? `<div>送信日時: ${metadata.timestamp}</div>` : ''}
-                        ${metadata.ip ? `<div>IPアドレス: ${metadata.ip}</div>` : ''}
+                        ${metadata.timestamp ? `<div>送信日時: ${this.escapeHtml(metadata.timestamp)}</div>` : ''}
+                        ${metadata.ip ? `<div>IPアドレス: ${this.escapeHtml(metadata.ip)}</div>` : ''}
                         ${metadata.userAgent ? `<div>User-Agent: ${this.escapeHtml(metadata.userAgent)}</div>` : ''}
                         
                     </div>
@@ -205,8 +206,8 @@ export class MailService {
     if (metadata) {
       text += '\n\n---\nメタデータ\n';
       if (metadata.timestamp) text += `送信日時: ${metadata.timestamp}\n`;
-      if (metadata.ip) text += `送信日時: ${metadata.ip}\n`;
-      if (metadata.userAgent) text += `送信日時: ${metadata.userAgent}\n`;
+      if (metadata.ip) text += `IPアドレス: ${metadata.ip}\n`;
+      if (metadata.userAgent) text += `User-Agent: ${metadata.userAgent}\n`;
     }
 
     return text;

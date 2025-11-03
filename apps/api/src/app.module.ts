@@ -27,8 +27,8 @@ import { ContactModule } from './modules/contact/contact.module';
         QIITA_USER_ID: Joi.string().trim().min(1).required(),
         RECAPTCHA_SECRET_KEY: Joi.string().allow('').default(''),
         RESEND_API_KEY: Joi.string().allow('').default(''),
-        MAIL_FROM: Joi.string().email().default('noreply@example.com'),
-        MAIL_TO: Joi.string().email().default('admin@example.com'),
+        RESEND_FROM: Joi.string().email().default('noreply@example.com'),
+        RESEND_TO: Joi.string().email().default('admin@example.com'),
       }),
     }),
     LoggerModule.forRootAsync({
