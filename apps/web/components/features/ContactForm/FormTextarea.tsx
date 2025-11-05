@@ -20,11 +20,11 @@ const TextareaWrapper = styled.div`
 const Label = styled.label`
     font-size: 1rem;
     font-weight: 600;
-    color: ${({theme}) => theme.colors.text.primary};
+    color: ${({ theme }) => theme.colors.text.primary};
 
     &::after {
         content: "*";
-        color: ${({theme}) => theme.colors.error};
+        color: ${({ theme }) => theme.colors.error};
     }
 `;
 
@@ -34,10 +34,10 @@ const Textarea = styled.textarea<{ $hasError?: boolean }>`
     padding: 0.75rem 1rem;
     font-size: 1rem;
     line-height: 1.5;
-    color: ${({theme}) => theme.colors.text.primary};
-    background-color: ${({theme}) => theme.colors.background.secondary};
+    color: ${({ theme }) => theme.colors.text.primary};
+    background-color: ${({ theme }) => theme.colors.background.secondary};
     border: 2px solid
-        ${({theme, $hasError}) => 
+        ${({ theme, $hasError }) =>
         $hasError ? theme.colors.error : theme.colors.border};
     border-radius: 0.5rem;
     transition: border-color 0.3s ease-in-out;
@@ -45,40 +45,50 @@ const Textarea = styled.textarea<{ $hasError?: boolean }>`
     font-family: inherit;
 
     &:hover:not(:disabled) {
-        border-color: ${({theme, $hasError}) =>
+        border-color: ${({ theme, $hasError }) =>
         $hasError ? theme.colors.error : theme.colors.primary};
     }
 
     &:focus:not(:disabled) {
-        border-color: ${({theme, $hasError}) =>
+        border-color: ${({ theme, $hasError }) =>
         $hasError ? theme.colors.error : theme.colors.primary};
     }
 
     &:focus {
         outline: none;
-        border-color: ${({theme, $hasError}) =>
+        border-color: ${({ theme, $hasError }) =>
         $hasError ? theme.colors.error : theme.colors.primary};
         box-shadow: 0 0 0 3px
-        ${({theme, $hasError}) => 
+        ${({ theme, $hasError }) =>
         $hasError
             ? `${theme.colors.error}33`
             : `${theme.colors.primary}33`};
     }
 
     &:disabled {
-        background-color: ${({theme}) => theme.colors.background.tertiary};
+        background-color: ${({ theme }) => theme.colors.background.tertiary};
         cursor: not-allowed;
         opacity: 0.6;
     }
 
     &::placeholder {
-        color: ${({theme}) => theme.colors.text.tertiary};
+        color: ${({ theme }) => theme.colors.text.tertiary};
+    }
+
+    /* オートコレクトされたフィールドも定義済みスタイルに統一 */
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus,
+    &:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px ${({ theme }) => theme.colors.background.secondary} inset !important;
+        -webkit-text-fill-color: ${({ theme }) => theme.colors.text.primary} !important;
+        box-shadow: 0 0 0 30px ${({ theme }) => theme.colors.background.secondary} inset !important;
     }
 `;
 
 const ErrorMessage = styled.span`
     font-size: 0.875rem;
-    color: ${({theme}) => theme.colors.error};
+    color: ${({ theme }) => theme.colors.error};
     display: flex;
     align-items: center;
     gap: 0.25rem;
@@ -90,7 +100,7 @@ const ErrorMessage = styled.span`
 
 const HelperText = styled.span`
     font-size: 0.8rem;
-    color: ${({theme}) => theme.colors.text.tertiary};
+    color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextAreaProps>(
