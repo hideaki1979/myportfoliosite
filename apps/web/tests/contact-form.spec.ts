@@ -95,15 +95,8 @@ class ContactPage {
             // 最大10秒待機
             const submitButton = this.submitButton;
 
-            // ボタンが有効になるまで最大15秒待機
-            await expect(submitButton).toBeEnabled({timeout: 10000});
-
-            // タイムアウト時はエラーをスロー
-            throw new Error(
-                `送信ボタンが有効になりませんでした(10000ms経過）。` +
-                `reCAPTCHAトークンが生成されていない可能性があります。` +
-                `reCAPTCHAのキーが正しく設定されているか確認してください。`
-            );
+            // ボタンが有効になるまで最大10秒待機
+            await expect(submitButton).toBeEnabled({ timeout: 10000 });
         } catch (error) {
             console.warn("reCAPTCHA自動通過に失敗しました。", error);
             throw error;

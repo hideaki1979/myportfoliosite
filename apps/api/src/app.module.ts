@@ -27,20 +27,16 @@ import { ContactModule } from './modules/contact/contact.module';
         QIITA_USER_ID: Joi.string().trim().min(1).required(),
         RECAPTCHA_SECRET_KEY: Joi.string().allow('').default(''),
         RESEND_API_KEY: Joi.string().allow('').default(''),
-        RESEND_FROM: Joi.string()
-          .default('noreply@example.com')
-          .when('RESEND_API_KEY', {
-            is: Joi.string().min(1),
-            then: Joi.string().min(1).required(),
-            otherwise: Joi.string().allow(''),
-          }),
-        RESEND_TO: Joi.string()
-          .default('admin@example.com')
-          .when('RESEND_API_KEY', {
-            is: Joi.string().min(1),
-            then: Joi.string().email().required(),
-            otherwise: Joi.string().allow(''),
-          }),
+        RESEND_FROM: Joi.when('RESEND_API_KEY', {
+          is: Joi.string().min(1),
+          then: Joi.string().min(1).required(),
+          otherwise: Joi.string().empty('').default('noreply@example.com'),
+        }),
+        RESEND_TO: Joi.when('RESEND_API_KEY', {
+          is: Joi.string().min(1),
+          then: Joi.string().email().required(),
+          otherwise: Joi.string().empty('').default('admin@example.com'),
+        }),
       }),
     }),
     LoggerModule.forRootAsync({
