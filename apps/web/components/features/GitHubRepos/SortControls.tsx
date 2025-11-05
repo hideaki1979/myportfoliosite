@@ -14,7 +14,7 @@ const Label = styled.span`
   font-family: 'Noto Sans JP', sans-serif;
   font-weight: 700;
   font-size: 16px;
-  color: #cccaca;
+  color: #666666;
 `;
 
 const ButtonGroup = styled.div`

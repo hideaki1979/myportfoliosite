@@ -13,7 +13,7 @@
 - **[NestJS 11](https://nestjs.com/)** - Node.jsフレームワーク  
   <img src="https://nestjs.com/img/logo-small.svg" alt="NestJS" width="120" height="40">
 
-- **[TypeScript 5.7](https://www.typescriptlang.org/)** - 型安全なJavaScript  
+- **[TypeScript 5.9](https://www.typescriptlang.org/)** - 型安全なJavaScript  
   <img src="https://www.typescriptlang.org/icons/icon-144x144.png" alt="TypeScript" width="80" height="80">
 
 - **[Node.js](https://nodejs.org/)** - JavaScriptランタイム  
