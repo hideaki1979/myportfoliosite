@@ -516,21 +516,6 @@ test.describe("Contact ページ - アクセシビリティ", () => {
         );
 
         expect(violations).toEqual([]);
-
-        // 色のコントラスト違反がある場合は警告を出力
-        const contrastViolations = accessibilityScanResults.violations.filter(
-            (violation) => violation.id === "color-contrast"
-        );
-        if (contrastViolations.length > 0) {
-            console.warn("⚠️  色のコントラスト違反が検出されました（実装側で修正が必要）:");
-            contrastViolations.forEach((violation) => {
-                console.warn(`  - ${violation.help}`);
-                violation.nodes.forEach((node) => {
-                    console.warn(`    Target: ${node.html}`);
-                    console.warn(`    Message: ${node.failureSummary}`);
-                });
-            });
-        }
     });
 
     test("フォームフィールドに適切なラベルが設定されている", async ({ page }) => {
@@ -558,7 +543,6 @@ test.describe("Contact ページ - アクセシビリティ", () => {
         // 無効なデータを入力してバリデーションエラーを発生させる
         await contactPage.nameInput.fill("a");
         await contactPage.emailInput.click(); // フォーカスを外す
-        await contactPage.waitForTimeout(500);
 
         // エラーメッセージが role="alert" または aria-live で通知される
         const errorMessages = page.getByRole("alert");
