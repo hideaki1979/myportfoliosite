@@ -1,14 +1,22 @@
 "use client";
 
-import { ThemeProvider } from "styled-components";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { ThemeProvider as SCThemeProvider } from "styled-components";
 import { theme } from "../styles/theme";
 import { GlobalStyle } from "../styles/global-style";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider theme={theme}>
-      <GlobalStyle />
-      {children}
-    </ThemeProvider>
+    <NextThemesProvider
+      attribute="data-theme"
+      defaultTheme="system"
+      enableSystem={true}
+      themes={["light", "dark"]}
+    >
+      <SCThemeProvider theme={theme}>
+        <GlobalStyle />
+        {children}
+      </SCThemeProvider>
+    </NextThemesProvider>
   );
 }

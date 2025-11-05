@@ -128,7 +128,7 @@ cd apps/web
 pnpm dev
 ```
 
-ブラウザで http://localhost:3000 を開いて確認できます。
+ブラウザで `http://localhost:3000` を開いて確認できます。
 
 4. **ビルド**
 
