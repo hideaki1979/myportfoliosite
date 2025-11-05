@@ -26,8 +26,8 @@ describe('Contact API (e2e)', () => {
         QIITA_TOKEN: '',
         RECAPTCHA_SECRET_KEY: 'test-secret-key',
         RESEND_API_KEY: '',
-        MAIL_FROM: 'test@example.com',
-        MAIL_TO: 'admin@example.com',
+        RESEND_FROM: 'test@example.com',
+        RESEND_TO: 'admin@example.com',
       };
       return (map[key] as T) ?? (defaultValue as T);
     },
