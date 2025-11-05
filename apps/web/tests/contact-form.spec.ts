@@ -18,9 +18,6 @@ import AxeBuilder from "@axe-core/playwright";
  * - 要件7: アクセシビリティとユーザビリティ
  */
 
-// Google reCAPTCHA テストキー（常に成功するテスト用キー）
-const RECAPTCHA_TEST_SITE_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI";
-
 // ページオブジェクトモデル（POM）パターン
 class ContactPage {
     constructor(private page: Page) { }
@@ -99,24 +96,13 @@ class ContactPage {
             const submitButton = this.submitButton;
 
             // ボタンが有効になるまで最大15秒待機
-            let attempts = 0;
-            const maxAttempts = 30; // 15秒（500ms * 30）
-            while (attempts < maxAttempts) {
-                const isDisabled = await submitButton.isDisabled();
-                if (!isDisabled) {
-                    // ボタンが有効になったことを確認
-                    await expect(submitButton).toBeEnabled();
-                    return;
-                }
-                await this.page.waitForTimeout(500);
-                attempts++;
-            }
+            await expect(submitButton).toBeEnabled({timeout: 10000});
 
             // タイムアウト時はエラーをスロー
             throw new Error(
-                `送信ボタンが有効になりませんでした（${maxAttempts * 500}ms経過）。` +
+                `送信ボタンが有効になりませんでした(10000ms経過）。` +
                 `reCAPTCHAトークンが生成されていない可能性があります。` +
-                `テストキー（${RECAPTCHA_TEST_SITE_KEY}）が正しく設定されているか確認してください。`
+                `reCAPTCHAのキーが正しく設定されているか確認してください。`
             );
         } catch (error) {
             console.warn("reCAPTCHA自動通過に失敗しました。", error);
@@ -177,7 +163,6 @@ class ContactPage {
         await this.fillForm(data);
         // 別のフィールドをクリックしてフォーカスを外す
         await this.emailInput.click();
-        await this.waitForTimeout(500);
     }
 
     /**
@@ -259,7 +244,10 @@ async function setupApiMocks(page: Page, options?: { status?: number, error?: st
 async function setupTestRecapchaKey(page: Page) {
     // テスト環境ではreCAPTCHAのテストキーを使用
     // 環境変数から取得、なければテストキーを使用
-    const siteKey = process.env.RECAPTCHA_SITE_KEY || RECAPTCHA_TEST_SITE_KEY;
+    const siteKey = process.env.RECAPTCHA_SITE_KEY;
+    if (!siteKey) {
+        throw new Error("RECAPTCHA_SITE_KEY is not configured for tests.");
+    }
 
     // ページ読み込み前に環境変数を設定
     await page.addInitScript((key) => {

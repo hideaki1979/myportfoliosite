@@ -146,7 +146,7 @@ tests/
 
 - ✅ 主要ブラウザでフォームが正しく動作する
 
-**合計: 40テストケース（Portfolio 13 + Contact 27）**
+## 合計: 61+テストケース（Portfolio 13 + Article 21 + Contact 27など）**
 
 ## 🚀 実行方法
 

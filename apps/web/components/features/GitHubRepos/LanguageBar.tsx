@@ -48,7 +48,7 @@ const LegendText = styled.span`
   font-weight: 400;
   font-size: 14px;
   line-height: 1.1;
-  color: #757575; /* WCAG 2 AA基準の4.5:1コントラスト比を満たす色（#c7c7c7から変更） */
+  color: ${({theme}) => theme.colors.text.tertiary}; /* WCAG 2 AA基準の4.5:1コントラスト比を満たす色（#c7c7c7から変更） */
   white-space: nowrap;
 `;
 

@@ -25,7 +25,7 @@ const SectionHeader = styled.div`
 const SectionTitle = styled.h1`
     font-size: 2.5rem;
     font-weight: 700;
-    color: #757575; /* WCAG 2 AA基準の3:1コントラスト比を満たす色（theme.colors.text.tertiary #999から変更） */
+    color: ${({ theme }) => theme.colors.text.tertiary}; /* WCAG 2 AA基準の3:1コントラスト比を満たす色（theme.colors.text.tertiary #999から変更） */
     margin-bottom: 1rem;
 
     &::before {
