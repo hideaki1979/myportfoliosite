@@ -25,7 +25,7 @@ const SectionHeader = styled.div`
 const SectionTitle = styled.h1`
     font-size: 2.5rem;
     font-weight: 700;
-    color: ${({theme}) => theme.colors.text.tertiary};
+    color: ${({ theme }) => theme.colors.text.tertiary}; /* WCAG 2 AA基準の3:1コントラスト比を満たす色（theme.colors.text.tertiary #999から変更） */
     margin-bottom: 1rem;
 
     &::before {
@@ -33,14 +33,14 @@ const SectionTitle = styled.h1`
       margin-right: 1rem;
     }
 
-    @media (max-width: ${({theme}) => theme.breakpoints.tablet}px) {
+    @media (max-width: ${({ theme }) => theme.breakpoints.tablet}px) {
       font-size: 2rem;
     }
 `;
 
 const SectionSubtitle = styled.p`
   font-size: 1.5rem;
-  color: ${({theme}) => theme.colors.text.secondary};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 interface ContactSectionProps {

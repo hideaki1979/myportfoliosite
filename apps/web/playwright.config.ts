@@ -85,5 +85,10 @@ export default defineConfig({
     timeout: 120 * 1000,
     stdout: 'pipe',
     stderr: 'pipe',
+    env: {
+      // reCAPTCHAテストキー（常に成功するテスト用キー）
+      // 環境変数が設定されていない場合のみ使用
+      RECAPTCHA_SITE_KEY: process.env.RECAPTCHA_SITE_KEY || '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI',
+    }
   },
 });
