@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
+import { useTheme } from "next-themes";
 import { useModalAccessibility } from "../hooks/useModalAccessibility";
 
 type NavItem = {
@@ -21,9 +22,15 @@ const NAV_ITEMS: NavItem[] = [
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const pathname = usePathname();
+  const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useModalAccessibility({
     isOpen,
@@ -31,6 +38,10 @@ export function Header() {
     triggerRef: triggerRef as unknown as React.RefObject<HTMLElement | null>,
     onClose: () => setIsOpen(false),
   });
+
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
 
   return (
     <SiteHeader>
@@ -52,18 +63,30 @@ export function Header() {
           </NavList>
         </DesktopNav>
 
-        <MenuButton
-          type="button"
-          aria-label="メニュー"
-          aria-expanded={isOpen}
-          aria-controls="primary-navigation"
-          onClick={() => setIsOpen((v) => !v)}
-          ref={triggerRef}
-        >
-          <Bar $top $open={isOpen} aria-hidden="true" />
-          <Bar $middle $open={isOpen} aria-hidden="true" />
-          <Bar $bottom $open={isOpen} aria-hidden="true" />
-        </MenuButton>
+        <RightControls>
+          {mounted && (
+            <ThemeToggle
+            type="button"
+            onClick={toggleTheme}
+            aria-label={`テーマを${theme === "light" ? "ダーク" : "ライト"}モードに切り替え`}
+            title={`テーマを${theme === "light" ? "ダーク" : "ライト"}モードに切り替え`}
+            >
+              {theme === "light" ? "🌙" : "☀️"}
+            </ThemeToggle>
+          )}
+          <MenuButton
+            type="button"
+            aria-label="メニュー"
+            aria-expanded={isOpen}
+            aria-controls="primary-navigation"
+            onClick={() => setIsOpen((v) => !v)}
+            ref={triggerRef}
+          >
+            <Bar $top $open={isOpen} aria-hidden="true" />
+            <Bar $middle $open={isOpen} aria-hidden="true" />
+            <Bar $bottom $open={isOpen} aria-hidden="true" />
+          </MenuButton>
+        </RightControls>
       </HeaderInner>
       <MobileOverlay $open={isOpen} onClick={() => setIsOpen(false)} />
       <MobilePanel
@@ -127,6 +150,33 @@ const NavList = styled.ul`
   margin: 0;
   padding: 0;
   list-style: none;
+`;
+
+const RightControls = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+const ThemeToggle = styled.button`
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid ${({theme}) => theme.colors.border};
+  background: ${({theme}) => theme.colors.background.primary};
+  border-radius: 8px;
+  font-size: 20px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: ${({theme}) => theme.colors.background.secondary};
+    transform: scale(1.2);
+  }
+
+  &:active {
+    transform: scale(0.9);
+  }
 `;
 
 const StyledLink = styled(Link)`

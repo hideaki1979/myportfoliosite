@@ -115,7 +115,7 @@ export default async function RootLayout({
   const structuredData = await generateMetadata();
 
   return (
-    <html lang="ja">
+    <html lang="ja" suppressHydrationWarning>
       <head>
         {structuredData.other &&
           Object.entries(structuredData.other).map(([key, value]) => {

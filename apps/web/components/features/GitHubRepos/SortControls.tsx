@@ -12,9 +12,9 @@ const Container = styled.div`
 
 const Label = styled.span`
   font-family: 'Noto Sans JP', sans-serif;
-  font-weight: 500;
-  font-size: 14px;
-  color: #333;
+  font-weight: 700;
+  font-size: 16px;
+  color: #666666;
 `;
 
 const ButtonGroup = styled.div`

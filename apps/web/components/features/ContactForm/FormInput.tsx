@@ -65,6 +65,16 @@ const Input = styled.input<{ $hasError?: boolean }>`
     &::placeholder {
         color: ${({theme}) => theme.colors.text.tertiary};
     }
+
+    /* オートコレクトされたフィールドも定義済みスタイルに統一 */
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus,
+    &:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px ${({theme}) => theme.colors.background.secondary} inset !important;
+        -webkit-text-fill-color: ${({theme}) => theme.colors.text.primary} !important;
+        box-shadow: 0 0 0 30px ${({theme}) => theme.colors.background.secondary} inset !important;
+    }
 `;
 
 const ErrorMessage = styled.span`
