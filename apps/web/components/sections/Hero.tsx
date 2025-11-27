@@ -36,7 +36,7 @@ export default function Hero() {
       <Inner>
         <Figure>
           <ProfileImage
-            src="/og-image.jpg"
+            src="/mirrorman-logo.svg"
             alt="Mirrormanのプロフィール画像"
             width={200}
             height={200}
