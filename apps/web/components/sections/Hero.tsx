@@ -37,7 +37,7 @@ export default function Hero() {
         <Figure>
           <ProfileImage
             src="/mirrorman-logo.svg"
-            alt="Mirrormanのプロフィール画像"
+            alt="Mirrormanのロゴ画像"
             width={200}
             height={200}
             priority
