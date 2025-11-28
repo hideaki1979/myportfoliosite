@@ -18,8 +18,8 @@ export async function GET() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                // 10分キャッシュ
-                next: { revalidate: 600 },
+                // 1時間キャッシュ
+                next: { revalidate: 3600 },
             },
         );
 

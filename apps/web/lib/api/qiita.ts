@@ -73,7 +73,7 @@ export async function fetchQiitaArticles(
                     'Content-Type': 'application/json',
                 },
                 // ISR: 10分ごとに再検証
-                next: { revalidate: 600 },   // 15分間キャッシュ
+                next: { revalidate: 600 },
             });
 
         if (!response.ok) {
