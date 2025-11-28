@@ -14,8 +14,8 @@ export async function GET() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            // サーバーサイドキャッシュ: 15分
-            next: { revalidate: 900 },
+            // サーバーサイドキャッシュ: 10分
+            next: { revalidate: 600 },
         });
 
         if (!response.ok) {

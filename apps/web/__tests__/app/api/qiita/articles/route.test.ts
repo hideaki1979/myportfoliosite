@@ -38,7 +38,7 @@ describe('Qiita Articles Route Handler', () => {
             'http://localhost:3100/api/qiita/articles?limit=10',
             expect.objectContaining({
                 method: 'GET',
-                next: { revalidate: 900 },
+                next: { revalidate: 600 },
             })
         );
     });

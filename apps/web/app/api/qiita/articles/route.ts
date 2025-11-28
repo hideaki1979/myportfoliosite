@@ -23,8 +23,8 @@ export async function GET(request: NextRequest) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                // 15分間キャッシュ
-                next: { revalidate: 900 },
+                // 10分間キャッシュ
+                next: { revalidate: 600 },
             },
         );
 
