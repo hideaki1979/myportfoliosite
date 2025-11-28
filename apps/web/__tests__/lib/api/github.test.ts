@@ -1,10 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { fetchGitHubRepositories, fetchGitHubRepositoriesClient } from '../../../lib/api/github';
 import { mockRepositories } from '../../mocks/github';
+import { REVALIDATE_INTERVAL_SHORT } from '../../../lib/constants';
 
-// constants.tsのbaseUrlをモック
+
+// constants.tsをモック（サーバーサイド関数はapiBaseUrlを使用）
 vi.mock('../../../lib/constants', () => ({
     baseUrl: 'http://localhost:3000',
+    apiBaseUrl: 'http://localhost:3100',
+    REVALIDATE_INTERVAL_SHORT: 600,
+    REVALIDATE_INTERVAL_LONG: 3600,
 }));
 
 const mockSuccessResponse = {
@@ -34,14 +39,13 @@ describe('GitHub API Client', () => {
 
             expect(result).toEqual(mockRepositories);
             expect(fetchMock).toHaveBeenCalledWith(
-                expect.stringContaining('/api/github/repositories?limit=20'),
+                'http://localhost:3100/api/github/repositories?limit=20',
                 expect.objectContaining({
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    cache: 'force-cache',
-                    next: { revalidate: 900 },
+                    next: { revalidate: REVALIDATE_INTERVAL_SHORT },
                 })
             );
         });
@@ -56,7 +60,7 @@ describe('GitHub API Client', () => {
             await fetchGitHubRepositories();
 
             expect(fetchMock).toHaveBeenCalledWith(
-                expect.stringContaining('/api/github/repositories?limit=20'),
+                'http://localhost:3100/api/github/repositories?limit=20',
                 expect.any(Object)
             );
         });
@@ -68,6 +72,7 @@ describe('GitHub API Client', () => {
                     vi.fn().mockResolvedValue({
                         ok: false,
                         status: 500,
+                        statusText: 'Internal Server Error',
                         json: async () => ({
                             success: false,
                             error: {
@@ -112,7 +117,7 @@ describe('GitHub API Client', () => {
             expect(consoleErrorSpy).toHaveBeenCalled();
         });
 
-        it('baseUrlを使用してAPIを呼び出すこと', async () => {
+        it('apiBaseUrlを使用してバックエンドAPIを直接呼び出すこと', async () => {
             const fetchMock = vi.fn().mockResolvedValue({
                 ok: true,
                 json: async () => mockSuccessResponse,
@@ -121,9 +126,13 @@ describe('GitHub API Client', () => {
 
             await fetchGitHubRepositories(20);
 
+            // バックエンドAPIのURL（apiBaseUrl）を使用していることを確認
             expect(fetchMock).toHaveBeenCalledWith(
-                'http://localhost:3000/api/github/repositories?limit=20',
-                expect.any(Object)
+                'http://localhost:3100/api/github/repositories?limit=20',
+                expect.objectContaining({
+                    method: 'GET',
+                    next: { revalidate: REVALIDATE_INTERVAL_SHORT },
+                })
             );
         });
     });

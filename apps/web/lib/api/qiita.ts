@@ -1,8 +1,14 @@
-import { baseUrl } from "../constants";
+import { apiBaseUrl } from "../constants";
+import { REVALIDATE_INTERVAL_SHORT } from '../../lib/constants';
+import { REVALIDATE_INTERVAL_LONG } from '../../lib/constants';
+
+
 
 /**
  * Qiita API クライアント
- * バックエンドAPIを経由してQiita記事を取得する
+ * 
+ * サーバーサイド関数: 直接バックエンドAPIにアクセス（ISR対応）
+ * クライアントサイド関数: Route Handler経由でアクセス
  */
 export interface QiitaArticle {
     id: string;
@@ -48,27 +54,30 @@ export interface QiitaUser {
     organization?: string;
 }
 
+// =============================================================================
+// サーバーサイド関数（直接バックエンドAPIにアクセス）
+// =============================================================================
+
 /**
- * Qiita記事を取得（サーバーサイド）
- * Next.jsのキャッシュ機能で15分間キャッシュ
+ * Qiita記事を取得（サーバーサイド用）
+ * 直接バックエンドAPIにアクセスし、ISRでキャッシュ
  */
 export async function fetchQiitaArticles(
     limit = 10,
 ): Promise<QiitaArticle[]> {
     try {
-        // Next.js Route Handlerを呼び出し（内部API）
-        const url = `${baseUrl}/api/qiita/articles?limit=${limit}`;
-
+        const safeLimit = Math.min(Math.max(limit, 1), 100);
+        const url = new URL(`${apiBaseUrl}/api/qiita/articles`);
+        url.searchParams.set('limit', String(safeLimit));
         const response = await fetch(
-            url,
+            url.toString(),
             {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                // サーバーサイドでは自動的にキャッシュされる
-                cache: 'force-cache',
-                next: { revalidate: 900 },   // 15分間キャッシュ
+                // ISR: 10分ごとに再検証
+                next: { revalidate: REVALIDATE_INTERVAL_SHORT },
             });
 
         if (!response.ok) {
@@ -95,13 +104,54 @@ export async function fetchQiitaArticles(
 }
 
 /**
- * Qiita記事を取得(将来のクライアントサイド使用を想定)
+ * Qiitaプロフィール情報を取得（サーバーサイド）
+ * Next.jsのキャッシュ機能で1時間キャッシュ
+ */
+export async function fetchQiitaProfile(): Promise<QiitaUser | null> {
+    try {
+        const url = `${apiBaseUrl}/api/qiita/profile`;
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            // ISR: 1時間ごとに再検証（プロフィールは頻繁に変わらないため）
+            next: {
+                revalidate: REVALIDATE_INTERVAL_LONG,
+            },
+        });
+
+        if (!response.ok) {
+            console.error(
+                `Qiita API error: ${response.status} ${response.statusText}`,
+            );
+            return null;
+        }
+
+        const data: QiitaApiResponse = await response.json();
+
+        if (!data.success || !data.profile) {
+            console.error('Qiita profile not available:');
+            return null;
+        }
+
+        return data.profile;
+    } catch (error) {
+        console.error('Failed to fetch Qiita profile:', error);
+        return null;
+    }
+}
+
+// =============================================================================
+// クライアントサイド関数（Route Handler経由でアクセス）
+// =============================================================================
+
+/**
+ * クライアントサイドでQiita記事を取得
+ * Next.js Route Handler経由でアクセス
  * 
- * 現状: サーバーサイドで実行(no-storeキャッシュ戦略)
- * 将来: ユーザーの明示的な更新アクション(ボタンクリック等)で使用予定
- * 
- * @note クライアントコンポーネントから使用する際は、
- *       環境変数をNEXT_PUBLIC_API_URLに変更する必要があります
+ * @note 将来的にユーザーの明示的な更新アクション（ボタンクリック等）で使用予定
  */
 export async function fetchQiitaArticlesClient(
     limit = 10,
@@ -142,46 +192,5 @@ export async function fetchQiitaArticlesClient(
             throw error;
         }
         throw new Error('Failed to fetch Qiita articles');
-    }
-}
-
-/**
- * Qiitaプロフィール情報を取得（サーバーサイド）
- * Next.jsのキャッシュ機能で1時間キャッシュ
- */
-export async function fetchQiitaProfile(): Promise<QiitaUser | null> {
-    try {
-        const url = `${baseUrl}/api/qiita/profile`;
-
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            // サーバーサイドでは自動的にキャッシュされる
-            cache: 'force-cache',
-            next: {
-                revalidate: 3600,   // 1時間キャッシュ
-            },
-        });
-
-        if (!response.ok) {
-            console.error(
-                `Qiita API error: ${response.status} ${response.statusText}`,
-            );
-            return null;
-        }
-
-        const data: QiitaApiResponse = await response.json();
-
-        if (!data.success || !data.profile) {
-            console.error('Qiita profile not available:');
-            return null;
-        }
-
-        return data.profile;
-    } catch (error) {
-        console.error('Failed to fetch Qiita profile:', error);
-        return null;
     }
 }

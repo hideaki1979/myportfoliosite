@@ -1,11 +1,14 @@
 /**
  * GitHub API クライアント
- * Next.js Route Handlersを経由してバックエンドAPIにアクセス
+ * 
+ * サーバーサイド関数: 直接バックエンドAPIにアクセス（ISR対応）
+ * クライアントサイド関数: Route Handler経由でアクセス
  */
 
 import { GitHubRepository } from "../../components/features/GitHubRepos/types";
 import { GitHubContributionCalendar } from "../../types/github";
-import { baseUrl } from "../constants";
+import { apiBaseUrl } from "../constants";
+import { REVALIDATE_INTERVAL_SHORT } from '../../lib/constants';
 
 interface GitHubContributionsApiResponse {
     success: boolean;
@@ -30,20 +33,23 @@ interface GitHubApiResponse {
     };
 }
 
+// =============================================================================
+// サーバーサイド関数（直接バックエンドAPIにアクセス）
+// =============================================================================
+
 /**
  * GitHubコントリビューションカレンダーを取得（サーバーサイド用）
- * Next.js Route Handlerを経由
+ * 直接バックエンドAPIにアクセスし、ISRでキャッシュ
  */
 export async function fetchGitHubContributions(): Promise<GitHubContributionCalendar> {
     try {
-        const response = await fetch(`${baseUrl}/api/github/contributions`, {
+        const response = await fetch(`${apiBaseUrl}/api/github/contributions`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             },
-            // サーバーサイドでは自動的にキャッシュされる
-            cache: 'force-cache',
-            next: { revalidate: 900 },
+            // ISR: 10分ごとに再検証
+            next: { revalidate: REVALIDATE_INTERVAL_SHORT },
         });
 
         if (!response.ok) {
@@ -53,6 +59,7 @@ export async function fetchGitHubContributions(): Promise<GitHubContributionCale
                 `GitHub contributions API error: ${response.status}`,
             );
         }
+        
         const result = (await response.json()) as GitHubContributionsApiResponse;
 
         if (!result.success || !result.contributions) {
@@ -69,6 +76,57 @@ export async function fetchGitHubContributions(): Promise<GitHubContributionCale
         };
     }
 }
+
+/**
+ * GitHubリポジトリ一覧を取得（サーバーサイド用）
+ * Next.js Route Handlerを経由
+ */
+export async function fetchGitHubRepositories(
+    limit = 20,
+): Promise<GitHubRepository[]> {
+
+    try {
+        // Next.js Route Handlerを呼び出し（内部API）
+        const safeLimit = Math.min(Math.max(limit, 1), 100);
+        const url = new URL(`${apiBaseUrl}/api/github/repositories`)
+        url.searchParams.set('limit', String(safeLimit));
+
+        const response = await fetch(url.toString(),
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                // ISR: 10分ごとに再検証
+                next: { revalidate: REVALIDATE_INTERVAL_SHORT },
+            },
+        );
+
+        if (!response.ok) {
+            const errorData = (await response.json().catch(() => { })) as GitHubApiResponse;
+            throw new Error(
+                errorData.error?.message ||
+                `GitHub API error: ${response.status} ${response.statusText}`
+            );
+        }
+
+        const result = (await response.json()) as GitHubApiResponse;
+
+        if (!result.success || !result.repositories) {
+            throw new Error('GitHub API returned invalid response');
+        }
+
+        return result.repositories;
+    } catch (error) {
+        console.error('Failed to fetch GitHub repositories:', error);
+        // エラー時は空配列を返す（フォールバック）
+        return [];
+    }
+}
+
+// =============================================================================
+// クライアントサイド関数（Route Handler経由でアクセス）
+// =============================================================================
 
 /**
  * クライアントサイドでGitHubコントリビューションカレンダーを取得
@@ -107,52 +165,6 @@ export async function fetchGitHubContributionsClient(): Promise<GitHubContributi
     }
 }
 
-
-/**
- * GitHubリポジトリ一覧を取得（サーバーサイド用）
- * Next.js Route Handlerを経由
- */
-export async function fetchGitHubRepositories(
-    limit = 20,
-): Promise<GitHubRepository[]> {
-
-    try {
-        // Next.js Route Handlerを呼び出し（内部API）
-        const response = await fetch(
-            `${baseUrl}/api/github/repositories?limit=${limit}`,
-            {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                // サーバーサイドでは自動的にキャッシュされる
-                cache: 'force-cache',
-                next: { revalidate: 900 },
-            },
-        );
-
-        if (!response.ok) {
-            const errorData = (await response.json().catch(() => {})) as GitHubApiResponse;
-            throw new Error(
-                errorData.error?.message ||
-                `GitHub API error: ${response.status} ${response.statusText}`
-            );
-        }
-
-        const result = (await response.json()) as GitHubApiResponse;
-
-        if (!result.success || !result.repositories) {
-            throw new Error('GitHub API returned invalid response');
-        }
-
-        return result.repositories;
-    } catch (error) {
-        console.error('Failed to fetch GitHub repositories:', error);
-        // エラー時は空配列を返す（フォールバック）
-        return [];
-    }
-}
-
 /**
  * クライアントサイドでGitHubリポジトリ一覧を取得
  * Next.js Route Handlerを経由
@@ -174,7 +186,7 @@ export async function fetchGitHubRepositoriesClient(
         );
 
         if (!response.ok) {
-            const errorData = (await response.json().catch(() => {})) as GitHubApiResponse;
+            const errorData = (await response.json().catch(() => { })) as GitHubApiResponse;
             throw new Error(
                 errorData.error?.message ||
                 `GitHub API request failed: ${response.status}`,

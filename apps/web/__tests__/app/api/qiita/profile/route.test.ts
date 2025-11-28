@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mockQiitaProfile } from '../../../../mocks/qiita';
 import { GET } from '../../../../../app/api/qiita/profile/route';
+import { REVALIDATE_INTERVAL_LONG } from '../../../../../lib/constants';
+
 
 describe('Qiita Profile Route Handler', () => {
     beforeEach(() => {
@@ -33,7 +35,7 @@ describe('Qiita Profile Route Handler', () => {
             'http://localhost:3100/api/qiita/profile',
             expect.objectContaining({
                 method: 'GET',
-                next: { revalidate: 3600 },
+                next: { revalidate: REVALIDATE_INTERVAL_LONG },
             })
         );
     });

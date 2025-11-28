@@ -5,6 +5,17 @@ import { PageContainer } from "../../components/layouts/PageLayout";
 import { PageDescription, PageTitle } from "../../components/ui/Typography";
 import GitHubSection from "../../components/sections/GitHubSection";
 
+/**
+ * ISR（Incremental Static Regeneration）設定
+ * 10分（600秒）ごとにページを再生成
+ * 
+ * 動作: revalidate時間経過後の最初のリクエストでは古いページを返し、
+ * バックグラウンドで再生成を開始。2回目以降のリクエストで新しいページを表示。
+ * 
+ * @note Next.jsの制約により、export const revalidate はリテラル値である必要があります。
+ */
+export const revalidate = 600;
+
 const breadcrumbData = createBreadcrumbStructuredData({
   items: [
     { name: "ホーム", url: baseUrl },
@@ -56,12 +67,12 @@ export default async function PortfolioPage() {
         Udemyや学習のために作成したアプリとなります。
       </PageDescription>
       <GitHubSection
-      showTitle={false}
-      showProfile={true}
-      showLanguageBar={true}
-      showTechTags={true}
-      showContributions={true}
-      limit={20}
+        showTitle={false}
+        showProfile={true}
+        showLanguageBar={true}
+        showTechTags={true}
+        showContributions={true}
+        limit={20}
       />
     </PageContainer>
   );

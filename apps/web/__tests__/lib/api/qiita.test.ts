@@ -1,5 +1,15 @@
 import { fetchQiitaArticles, fetchQiitaArticlesClient, fetchQiitaProfile } from "../../../lib/api/qiita";
 import { mockQiitaArticles, mockQiitaProfile } from "../../mocks/qiita";
+import { REVALIDATE_INTERVAL_LONG } from '../../../lib/constants';
+import { REVALIDATE_INTERVAL_SHORT } from '../../../lib/constants';
+
+// constants.tsをモック（サーバーサイド関数はapiBaseUrlを使用）
+vi.mock('../../../lib/constants.ts', () => ({
+    baseUrl: 'http://localhost:3000',
+    apiBaseUrl: 'http://localhost:3100',
+    REVALIDATE_INTERVAL_SHORT: 600,
+    REVALIDATE_INTERVAL_LONG: 3600,
+}));
 
 const mockArticlesSuccessResponse = {
     success: true,
@@ -22,9 +32,6 @@ describe('Qiita API Client', () => {
     });
 
     describe('fetchQiitaArticles (Server-side)', () => {
-        beforeEach(() => {
-            vi.stubEnv('API_URL', 'http://localhost:3100');
-        });
 
         it('正常に記事を取得できること', async () => {
             const fetchMock = vi.fn().mockResolvedValue({
@@ -37,11 +44,13 @@ describe('Qiita API Client', () => {
 
             expect(result).toEqual(mockQiitaArticles);
             expect(fetchMock).toHaveBeenCalledWith(
-                'http://localhost:3000/api/qiita/articles?limit=10',
+                'http://localhost:3100/api/qiita/articles?limit=10',
                 expect.objectContaining({
                     method: 'GET',
-                    cache: 'force-cache',
-                    next: { revalidate: 900 },
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    next: { revalidate: REVALIDATE_INTERVAL_SHORT },
                 }),
             );
         });
@@ -56,7 +65,7 @@ describe('Qiita API Client', () => {
             await fetchQiitaArticles();
 
             expect(fetchMock).toHaveBeenCalledWith(
-                'http://localhost:3000/api/qiita/articles?limit=10',
+                'http://localhost:3100/api/qiita/articles?limit=10',
                 expect.any(Object)
             );
         });
@@ -95,7 +104,7 @@ describe('Qiita API Client', () => {
             expect(consoleErrorSpy).toHaveBeenCalled();
         });
 
-        it('baseUrlが正しく使用されること', async () => {
+        it('apiBaseUrlを使用してバックエンドAPIを直接呼び出すこと', async () => {
             const fetchMock = vi.fn().mockResolvedValue({
                 ok: true,
                 json: async () => mockArticlesSuccessResponse,
@@ -104,12 +113,12 @@ describe('Qiita API Client', () => {
 
             await fetchQiitaArticles(10);
 
+            // バックエンドAPIのURL（apiBaseUrl）を使用していることを確認
             expect(fetchMock).toHaveBeenCalledWith(
-                'http://localhost:3000/api/qiita/articles?limit=10',
+                'http://localhost:3100/api/qiita/articles?limit=10',
                 expect.objectContaining({
                     method: 'GET',
-                    cache: 'force-cache',
-                    next: { revalidate: 900 }
+                    next: { revalidate: REVALIDATE_INTERVAL_SHORT }
                 }),
             );
         });
@@ -224,11 +233,13 @@ describe('Qiita API Client', () => {
 
             expect(result).toEqual(mockQiitaProfile);
             expect(fetchMock).toHaveBeenCalledWith(
-                'http://localhost:3000/api/qiita/profile',
+                'http://localhost:3100/api/qiita/profile',
                 expect.objectContaining({
                     method: 'GET',
-                    cache: 'force-cache',
-                    next: { revalidate: 3600 },
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    next: { revalidate: REVALIDATE_INTERVAL_LONG },
                 })
             );
         });
@@ -287,7 +298,7 @@ describe('Qiita API Client', () => {
             expect(consoleErrorSpy).toHaveBeenCalled();
         });
 
-        it('baseUrlが正しく使用されること', async () => {
+        it('apiBaseUrlを使用してバックエンドAPIを直接呼び出すこと', async () => {
             const fetchMock = vi.fn().mockResolvedValue({
                 ok: true,
                 json: async () => mockProfileSuccessResponse,
@@ -296,12 +307,12 @@ describe('Qiita API Client', () => {
 
             await fetchQiitaProfile();
 
+            // バックエンドAPIのURL（apiBaseUrl）を使用していることを確認
             expect(fetchMock).toHaveBeenCalledWith(
-                'http://localhost:3000/api/qiita/profile',
+                'http://localhost:3100/api/qiita/profile',
                 expect.objectContaining({
                     method: 'GET',
-                    cache: 'force-cache',
-                    next: { revalidate: 3600 }
+                    next: { revalidate: REVALIDATE_INTERVAL_LONG }
                 }),
             );
         });
