@@ -33,7 +33,7 @@ describe('Qiita Profile Route Handler', () => {
             'http://localhost:3100/api/qiita/profile',
             expect.objectContaining({
                 method: 'GET',
-                next: { revalidate: 3600 },
+                next: { revalidate: 600 },
             })
         );
     });
