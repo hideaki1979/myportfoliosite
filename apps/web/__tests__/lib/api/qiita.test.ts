@@ -1,10 +1,14 @@
 import { fetchQiitaArticles, fetchQiitaArticlesClient, fetchQiitaProfile } from "../../../lib/api/qiita";
 import { mockQiitaArticles, mockQiitaProfile } from "../../mocks/qiita";
+import { REVALIDATE_INTERVAL_LONG } from '../../../lib/constants';
+import { REVALIDATE_INTERVAL_SHORT } from '../../../lib/constants';
 
 // constants.tsをモック（サーバーサイド関数はapiBaseUrlを使用）
 vi.mock('../../../lib/constants.ts', () => ({
     baseUrl: 'http://localhost:3000',
     apiBaseUrl: 'http://localhost:3100',
+    REVALIDATE_INTERVAL_SHORT: 600,
+    REVALIDATE_INTERVAL_LONG: 3600,
 }));
 
 const mockArticlesSuccessResponse = {
@@ -46,7 +50,7 @@ describe('Qiita API Client', () => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    next: { revalidate: 600 },
+                    next: { revalidate: REVALIDATE_INTERVAL_SHORT },
                 }),
             );
         });
@@ -114,7 +118,7 @@ describe('Qiita API Client', () => {
                 'http://localhost:3100/api/qiita/articles?limit=10',
                 expect.objectContaining({
                     method: 'GET',
-                    next: { revalidate: 600 }
+                    next: { revalidate: REVALIDATE_INTERVAL_SHORT }
                 }),
             );
         });
@@ -235,7 +239,7 @@ describe('Qiita API Client', () => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    next: { revalidate: 3600 },
+                    next: { revalidate: REVALIDATE_INTERVAL_LONG },
                 })
             );
         });
@@ -308,7 +312,7 @@ describe('Qiita API Client', () => {
                 'http://localhost:3100/api/qiita/profile',
                 expect.objectContaining({
                     method: 'GET',
-                    next: { revalidate: 3600 }
+                    next: { revalidate: REVALIDATE_INTERVAL_LONG }
                 }),
             );
         });

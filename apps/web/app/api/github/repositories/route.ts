@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { REVALIDATE_INTERVAL_SHORT } from '../../../../lib/constants';
 
 const API_BASE_URL = process.env.API_URL || 'http://localhost:3100';
 
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
                     'Content-Type': 'application/json',
                 },
                 // 10分間キャッシュ
-                next: { revalidate: 600 },
+                next: { revalidate: REVALIDATE_INTERVAL_SHORT },
             },
         );
 
@@ -53,7 +54,7 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json(data, {
             headers: {
-                'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=1200',
+                'Cache-Control': `public, s-maxage=${REVALIDATE_INTERVAL_SHORT}, stale-while-revalidate=${REVALIDATE_INTERVAL_SHORT * 2}`,
             },
         });
     } catch (error) {

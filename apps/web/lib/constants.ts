@@ -10,3 +10,5 @@ export const apiBaseUrl = process.env.API_URL || 'http://localhost:3100';
 
 export const TYPING_SPEED_MS = 100;
 export const ANIMATION_DELAY = 150;
+export const REVALIDATE_INTERVAL_SHORT = 600; // 10分
+export const REVALIDATE_INTERVAL_LONG = 3600; // 1時間

@@ -1,11 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { fetchGitHubRepositories, fetchGitHubRepositoriesClient } from '../../../lib/api/github';
 import { mockRepositories } from '../../mocks/github';
+import { REVALIDATE_INTERVAL_SHORT } from '../../../lib/constants';
+
 
 // constants.tsをモック（サーバーサイド関数はapiBaseUrlを使用）
 vi.mock('../../../lib/constants', () => ({
     baseUrl: 'http://localhost:3000',
     apiBaseUrl: 'http://localhost:3100',
+    REVALIDATE_INTERVAL_SHORT: 600,
+    REVALIDATE_INTERVAL_LONG: 3600,
 }));
 
 const mockSuccessResponse = {
@@ -41,7 +45,7 @@ describe('GitHub API Client', () => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    next: { revalidate: 600 },
+                    next: { revalidate: REVALIDATE_INTERVAL_SHORT },
                 })
             );
         });
@@ -127,7 +131,7 @@ describe('GitHub API Client', () => {
                 'http://localhost:3100/api/github/repositories?limit=20',
                 expect.objectContaining({
                     method: 'GET',
-                    next: { revalidate: 600 },
+                    next: { revalidate: REVALIDATE_INTERVAL_SHORT },
                 })
             );
         });

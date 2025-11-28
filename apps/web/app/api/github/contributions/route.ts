@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { REVALIDATE_INTERVAL_SHORT } from '../../../../lib/constants';
 
 const API_BASE_URL = process.env.API_URL || 'http://localhost:3100';
 
@@ -15,7 +16,7 @@ export async function GET() {
                 'Content-Type': 'application/json',
             },
             // サーバーサイドキャッシュ: 10分
-            next: { revalidate: 600 },
+            next: { revalidate: REVALIDATE_INTERVAL_SHORT },
         });
 
         if (!response.ok) {
