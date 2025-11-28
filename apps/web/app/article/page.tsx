@@ -6,7 +6,6 @@ import QiitaArticles, { SkeletonLoader } from "../../components/features/QiitaAr
 import { PageContainer } from "../../components/layouts/PageLayout";
 import { PageSubtitle, PageTitle, SectionHeading } from "../../components/ui/Typography";
 import { Suspense } from "react";
-import { REVALIDATE_INTERVAL_SHORT } from '../../lib/constants';
 
 /**
  * ISR（Incremental Static Regeneration）設定
@@ -14,8 +13,10 @@ import { REVALIDATE_INTERVAL_SHORT } from '../../lib/constants';
  * 
  * 動作: revalidate時間経過後の最初のリクエストでは古いページを返し、
  * バックグラウンドで再生成を開始。2回目以降のリクエストで新しいページを表示。
+ * 
+ * @note Next.jsの制約により、export const revalidate はリテラル値である必要があります。
  */
-export const revalidate = REVALIDATE_INTERVAL_SHORT
+export const revalidate = 600;
 
 const breadcrumbData = createBreadcrumbStructuredData({
   items: [
