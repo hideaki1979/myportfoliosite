@@ -8,6 +8,7 @@
 import { GitHubRepository } from "../../components/features/GitHubRepos/types";
 import { GitHubContributionCalendar } from "../../types/github";
 import { apiBaseUrl } from "../constants";
+import { REVALIDATE_INTERVAL_SHORT } from '../../lib/constants';
 
 interface GitHubContributionsApiResponse {
     success: boolean;
@@ -48,7 +49,7 @@ export async function fetchGitHubContributions(): Promise<GitHubContributionCale
                 'Content-Type': 'application/json',
             },
             // ISR: 10分ごとに再検証
-            next: { revalidate: 600 },
+            next: { revalidate: REVALIDATE_INTERVAL_SHORT },
         });
 
         if (!response.ok) {
@@ -97,7 +98,7 @@ export async function fetchGitHubRepositories(
                     'Content-Type': 'application/json',
                 },
                 // ISR: 10分ごとに再検証
-                next: { revalidate: 600 },
+                next: { revalidate: REVALIDATE_INTERVAL_SHORT },
             },
         );
 

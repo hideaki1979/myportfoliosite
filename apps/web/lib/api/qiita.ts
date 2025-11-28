@@ -1,4 +1,8 @@
 import { apiBaseUrl } from "../constants";
+import { REVALIDATE_INTERVAL_SHORT } from '../../lib/constants';
+import { REVALIDATE_INTERVAL_LONG } from '../../lib/constants';
+
+
 
 /**
  * Qiita API クライアント
@@ -73,7 +77,7 @@ export async function fetchQiitaArticles(
                     'Content-Type': 'application/json',
                 },
                 // ISR: 10分ごとに再検証
-                next: { revalidate: 600 },
+                next: { revalidate: REVALIDATE_INTERVAL_SHORT },
             });
 
         if (!response.ok) {
@@ -114,7 +118,7 @@ export async function fetchQiitaProfile(): Promise<QiitaUser | null> {
             },
             // ISR: 1時間ごとに再検証（プロフィールは頻繁に変わらないため）
             next: {
-                revalidate: 3600,
+                revalidate: REVALIDATE_INTERVAL_LONG,
             },
         });
 

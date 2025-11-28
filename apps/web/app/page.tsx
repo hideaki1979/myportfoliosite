@@ -3,6 +3,7 @@ import Hero from "../components/sections/Hero";
 import { WidePageContainer } from "../components/layouts/PageLayout";
 import QiitaSection from "../components/sections/QiitaSection";
 import GitHubSection from "../components/sections/GitHubSection";
+import { REVALIDATE_INTERVAL_SHORT } from '../lib/constants';
 
 /**
  * ISR（Incremental Static Regeneration）設定
@@ -11,7 +12,7 @@ import GitHubSection from "../components/sections/GitHubSection";
  * 動作: revalidate時間経過後の最初のリクエストでは古いページを返し、
  * バックグラウンドで再生成を開始。2回目以降のリクエストで新しいページを表示。
  */
-export const revalidate = 600
+export const revalidate = REVALIDATE_INTERVAL_SHORT;
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
