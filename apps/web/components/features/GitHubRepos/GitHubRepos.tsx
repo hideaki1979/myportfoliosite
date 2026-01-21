@@ -1,8 +1,8 @@
 'use client'
 
 import styled from "styled-components"
-import { GitHubReposProps, SortBy } from "./types";
-import { useMemo, useState } from "react";
+import { GitHubReposProps, GitHubRepository, SortBy } from "./types";
+import { useMemo, useState, useCallback } from "react";
 import { calculateLanguageStats, extractTechTags, sortRepositories } from "./utils";
 import GitHubProfile from "./GitHubProfile";
 import LanguageBar from "./LanguageBar";
@@ -12,6 +12,7 @@ import RepositoryCard from "./RepositoryCard";
 import SkeletonLoader from "./SkeletonLoader";
 import { fetchGitHubRepositoriesClient } from "../../../lib/api/github";
 import ErrorDisplay from "./ErrorDisplay";
+import LoadMoreButton from "./LoadMoreButton";
 
 const Container = styled.section`
     width: 100%;
@@ -88,11 +89,19 @@ export default function GitHubRepos({
     isLoading = false,
     error: initialError = null,
     betweenContent,
+    initialPagination,
+    enableLoadMore = false,
 }: GitHubReposProps) {
     const [sortBy, setSortBy] = useState<SortBy>('stars');
-    const [repositories, setRepositories] = useState(initialData);
+    const [repositories, setRepositories] = useState<GitHubRepository[]>(initialData);
     const [error, setError] = useState<{ message: string } | null>(initialError);
     const [isRetrying, setIsRetrying] = useState(false);
+
+    // Load More state
+    const [currentPage, setCurrentPage] = useState(initialPagination?.page ?? 1);
+    const [hasMore, setHasMore] = useState(initialPagination?.hasMore ?? false);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const perPage = initialPagination?.perPage ?? 20;
 
     // リトライハンドラー
     const handleRetry = async () => {
@@ -100,8 +109,10 @@ export default function GitHubRepos({
         setError(null);
 
         try {
-            const data = await fetchGitHubRepositoriesClient(20);
-            setRepositories(data);
+            const result = await fetchGitHubRepositoriesClient(perPage, 1);
+            setRepositories(result.repositories);
+            setCurrentPage(1);
+            setHasMore(result.pagination.hasMore);
             setError(null)
         } catch (err) {
             setError(err instanceof Error ? err : new Error('Githubレポジトリデータの取得に失敗しました'));
@@ -110,11 +121,32 @@ export default function GitHubRepos({
         }
     };
 
-    // リポジトリをソート
+    // Load Moreハンドラー
+    const handleLoadMore = useCallback(async () => {
+        if (isLoadingMore || !hasMore) return;
+
+        setIsLoadingMore(true);
+        try {
+            const nextPage = currentPage + 1;
+            const result = await fetchGitHubRepositoriesClient(perPage, nextPage);
+
+            setRepositories(prev => [...prev, ...result.repositories]);
+            setCurrentPage(nextPage);
+            setHasMore(result.pagination.hasMore);
+        } catch (err) {
+            console.error('Failed to load more repositories:', err);
+            // Load More失敗時は既存データを保持し、エラーはconsoleに出力のみ
+        } finally {
+            setIsLoadingMore(false);
+        }
+    }, [currentPage, hasMore, isLoadingMore, perPage]);
+
+    // リポジトリをソート（Load More有効時はlimitを適用しない）
     const sortedRepos = useMemo(() => {
         const sorted = sortRepositories(repositories, sortBy);
-        return limit ? sorted.slice(0, limit) : sorted;
-    }, [repositories, sortBy, limit]);
+        // Load More有効時はソート後の全データを返す（limitを適用しない）
+        return (enableLoadMore || !limit) ? sorted : sorted.slice(0, limit);
+    }, [repositories, sortBy, limit, enableLoadMore]);
 
     // 言語統計を計算
     const languageStats = useMemo(
@@ -201,7 +233,15 @@ export default function GitHubRepos({
                     ))}
                 </RepoGrid>
 
-                {profile && (
+                {enableLoadMore && (
+                    <LoadMoreButton
+                        onClick={handleLoadMore}
+                        isLoading={isLoadingMore}
+                        hasMore={hasMore}
+                    />
+                )}
+
+                {profile && !enableLoadMore && (
                     <MoreLink
                         href={profile.profileUrl}
                         target="_blank"

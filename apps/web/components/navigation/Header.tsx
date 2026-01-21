@@ -17,6 +17,7 @@ const NAV_ITEMS: NavItem[] = [
   { url: "/about", label: "AboutMe" },
   { url: "/portfolio", label: "Portfolio" },
   { url: "/article", label: "Article" },
+  { url: "/ai-articles", label: "AI Articles" },
   { url: "/contact", label: "Contact" },
 ];
 

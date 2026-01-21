@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import Joi from 'joi';
@@ -10,6 +11,7 @@ import { GithubModule } from './modules/github/github.module';
 import { CacheModule } from './modules/cache/cache.module';
 import { QiitaModule } from './modules/qiita/qiita.module';
 import { ContactModule } from './modules/contact/contact.module';
+import { AIArticlesModule } from './modules/ai-articles/ai-articles.module';
 
 @Module({
   imports: [
@@ -49,22 +51,24 @@ import { ContactModule } from './modules/contact/contact.module';
             transport:
               nodeEnv === 'development'
                 ? {
-                  target: 'pino-pretty',
-                  options: { colorize: true, singleLine: true },
-                }
+                    target: 'pino-pretty',
+                    options: { colorize: true, singleLine: true },
+                  }
                 : undefined,
           },
         };
       },
     }),
+    ScheduleModule.forRoot(),
     CacheModule,
     HealthModule,
     MetricsModule,
     GithubModule,
     QiitaModule,
     ContactModule,
+    AIArticlesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

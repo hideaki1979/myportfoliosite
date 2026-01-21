@@ -59,14 +59,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 async function QiitaArticlesData() {
-  // Qiita記事をサーバーサイドで取得
+  // Qiita記事をサーバーサイドで取得（検索用に多めに取得）
   let articles: QiitaArticle[] = [];
   let profile = null;
 
   // CI環境やAPI_URLが設定されていない場合は空のデータでビルドを継続
   try {
     [articles, profile] = await Promise.all([
-      fetchQiitaArticles(10),
+      fetchQiitaArticles(50), // 検索用に50件取得
       fetchQiitaProfile(),
     ]);
   } catch (error) {
@@ -78,15 +78,15 @@ async function QiitaArticlesData() {
       initialData={articles}
       profile={profile ?? undefined}
       showProfile={true}
+      enableSearch={true}
     />
-
   );
 }
 
 function QiitaArticlesLoading() {
   return (
     <SkeletonLoader
-      count={10}
+      count={6}
       showProfile={true}
     />
   )

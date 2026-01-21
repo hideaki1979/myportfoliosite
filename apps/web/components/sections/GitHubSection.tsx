@@ -14,6 +14,7 @@ interface GitHubSectionProps {
     showContributions?: boolean;
     title?: string;
     showTitle?: boolean;
+    enableLoadMore?: boolean;
 }
 
 async function GitHubReposData({
@@ -22,12 +23,16 @@ async function GitHubReposData({
     showTechTags = true,
     limit = 6,
     showContributions = true,
+    enableLoadMore = false,
 }: GitHubSectionProps) {
     let repositories: GitHubRepository[] = [];
     let error: { message: string } | null = null;
+    let pagination: { page: number; perPage: number; hasMore: boolean } | undefined;
 
     try {
-        repositories = await fetchGitHubRepositories(limit ?? 20);
+        const result = await fetchGitHubRepositories(enableLoadMore ? 20 : (limit ?? 20));
+        repositories = result.repositories;
+        pagination = result.pagination;
     } catch (err) {
         console.error("Failed to fetch GitHub repositories:", err);
         error = { message: err instanceof Error ? err.message : 'GitHubリポジトリの取得に失敗しました' };
@@ -40,8 +45,10 @@ async function GitHubReposData({
             showProfile={showProfile}
             showLanguageBar={showLanguageBar}
             showTechTags={showTechTags}
-            limit={limit}
+            limit={enableLoadMore ? undefined : limit}
             error={error}
+            initialPagination={pagination}
+            enableLoadMore={enableLoadMore}
             betweenContent={
                 showContributions ? (
                     <Suspense fallback={<GitHubContributionsLoading />}>

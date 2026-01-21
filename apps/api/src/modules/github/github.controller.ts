@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Post, Query } from '@nestjs/common';
 import { GithubService } from './github.service';
 import { DEFAULT_REPOSITORY_LIMIT } from '../../constants/constants';
 
@@ -7,16 +7,27 @@ export class GithubController {
   constructor(private readonly github: GithubService) {}
 
   @Get('repositories')
-  async getRepositories(@Query('limit') limit?: string) {
-    const parsed = limit ? parseInt(limit, 10) : NaN;
-    const safeLimit = Number.isFinite(parsed)
-      ? parsed
+  async getRepositories(
+    @Query('limit') limit?: string,
+    @Query('page') page?: string,
+  ) {
+    const parsedLimit = limit ? parseInt(limit, 10) : NaN;
+    const safeLimit = Number.isFinite(parsedLimit)
+      ? parsedLimit
       : DEFAULT_REPOSITORY_LIMIT;
-    const repositories = await this.github.getUserPublicRepositories(safeLimit);
+
+    const parsedPage = page ? parseInt(page, 10) : 1;
+    const safePage = Number.isFinite(parsedPage) && parsedPage >= 1
+      ? parsedPage
+      : 1;
+
+    const result = await this.github.getUserPublicRepositories(safeLimit, safePage);
     const rateLimit = this.github.getRateLimitInfo();
+
     return {
       success: true,
-      repositories,
+      repositories: result.repositories,
+      pagination: result.pagination,
       ...(rateLimit && {
         rateLimit: {
           limit: rateLimit.limit,
@@ -55,6 +66,20 @@ export class GithubController {
     return {
       success: true,
       contributions,
+    };
+  }
+
+  /**
+   * コントリビューションキャッシュをクリアして最新データを取得
+   * POST /api/github/contributions/refresh
+   */
+  @Post('contributions/refresh')
+  async refreshContributions() {
+    const contributions = await this.github.refreshContributionCalendar();
+    return {
+      success: true,
+      contributions,
+      refreshedAt: new Date().toISOString(),
     };
   }
 }

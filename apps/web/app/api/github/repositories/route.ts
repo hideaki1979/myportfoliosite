@@ -12,8 +12,14 @@ export async function GET(request: NextRequest) {
         const rawLimit = request.nextUrl.searchParams.get('limit');
         const parsed = rawLimit ? parseInt(rawLimit, 10) : 20;
         const safeLimit = Number.isFinite(parsed) ? Math.min(Math.max(parsed, 1), 100) : 20;
+
+        const rawPage = request.nextUrl.searchParams.get('page');
+        const parsedPage = rawPage ? parseInt(rawPage, 10) : 1;
+        const safePage = Number.isFinite(parsedPage) && parsedPage >= 1 ? parsedPage : 1;
+
         const url = new URL(`${API_BASE_URL}/api/github/repositories`);
-        url.searchParams.set('limit', String(safeLimit))
+        url.searchParams.set('limit', String(safeLimit));
+        url.searchParams.set('page', String(safePage));
 
         // バックエンドAPIを呼び出し
         const response = await fetch(

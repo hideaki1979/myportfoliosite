@@ -12,4 +12,5 @@ export interface QiitaArticlesProps {
     limit?: number;
     isLoading?: boolean;
     error?: { message: string } | null;
+    enableSearch?: boolean;
 }

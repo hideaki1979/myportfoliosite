@@ -31,6 +31,12 @@ export interface GitHubProfile {
 export type SortBy = 'stars' | 'updated';
 export type SortOrder = 'asc' | 'desc';
 
+export interface PaginationInfo {
+    page: number;
+    perPage: number;
+    hasMore: boolean;
+}
+
 export interface GitHubReposProps {
     initialData?: GitHubRepository[];
     profile?: GitHubProfile;
@@ -41,4 +47,6 @@ export interface GitHubReposProps {
     isLoading?: boolean;
     error?: { message: string } | null;
     betweenContent?: React.ReactNode;
+    initialPagination?: PaginationInfo;
+    enableLoadMore?: boolean;
 }
