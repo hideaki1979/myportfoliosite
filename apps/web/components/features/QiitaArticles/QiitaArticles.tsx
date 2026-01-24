@@ -8,6 +8,9 @@ import ArticleCard from "./ArticleCard";
 import SkeletonLoader from "./SkeletonLoader";
 import { fetchQiitaArticlesClient } from "../../../lib/api/qiita";
 import ErrorDisplay from "./ErrorDisplay";
+import SearchBar from "./SearchBar";
+import TagFilter from "./TagFilter";
+import useArticleSearch from "./hooks/useArticleSearch";
 
 const Container = styled.section`
     width: 100%;
@@ -75,6 +78,25 @@ const ChevronIcon = styled.svg`
     fill: currentColor;
 `;
 
+const SearchFilterSection = styled.div`
+    margin-bottom: 24px;
+`;
+
+const NoResultsState = styled.div`
+    padding: 48px;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px dashed #555;
+`;
+
+const NoResultsMessage = styled.p`
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    color: #999;
+`;
+
 export default function QiitaArticles({
     initialData = [],
     profile,
@@ -82,10 +104,24 @@ export default function QiitaArticles({
     limit,
     isLoading = false,
     error: initialError = null,
+    enableSearch = false,
 }: QiitaArticlesProps) {
     const [articles, setArticles] = useState(initialData);
     const [error, setError] = useState<{message: string} | null>(initialError);
     const [isRetrying, setIsRetrying] = useState(false);
+
+    // 検索・フィルタリング機能
+    const {
+        searchQuery,
+        setSearchQuery,
+        selectedTags,
+        setSelectedTags,
+        filteredArticles,
+        availableTags,
+        totalCount,
+        filteredCount,
+        hasActiveFilters,
+    } = useArticleSearch(articles);
 
     // リトライハンドラー
     const handleRetry = async () => {
@@ -103,10 +139,11 @@ export default function QiitaArticles({
         }
     };
 
-    // 記事を制限
+    // 記事を制限（検索が有効な場合はフィルタリング結果を使用）
     const displayArticles = useMemo(() => {
-        return limit ? articles.slice(0, limit) : articles;
-    }, [articles, limit]);
+        const sourceArticles = enableSearch ? filteredArticles : articles;
+        return limit && !enableSearch ? sourceArticles.slice(0, limit) : sourceArticles;
+    }, [articles, filteredArticles, limit, enableSearch]);
 
     // ローディング状態
     if (isLoading || isRetrying) {
@@ -133,8 +170,8 @@ export default function QiitaArticles({
         );
     }
 
-    // 空チェック
-    if (displayArticles.length === 0) {
+    // 元データが空の場合
+    if (articles.length === 0) {
         return (
             <EmptyState>
                 <EmptyMessage>記事が見つかりませんでした。</EmptyMessage>
@@ -152,12 +189,42 @@ export default function QiitaArticles({
 
             <Section>
                 <SectionTitle>投稿記事</SectionTitle>
-                <ArticlesContainer role="list" aria-label="Qiita記事一覧">
-                    {displayArticles.map((article) => (
-                        <ArticleCard key={article.id} article={article} />
-                    ))}
-                </ArticlesContainer>
-                {profile?.websiteUrl && (
+                
+                {/* 検索UI */}
+                {enableSearch && (
+                    <SearchFilterSection>
+                        <SearchBar
+                            value={searchQuery}
+                            onChange={setSearchQuery}
+                            resultCount={filteredCount}
+                            totalCount={totalCount}
+                            placeholder="タイトルまたはタグで検索..."
+                        />
+                        <TagFilter
+                            tags={availableTags}
+                            selectedTags={selectedTags}
+                            onChange={setSelectedTags}
+                            maxInitialDisplay={10}
+                        />
+                    </SearchFilterSection>
+                )}
+                
+                {/* フィルタリング結果が0件の場合 */}
+                {enableSearch && hasActiveFilters && displayArticles.length === 0 ? (
+                    <NoResultsState>
+                        <NoResultsMessage>
+                            検索条件に一致する記事が見つかりませんでした。
+                        </NoResultsMessage>
+                    </NoResultsState>
+                ) : (
+                    <ArticlesContainer role="list" aria-label="Qiita記事一覧">
+                        {displayArticles.map((article) => (
+                            <ArticleCard key={article.id} article={article} />
+                        ))}
+                    </ArticlesContainer>
+                )}
+                
+                {profile?.websiteUrl && !enableSearch && (
                     <MoreLinkContainer>
                         <ChevronIcon
                             viewBox="0 0 24 24"

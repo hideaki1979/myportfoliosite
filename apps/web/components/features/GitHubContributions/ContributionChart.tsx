@@ -2,7 +2,8 @@
 
 import styled from "styled-components";
 import { ContributionDay, GitHubContributionCalendar } from "./index";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
+import { refreshGitHubContributions } from "../../../lib/api/github";
 
 interface ContributionChartProps {
     data: GitHubContributionCalendar;
@@ -26,7 +27,19 @@ const Container = styled.div`
 `;
 
 const Header = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const HeaderLeft = styled.div``;
+
+const HeaderRight = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
 `;
 
 const Title = styled.h3`
@@ -34,6 +47,53 @@ const Title = styled.h3`
     font-weight: 700;
     color: ${({ theme }) => theme.colors.text.primary};
     margin-bottom: ${({ theme }) => `${theme.spacing.xs}px`};
+`;
+
+const RefreshButton = styled.button<{ $isLoading?: boolean }>`
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: ${({ theme }) => theme.colors.text.secondary};
+    background-color: transparent;
+    border: 1px solid ${({ theme }) => theme.colors.border};
+    border-radius: 6px;
+    cursor: ${({ $isLoading }) => ($isLoading ? 'not-allowed' : 'pointer')};
+    opacity: ${({ $isLoading }) => ($isLoading ? 0.6 : 1)};
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+        background-color: ${({ theme }) => theme.colors.background.primary};
+        border-color: ${({ theme }) => theme.colors.text.secondary};
+        color: ${({ theme }) => theme.colors.text.primary};
+    }
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px ${({ theme }) => theme.colors.primary}40;
+    }
+
+    svg {
+        width: 14px;
+        height: 14px;
+        animation: ${({ $isLoading }) => ($isLoading ? 'spin 1s linear infinite' : 'none')};
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+`;
+
+const ErrorMessage = styled.p`
+    font-size: 12px;
+    color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 const Stats = styled.p`
@@ -197,8 +257,27 @@ const LegendCell = styled.div<{ $color: string }>`
  * 過去1年間のコントリビューション履歴を可視化
  */
 export default function ContributionChart({ data }: ContributionChartProps) {
+    const [currentData, setCurrentData] = useState<GitHubContributionCalendar>(data);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [hoveredDay, setHoveredDay] = useState<ContributionDay | null>(null);
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+
+    const handleRefresh = useCallback(async () => {
+        if (isRefreshing) return;
+
+        setIsRefreshing(true);
+        setErrorMessage(null);
+        try {
+            const newData = await refreshGitHubContributions();
+            setCurrentData(newData);
+        } catch (error) {
+            console.error('Failed to refresh contributions:', error);
+            setErrorMessage('コントリビューションの更新に失敗しました。しばらく経ってから再度お試しください。');
+        } finally {
+            setIsRefreshing(false);
+        }
+    }, [isRefreshing]);
 
     const handleMouseEnter = (
         day: ContributionDay,
@@ -221,7 +300,7 @@ export default function ContributionChart({ data }: ContributionChartProps) {
         const labels: Array<{ month: string, offset: number }> = [];
         let currentMonth = '';
 
-        data.weeks.forEach((week, weekIndex) => {
+        currentData.weeks.forEach((week, weekIndex) => {
             const firstDay = week.contributionDays[0];
             if (!firstDay) return;
 
@@ -239,7 +318,7 @@ export default function ContributionChart({ data }: ContributionChartProps) {
         });
 
         return labels;
-    }, [data.weeks]);
+    }, [currentData.weeks]);
 
 
     // 曜日のラベル
@@ -248,10 +327,39 @@ export default function ContributionChart({ data }: ContributionChartProps) {
     return (
         <Container>
             <Header>
-                <Title>年間コントリビューション</Title>
-                <Stats>
-                    過去1年間で<strong>{data.totalContributions.toLocaleString()}</strong>件のコントリビューション
-                </Stats>
+                <HeaderLeft>
+                    <Title>年間コントリビューション</Title>
+                    <Stats>
+                        過去1年間で<strong>{currentData.totalContributions.toLocaleString()}</strong>件のコントリビューション
+                    </Stats>
+                </HeaderLeft>
+                <HeaderRight>
+                    <RefreshButton
+                        onClick={handleRefresh}
+                        disabled={isRefreshing}
+                        $isLoading={isRefreshing}
+                        aria-label="最新情報を取得"
+                        title="最新情報を取得"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+                            <path d="M21 3v5h-5" />
+                        </svg>
+                        {isRefreshing ? '更新中...' : '最新情報を取得'}
+                    </RefreshButton>
+                    {errorMessage && (
+                        <ErrorMessage role="status" aria-live="polite">
+                            {errorMessage}
+                        </ErrorMessage>
+                    )}
+                </HeaderRight>
             </Header>
 
             <ChartWrapper>
@@ -273,7 +381,7 @@ export default function ContributionChart({ data }: ContributionChartProps) {
                     </MonthLabels>
 
                     <Grid role="grid" aria-label="GitHub コントリビューション グリッド">
-                        {data.weeks.map((week, weekIndex) => (
+                        {currentData.weeks.map((week, weekIndex) => (
                             <Week key={weekIndex} role="row">
                                 {week.contributionDays.map((day, dayIndex) => (
                                     <DayCell

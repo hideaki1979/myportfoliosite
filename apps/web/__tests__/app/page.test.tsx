@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Home from '../../app/page';
 import { fetchGitHubRepositories } from '../../lib/api/github';
-import { mockRepositories } from '../mocks/github';
+import { mockRepositoriesResponse } from '../mocks/github';
 import { GitHubReposProps } from '../../components/features/GitHubRepos';
 import { fetchQiitaArticles, fetchQiitaProfile } from '../../lib/api/qiita';
 import { QiitaArticlesProps } from '../../components/features/QiitaArticles';
@@ -96,7 +96,7 @@ describe('Home Page', () => {
     });
 
     it('Heroセクションがレンダリングされること', async () => {
-        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositories);
+        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositoriesResponse);
 
         const page = await Home();
         render(page);
@@ -107,7 +107,7 @@ describe('Home Page', () => {
     });
 
     it('GitHubセクションのタイトルが表示されること', async () => {
-        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositories);
+        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositoriesResponse);
         vi.mocked(fetchQiitaArticles).mockResolvedValue(mockQiitaArticles);
         vi.mocked(fetchQiitaProfile).mockResolvedValue(mockQiitaProfile);
 
@@ -119,7 +119,7 @@ describe('Home Page', () => {
     });
 
     it('Qiitaセクションのタイトルが表示されること', async () => {
-        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositories);
+        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositoriesResponse);
         vi.mocked(fetchQiitaArticles).mockResolvedValue(mockQiitaArticles);
         vi.mocked(fetchQiitaProfile).mockResolvedValue(mockQiitaProfile);
 
@@ -131,7 +131,7 @@ describe('Home Page', () => {
     });
 
     it('ページの構造が正しいこと（maxWidth、padding）', async () => {
-        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositories);
+        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositoriesResponse);
         vi.mocked(fetchQiitaArticles).mockResolvedValue([]);
         vi.mocked(fetchQiitaProfile).mockResolvedValue(mockQiitaProfile);
 
@@ -148,7 +148,7 @@ describe('Home Page', () => {
     });
 
     it('GitHubセクションとQiitaセクションのマージンが正しいこと', async () => {
-        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositories);
+        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositoriesResponse);
         vi.mocked(fetchQiitaArticles).mockResolvedValue([]);
         vi.mocked(fetchQiitaProfile).mockResolvedValue(mockQiitaProfile);
 

@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import type { GitHubRepository } from '../types';
+import type { GitHubRepository, PaginationInfo } from '../types';
 import { fetchGitHubRepositoriesClient } from '../../../../lib/api/github';
 
 interface UseGitHubReposResult {
     data: GitHubRepository[];
     loading: boolean;
     error: Error | null;
+    pagination: PaginationInfo | null;
     refetch: () => Promise<void>;
 }
 
@@ -22,13 +23,15 @@ export function useGitHubRepos(
     const [data, setData] = useState<GitHubRepository[]>(initialData || []);
     const [loading, setLoading] = useState(!hasInitialData);
     const [error, setError] = useState<Error | null>(null);
+    const [pagination, setPagination] = useState<PaginationInfo | null>(null);
 
     const fetchData = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
-            const repositories = await fetchGitHubRepositoriesClient(limit);
-            setData(repositories);
+            const result = await fetchGitHubRepositoriesClient(limit);
+            setData(result.repositories);
+            setPagination(result.pagination);
         } catch (err) {
             const error =
                 err instanceof Error ? err : new Error('Failed to fetch repositories');
@@ -53,6 +56,7 @@ export function useGitHubRepos(
         data,
         loading,
         error,
+        pagination,
         refetch,
     };
 }

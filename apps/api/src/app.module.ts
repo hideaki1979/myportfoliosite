@@ -1,5 +1,7 @@
-import { Module } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
+import { APP_PIPE } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import Joi from 'joi';
@@ -10,6 +12,7 @@ import { GithubModule } from './modules/github/github.module';
 import { CacheModule } from './modules/cache/cache.module';
 import { QiitaModule } from './modules/qiita/qiita.module';
 import { ContactModule } from './modules/contact/contact.module';
+import { AIArticlesModule } from './modules/ai-articles/ai-articles.module';
 
 @Module({
   imports: [
@@ -37,6 +40,10 @@ import { ContactModule } from './modules/contact/contact.module';
           then: Joi.string().email().required(),
           otherwise: Joi.string().empty('').default('admin@example.com'),
         }),
+        AI_ARTICLES_REFRESH_API_KEY: Joi.string().allow('').default(''),
+        GITHUB_CONTRIBUTIONS_REFRESH_API_KEY: Joi.string()
+          .allow('')
+          .default(''),
       }),
     }),
     LoggerModule.forRootAsync({
@@ -49,22 +56,36 @@ import { ContactModule } from './modules/contact/contact.module';
             transport:
               nodeEnv === 'development'
                 ? {
-                  target: 'pino-pretty',
-                  options: { colorize: true, singleLine: true },
-                }
+                    target: 'pino-pretty',
+                    options: { colorize: true, singleLine: true },
+                  }
                 : undefined,
           },
         };
       },
     }),
+    ScheduleModule.forRoot(),
     CacheModule,
     HealthModule,
     MetricsModule,
     GithubModule,
     QiitaModule,
     ContactModule,
+    AIArticlesModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_PIPE,
+      useFactory: () =>
+        new ValidationPipe({
+          transform: true,
+          whitelist: true,
+          forbidNonWhitelisted: true,
+          transformOptions: { enableImplicitConversion: true },
+        }),
+    },
+  ],
 })
-export class AppModule { }
+export class AppModule {}

@@ -12,9 +12,26 @@ vi.mock('../../../lib/constants', () => ({
     REVALIDATE_INTERVAL_LONG: 3600,
 }));
 
+const mockPagination = {
+    page: 1,
+    perPage: 20,
+    hasMore: false,
+};
+
 const mockSuccessResponse = {
     success: true,
     repositories: mockRepositories,
+    pagination: mockPagination,
+};
+
+const mockExpectedResponse = {
+    repositories: mockRepositories,
+    pagination: mockPagination,
+};
+
+const mockEmptyResponse = {
+    repositories: [],
+    pagination: { page: 1, perPage: 20, hasMore: false },
 };
 
 describe('GitHub API Client', () => {
@@ -37,9 +54,9 @@ describe('GitHub API Client', () => {
 
             const result = await fetchGitHubRepositories(20);
 
-            expect(result).toEqual(mockRepositories);
+            expect(result).toEqual(mockExpectedResponse);
             expect(fetchMock).toHaveBeenCalledWith(
-                'http://localhost:3100/api/github/repositories?limit=20',
+                'http://localhost:3100/api/github/repositories?limit=20&page=1',
                 expect.objectContaining({
                     method: 'GET',
                     headers: {
@@ -60,14 +77,14 @@ describe('GitHub API Client', () => {
             await fetchGitHubRepositories();
 
             expect(fetchMock).toHaveBeenCalledWith(
-                'http://localhost:3100/api/github/repositories?limit=20',
+                'http://localhost:3100/api/github/repositories?limit=20&page=1',
                 expect.any(Object)
             );
         });
 
         const errorCases = [
             {
-                description: 'APIがエラーレスポンスを返した場合、空配列を返すこと',
+                description: 'APIがエラーレスポンスを返した場合、空レスポンスを返すこと',
                 setup: () =>
                     vi.fn().mockResolvedValue({
                         ok: false,
@@ -83,7 +100,7 @@ describe('GitHub API Client', () => {
                     })
             },
             {
-                description: 'successがfalseの場合、空配列を返すこと',
+                description: 'successがfalseの場合、空レスポンスを返すこと',
                 setup: () =>
                     vi.fn().mockResolvedValue({
                         ok: true,
@@ -93,7 +110,7 @@ describe('GitHub API Client', () => {
                     })
             },
             {
-                description: 'repositoriesが存在しない場合、空配列を返すこと',
+                description: 'repositoriesが存在しない場合、空レスポンスを返すこと',
                 setup: () =>
                     vi.fn().mockResolvedValue({
                         ok: true,
@@ -103,7 +120,7 @@ describe('GitHub API Client', () => {
                     })
             },
             {
-                description: 'ネットワークエラーが発生した場合、空配列を返すこと',
+                description: 'ネットワークエラーが発生した場合、空レスポンスを返すこと',
                 setup: () => vi.fn().mockRejectedValue(new Error('Network error')),
             },
         ];
@@ -113,7 +130,7 @@ describe('GitHub API Client', () => {
             global.fetch = setup();
 
             const result = await fetchGitHubRepositories(20);
-            expect(result).toEqual([]);
+            expect(result).toEqual(mockEmptyResponse);
             expect(consoleErrorSpy).toHaveBeenCalled();
         });
 
@@ -128,7 +145,7 @@ describe('GitHub API Client', () => {
 
             // バックエンドAPIのURL（apiBaseUrl）を使用していることを確認
             expect(fetchMock).toHaveBeenCalledWith(
-                'http://localhost:3100/api/github/repositories?limit=20',
+                'http://localhost:3100/api/github/repositories?limit=20&page=1',
                 expect.objectContaining({
                     method: 'GET',
                     next: { revalidate: REVALIDATE_INTERVAL_SHORT },
@@ -147,9 +164,9 @@ describe('GitHub API Client', () => {
 
             const result = await fetchGitHubRepositoriesClient(20);
 
-            expect(result).toEqual(mockRepositories);
+            expect(result).toEqual(mockExpectedResponse);
             expect(fetchMock).toHaveBeenCalledWith(
-                '/api/github/repositories?limit=20',
+                expect.stringContaining('/api/github/repositories?limit=20&page=1'),
                 expect.objectContaining({
                     method: 'GET',
                     headers: {
@@ -171,7 +188,7 @@ describe('GitHub API Client', () => {
             await fetchGitHubRepositoriesClient();
 
             expect(fetchMock).toHaveBeenCalledWith(
-                '/api/github/repositories?limit=20',
+                expect.stringContaining('/api/github/repositories?limit=20&page=1'),
                 expect.any(Object)
             );
         });

@@ -2,6 +2,10 @@
  * GitHubリポジトリ関連の型定義
  */
 
+import type { PaginationInfo } from '@repo/shared-types';
+
+export type { PaginationInfo };
+
 export interface GitHubRepository {
     id: string;
     name: string;
@@ -41,4 +45,6 @@ export interface GitHubReposProps {
     isLoading?: boolean;
     error?: { message: string } | null;
     betweenContent?: React.ReactNode;
+    initialPagination?: PaginationInfo;
+    enableLoadMore?: boolean;
 }

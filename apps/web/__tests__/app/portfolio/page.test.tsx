@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from "@testing-library/react";
 import PortfolioPage from "../../../app/portfolio/page";
 import { fetchGitHubRepositories } from "../../../lib/api/github";
-import { mockRepositories } from '../../mocks/github';
+import { mockRepositoriesResponse } from '../../mocks/github';
 import { GitHubReposProps } from '../../../components/features/GitHubRepos';
 
 // モジュールのモック
@@ -37,7 +37,7 @@ describe('Portfolio Page', () => {
     });
 
     it('ページタイトルが正しく表示されること', async () => {
-        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositories);
+        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositoriesResponse);
 
         const page = await PortfolioPage();
         render(page);
@@ -47,7 +47,7 @@ describe('Portfolio Page', () => {
     });
 
     it('ページの説明文が正しく表示されること', async () => {
-        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositories);
+        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositoriesResponse);
 
         const page = await PortfolioPage();
         render(page);
@@ -60,7 +60,7 @@ describe('Portfolio Page', () => {
     });
 
     it('ページの構造が正しいこと（maxWidth、padding）', async () => {
-        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositories);
+        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositoriesResponse);
 
         const page = await PortfolioPage();
         const { container } = render(page);
@@ -74,7 +74,7 @@ describe('Portfolio Page', () => {
     });
 
     it('タイトルと説明文が正しいHTML構造で表示されること', async () => {
-        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositories);
+        vi.mocked(fetchGitHubRepositories).mockResolvedValue(mockRepositoriesResponse);
 
         const page = await PortfolioPage();
 

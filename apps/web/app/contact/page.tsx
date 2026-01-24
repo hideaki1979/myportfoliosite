@@ -46,8 +46,17 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function ContactPage() {
   const recaptchaSiteKey = process.env.RECAPTCHA_SITE_KEY;
+  const isCiBuild = process.env.CI === "true";
 
   if (!recaptchaSiteKey) {
+    if (isCiBuild) {
+      return (
+        <PageContainer>
+          <h1>Contact</h1>
+          <p>CI環境ではreCAPTCHAのキーが未設定のため、お問い合わせフォームは無効化されています。</p>
+        </PageContainer>
+      );
+    }
     // サーバーサイドコンポーネントなので、ビルド時またはリクエスト時にエラーをスローして問題を明確にします
     throw new Error("RECAPTCHA_SITE_KEY is not configured in environment variables.");
   }

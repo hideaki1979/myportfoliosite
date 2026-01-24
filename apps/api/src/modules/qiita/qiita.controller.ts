@@ -1,15 +1,15 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { QiitaService } from './qiita.service';
 import { DEFAULT_ARTICLE_LIMIT } from '../../constants/constants';
+import { QiitaArticlesQueryDto } from './dto/qiita-articles.query.dto';
 
 @Controller('api/qiita')
 export class QiitaController {
   constructor(private readonly qiita: QiitaService) {}
 
   @Get('articles')
-  async getArticles(@Query('limit') limit?: string) {
-    const parsed = limit ? parseInt(limit, 10) : NaN;
-    const safeLimit = Number.isFinite(parsed) ? parsed : DEFAULT_ARTICLE_LIMIT;
+  async getArticles(@Query() query: QiitaArticlesQueryDto) {
+    const safeLimit = query.limit ?? DEFAULT_ARTICLE_LIMIT;
     const articles = await this.qiita.getUserArticles(safeLimit);
     const rateLimit = this.qiita.getRateLimitInfo();
     return {

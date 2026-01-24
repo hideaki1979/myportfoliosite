@@ -1,5 +1,6 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import type { PaginationInfo } from '@repo/shared-types';
 import { Logger } from 'nestjs-pino';
 import { CacheService } from '../cache/cache.service';
 import { API_TIMEOUT, GITHUB_GRAPHQL_URL } from 'src/constants/constants';
@@ -24,6 +25,11 @@ export interface GitHubRepositoryDto {
   forkCount: number;
   primaryLanguage: string | null;
   updatedAt: string;
+}
+
+export interface RepositoriesWithPagination {
+  repositories: GitHubRepositoryDto[];
+  pagination: PaginationInfo;
 }
 
 export interface GitHubRateLimitInfo {
@@ -107,12 +113,18 @@ export class GithubService {
     this.githubUsername = this.config.get<string>('GITHUB_USERNAME', '');
   }
 
-  async getUserPublicRepositories(limit = 20): Promise<GitHubRepositoryDto[]> {
+  async getUserPublicRepositories(
+    limit = 20,
+    page = 1,
+  ): Promise<RepositoriesWithPagination> {
     if (!this.githubUsername) {
       this.logger.warn(
         'GITHUB_USERNAME is not configured, returning empty list.',
       );
-      return [];
+      return {
+        repositories: [],
+        pagination: { page: 1, perPage: limit, hasMore: false },
+      };
     }
 
     const numericLimit = Number(limit);
@@ -121,20 +133,26 @@ export class GithubService {
       : 20;
     const perPage = Math.min(Math.max(perPageBase, 1), 100);
 
-    const cacheKey = `${CACHE_KEY_PREFIX}:${perPage}`;
+    const numericPage = Number(page);
+    const safePage =
+      Number.isFinite(numericPage) && numericPage >= 1
+        ? Math.floor(numericPage)
+        : 1;
+
+    const cacheKey = `${CACHE_KEY_PREFIX}:${perPage}:page${safePage}`;
     const staleCacheKey = `${cacheKey}:stale`;
 
     // キャッシュから取得を試行
-    const cached = this.cacheService.get<GitHubRepositoryDto[]>(cacheKey);
+    const cached = this.cacheService.get<RepositoriesWithPagination>(cacheKey);
     if (cached) {
       this.logger.log(
-        `GitHub repositories served from cache (${cached.length} items)`,
+        `GitHub repositories served from cache (page ${safePage}, ${cached.repositories.length} items)`,
       );
       return cached;
     }
 
     try {
-      const path = `/users/${encodeURIComponent(this.githubUsername)}/repos?per_page=${perPage}&sort=updated&direction=desc`;
+      const path = `/users/${encodeURIComponent(this.githubUsername)}/repos?per_page=${perPage}&page=${safePage}&sort=updated&direction=desc`;
 
       const response = await this.request<GitHubRepositoryApiResponse[]>(
         path,
@@ -148,11 +166,23 @@ export class GithubService {
 
       const repositories = response.data.map((r) => this.mapRepository(r));
 
+      // hasMore判定: 取得件数がper_pageと同じなら次のページがある可能性
+      const hasMore = repositories.length === perPage;
+
+      const result: RepositoriesWithPagination = {
+        repositories,
+        pagination: {
+          page: safePage,
+          perPage,
+          hasMore,
+        },
+      };
+
       // 通常のキャッシュに保存（15分）
-      this.cacheService.set(cacheKey, repositories, CACHE_TTL);
+      this.cacheService.set(cacheKey, result, CACHE_TTL);
 
       // staleキャッシュに保存（1時間、エラー時のフォールバック用）
-      this.cacheService.set(staleCacheKey, repositories, STALE_CACHE_TTL);
+      this.cacheService.set(staleCacheKey, result, STALE_CACHE_TTL);
 
       // レート制限情報をキャッシュ
       if (response.rateLimit) {
@@ -168,10 +198,10 @@ export class GithubService {
       }
 
       this.logger.log(
-        `Fetched ${repositories.length} repositories from GitHub API`,
+        `Fetched ${repositories.length} repositories from GitHub API (page ${safePage})`,
       );
 
-      return repositories;
+      return result;
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
@@ -184,11 +214,11 @@ export class GithubService {
 
       // エラー時はstaleキャッシュから返却を試行
       const staleCache =
-        this.cacheService.get<GitHubRepositoryDto[]>(staleCacheKey);
+        this.cacheService.get<RepositoriesWithPagination>(staleCacheKey);
 
       if (staleCache) {
         this.logger.warn(
-          `GitHub API error, serving stale cache (${staleCache.length} items)`,
+          `GitHub API error, serving stale cache (page ${safePage}, ${staleCache.repositories.length} items)`,
         );
         return staleCache;
       }
@@ -205,6 +235,19 @@ export class GithubService {
    */
   getRateLimitInfo(): GitHubRateLimitInfo | null {
     return this.cacheService.get<GitHubRateLimitInfo>('github:rate-limit');
+  }
+
+  /**
+   * コントリビューションキャッシュをクリアして最新データを取得
+   * 注意: スタルキャッシュはフォールバック用に保持し、成功時のみ更新される
+   */
+  async refreshContributionCalendar(): Promise<GitHubContributionCalendar> {
+    // 通常キャッシュのみクリア（スタルキャッシュはフォールバック用に保持）
+    this.cacheService.delete('github:contributions');
+    this.logger.log('GitHub contributions cache cleared for refresh');
+
+    // 最新データを取得（getContributionCalendar内で成功時にスタルキャッシュも更新される）
+    return this.getContributionCalendar();
   }
 
   /**

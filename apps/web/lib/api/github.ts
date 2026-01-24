@@ -5,7 +5,7 @@
  * クライアントサイド関数: Route Handler経由でアクセス
  */
 
-import { GitHubRepository } from "../../components/features/GitHubRepos/types";
+import { GitHubRepository, PaginationInfo } from "../../components/features/GitHubRepos/types";
 import { GitHubContributionCalendar } from "../../types/github";
 import { apiBaseUrl } from "../constants";
 import { REVALIDATE_INTERVAL_SHORT } from '../../lib/constants';
@@ -13,6 +13,7 @@ import { REVALIDATE_INTERVAL_SHORT } from '../../lib/constants';
 interface GitHubContributionsApiResponse {
     success: boolean;
     contributions?: GitHubContributionCalendar;
+    refreshedAt?: string;
     error?: {
         code: string;
         message: string;
@@ -22,6 +23,7 @@ interface GitHubContributionsApiResponse {
 interface GitHubApiResponse {
     success: boolean;
     repositories?: GitHubRepository[];
+    pagination?: PaginationInfo;
     error?: {
         code: string;
         message: string;
@@ -31,6 +33,11 @@ interface GitHubApiResponse {
         remaining: number;
         resetAt: string;
     };
+}
+
+export interface GitHubRepositoriesResponse {
+    repositories: GitHubRepository[];
+    pagination: PaginationInfo;
 }
 
 // =============================================================================
@@ -53,13 +60,13 @@ export async function fetchGitHubContributions(): Promise<GitHubContributionCale
         });
 
         if (!response.ok) {
-            const errorData = (await response.json().catch(() => {})) as GitHubContributionsApiResponse;
+            const errorData = (await response.json().catch(() => { })) as GitHubContributionsApiResponse;
             throw new Error(
                 errorData.error?.message ||
                 `GitHub contributions API error: ${response.status}`,
             );
         }
-        
+
         const result = (await response.json()) as GitHubContributionsApiResponse;
 
         if (!result.success || !result.contributions) {
@@ -83,13 +90,17 @@ export async function fetchGitHubContributions(): Promise<GitHubContributionCale
  */
 export async function fetchGitHubRepositories(
     limit = 20,
-): Promise<GitHubRepository[]> {
+    page = 1,
+): Promise<GitHubRepositoriesResponse> {
+    const safeLimit = Math.min(Math.max(limit, 1), 100);
+    const safePage = Math.max(page, 1);
+    const defaultPagination: PaginationInfo = { page: safePage, perPage: safeLimit, hasMore: false };
 
     try {
         // Next.js Route Handlerを呼び出し（内部API）
-        const safeLimit = Math.min(Math.max(limit, 1), 100);
         const url = new URL(`${apiBaseUrl}/api/github/repositories`)
         url.searchParams.set('limit', String(safeLimit));
+        url.searchParams.set('page', String(safePage));
 
         const response = await fetch(url.toString(),
             {
@@ -116,11 +127,14 @@ export async function fetchGitHubRepositories(
             throw new Error('GitHub API returned invalid response');
         }
 
-        return result.repositories;
+        return {
+            repositories: result.repositories,
+            pagination: result.pagination ?? defaultPagination,
+        };
     } catch (error) {
         console.error('Failed to fetch GitHub repositories:', error);
         // エラー時は空配列を返す（フォールバック）
-        return [];
+        return { repositories: [], pagination: defaultPagination };
     }
 }
 
@@ -143,7 +157,7 @@ export async function fetchGitHubContributionsClient(): Promise<GitHubContributi
         });
 
         if (!response.ok) {
-            const errorData = (await response.json().catch(() => {})) as GitHubContributionsApiResponse;
+            const errorData = (await response.json().catch(() => { })) as GitHubContributionsApiResponse;
             throw new Error(
                 errorData.error?.message ||
                 `GitHub contributions request failed: ${response.status}`,
@@ -171,11 +185,16 @@ export async function fetchGitHubContributionsClient(): Promise<GitHubContributi
  */
 export async function fetchGitHubRepositoriesClient(
     limit = 20,
-): Promise<GitHubRepository[]> {
+    page = 1,
+): Promise<GitHubRepositoriesResponse> {
     try {
         // Next.js Route Handlerを呼び出し（内部API）
+        const url = new URL('/api/github/repositories', window.location.origin);
+        url.searchParams.set('limit', String(limit));
+        url.searchParams.set('page', String(page));
+
         const response = await fetch(
-            `/api/github/repositories?limit=${limit}`,
+            url.toString(),
             {
                 method: 'GET',
                 headers: {
@@ -199,11 +218,51 @@ export async function fetchGitHubRepositoriesClient(
             throw new Error('GitHub API returned invalid response');
         }
 
-        return result.repositories;
+        return {
+            repositories: result.repositories,
+            pagination: result.pagination ?? { page, perPage: limit, hasMore: false },
+        };
     } catch (error) {
         if (error instanceof Error) {
             throw error;
         }
         throw new Error('Failed to fetch GitHub repositories');
+    }
+}
+
+/**
+ * クライアントサイドでGitHubコントリビューションをリフレッシュ
+ * キャッシュをクリアして最新データを取得
+ */
+export async function refreshGitHubContributions(): Promise<GitHubContributionCalendar> {
+    try {
+        const response = await fetch('/api/github/contributions/refresh', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            cache: 'no-store',
+        });
+
+        if (!response.ok) {
+            const errorData = (await response.json().catch(() => { })) as GitHubContributionsApiResponse;
+            throw new Error(
+                errorData.error?.message ||
+                `GitHub contributions refresh failed: ${response.status}`,
+            );
+        }
+
+        const result = await response.json() as GitHubContributionsApiResponse;
+
+        if (!result.success || !result.contributions) {
+            throw new Error('GitHub contributions refresh API returned invalid response');
+        }
+
+        return result.contributions;
+    } catch (error) {
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error('Failed to refresh GitHub contributions');
     }
 }

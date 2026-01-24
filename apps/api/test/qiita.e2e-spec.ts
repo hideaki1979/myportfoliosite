@@ -352,7 +352,7 @@ describe('Qiita API (e2e)', () => {
   });
 
   describe('Error handling', () => {
-    it('should handle invalid limit parameter gracefully', async () => {
+    it('should return 400 for invalid limit parameter', async () => {
       const mockQiitaService = {
         getUserArticles: jest.fn().mockResolvedValue([]),
         getRateLimitInfo: jest.fn().mockReturnValue(null),
@@ -364,20 +364,14 @@ describe('Qiita API (e2e)', () => {
       ]);
 
       const server = app.getHttpServer() as Parameters<typeof request>[0];
-      const res = await request(server)
+      await request(server)
         .get('/api/qiita/articles?limit=invalid')
-        .expect(200);
+        .expect(400);
 
-      const body = res.body as ArticleResponse;
-      // 無効なlimitの場合はデフォルト値（10）が使われる
-      expect(body.success).toBe(true);
-      expect(Array.isArray(body.articles)).toBe(true);
-
-      // Ensure default limit (10) is used
-      expect(mockQiitaService.getUserArticles).toHaveBeenCalledWith(10);
+      expect(mockQiitaService.getUserArticles).not.toHaveBeenCalled();
     });
 
-    it('should handle negative limit parameter', async () => {
+    it('should return 400 for negative limit parameter', async () => {
       const mockQiitaService = {
         getUserArticles: jest.fn().mockResolvedValue([]),
         getRateLimitInfo: jest.fn().mockReturnValue(null),
@@ -389,13 +383,9 @@ describe('Qiita API (e2e)', () => {
       ]);
 
       const server = app.getHttpServer() as Parameters<typeof request>[0];
-      const res = await request(server)
-        .get('/api/qiita/articles?limit=-5')
-        .expect(200);
+      await request(server).get('/api/qiita/articles?limit=-5').expect(400);
 
-      const body = res.body as ArticleResponse;
-      expect(body.success).toBe(true);
-      expect(Array.isArray(body.articles)).toBe(true);
+      expect(mockQiitaService.getUserArticles).not.toHaveBeenCalled();
     });
 
     it('should handle excessively large limit parameter', async () => {

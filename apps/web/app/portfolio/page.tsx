@@ -72,7 +72,7 @@ export default async function PortfolioPage() {
         showLanguageBar={true}
         showTechTags={true}
         showContributions={true}
-        limit={20}
+        enableLoadMore={true}
       />
     </PageContainer>
   );
