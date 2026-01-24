@@ -35,6 +35,15 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: Check RECAPTCHA_SITE_KEY presence
+        run: |
+          if [ -z "${RECAPTCHA_SITE_KEY}" ]; then
+            echo "RECAPTCHA_SITE_KEY is empty"
+            exit 1
+          fi
+        env:
+          RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
+
       - name: Build
         run: pnpm build
         env:
