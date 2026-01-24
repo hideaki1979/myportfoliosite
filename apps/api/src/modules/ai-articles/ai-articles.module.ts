@@ -5,7 +5,7 @@ import { AIArticlesService } from './ai-articles.service';
 import { AIArticlesScheduler } from './ai-articles.scheduler';
 import { FileStorageService } from './storage/file-storage.service';
 import { CacheModule } from '../cache/cache.module';
-import { AIArticlesRefreshGuard } from './guards/ai-articles-refresh.guard';
+import { ApiKeyGuard } from '../../common/guards/api-key.guard';
 
 @Module({
   imports: [ConfigModule, CacheModule],
@@ -14,7 +14,7 @@ import { AIArticlesRefreshGuard } from './guards/ai-articles-refresh.guard';
     AIArticlesService,
     AIArticlesScheduler,
     FileStorageService,
-    AIArticlesRefreshGuard,
+    ApiKeyGuard,
   ],
   exports: [AIArticlesService],
 })

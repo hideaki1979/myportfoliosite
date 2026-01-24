@@ -141,7 +141,7 @@ describe('Github Repositories API (e2e)', () => {
     });
   });
 
-  it('GET /api/github/repositories applies default limit when invalid (inspect fetch URL)', async () => {
+  it('GET /api/github/repositories returns 400 when limit is invalid', async () => {
     fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
       json: () => Promise.resolve([]),
@@ -155,13 +155,9 @@ describe('Github Repositories API (e2e)', () => {
     const server = app.getHttpServer() as Parameters<typeof request>[0];
     await request(server)
       .get('/api/github/repositories?limit=not-a-number')
-      .expect(200);
+      .expect(400);
 
-    // Ensure default limit (20) is used in the GitHub API request
-    const firstCall = fetchSpy?.mock.calls[0];
-    const calledWithUrl =
-      firstCall && typeof firstCall[0] === 'string' ? firstCall[0] : '';
-    expect(calledWithUrl).toContain('per_page=20');
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 
   it('GET /api/github/repositories returns 503 when service is unavailable', async () => {

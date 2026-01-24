@@ -2,37 +2,6 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { Logger } from 'nestjs-pino';
 import { AIArticlesService } from './ai-articles.service';
-import z from 'zod';
-import { AIArticleAuthorSchema } from './dto/ai-article.dto';
-
-export const AIArticleTagSchema = z.object({
-  name: z.string(),
-  versions: z.array(z.string()),
-});
-
-export const AIArticleAuthorDto = z.object({
-  id: z.string(),
-  name: z.string(),
-  profileImageUrl: z.string(),
-});
-
-export const AIArticleSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  url: z.string(),
-  likesCount: z.number(),
-  stocksCount: z.number(),
-  createdAt: z.string(),
-  tags: z.array(AIArticleTagSchema),
-  author: AIArticleAuthorSchema,
-  fetchedAt: z.string(),
-});
-
-export const AIArticlesStorageSchema = z.object({
-  lastUpdated: z.string(),
-  articles: z.array(AIArticleSchema),
-  tags: z.array(z.string()),
-});
 
 /**
  * AI記事バッチ取得スケジューラー

@@ -4,7 +4,9 @@ import type {
   AIArticlesResponse,
   AIArticlesTagsResponse,
 } from './dto/ai-article.dto';
-import { AIArticlesRefreshGuard } from './guards/ai-articles-refresh.guard';
+import { AIArticlesQueryDto } from './dto/ai-articles.query.dto';
+import { ApiKeyProtected } from '../../common/decorators/api-key-protected.decorator';
+import { ApiKeyGuard } from '../../common/guards/api-key.guard';
 
 @Controller('api/ai-articles')
 export class AIArticlesController {
@@ -15,14 +17,10 @@ export class AIArticlesController {
    * GET /api/ai-articles
    */
   @Get()
-  getArticles(
-    @Query('tag') tag?: string,
-    @Query('limit') limit?: string,
-  ): AIArticlesResponse {
-    const numLimit = limit ? parseInt(limit, 10) : undefined;
+  getArticles(@Query() query: AIArticlesQueryDto): AIArticlesResponse {
     const { articles, lastUpdated } = this.aiArticlesService.findArticles({
-      tag,
-      limit: numLimit && !isNaN(numLimit) ? numLimit : undefined,
+      tag: query.tag,
+      limit: query.limit,
     });
 
     return {
@@ -51,7 +49,11 @@ export class AIArticlesController {
    * POST /api/ai-articles/refresh
    */
   @Post('refresh')
-  @UseGuards(AIArticlesRefreshGuard)
+  @ApiKeyProtected(
+    'AI_ARTICLES_REFRESH_API_KEY',
+    'AI articles refresh API key is not configured.',
+  )
+  @UseGuards(ApiKeyGuard)
   async refresh(): Promise<AIArticlesResponse> {
     const data = await this.aiArticlesService.fetchAndSaveArticles();
     return {

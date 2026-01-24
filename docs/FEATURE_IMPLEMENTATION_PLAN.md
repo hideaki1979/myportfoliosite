@@ -21,16 +21,16 @@
 
 ### 実装済み機能
 
-| 機能 | 状態 | 備考 |
-|------|------|------|
-| ホームページ | ✅ 完了 | Hero, GitHub/Qiitaプレビュー |
+| 機能                 | 状態    | 備考                                 |
+| -------------------- | ------- | ------------------------------------ |
+| ホームページ         | ✅ 完了 | Hero, GitHub/Qiitaプレビュー         |
 | ポートフォリオページ | ✅ 完了 | リポジトリ一覧、コントリビューション |
-| アバウトページ | ✅ 完了 | 自己紹介、職歴 |
-| 記事ページ | ✅ 完了 | Qiita記事一覧 |
-| お問い合わせ | ✅ 完了 | reCAPTCHA付きフォーム |
-| ダークモード | ✅ 完了 | next-themes + 切り替えUI |
-| レスポンシブ | ✅ 完了 | モバイル対応済み |
-| SEO | ✅ 完了 | メタデータ、構造化データ |
+| アバウトページ       | ✅ 完了 | 自己紹介、職歴                       |
+| 記事ページ           | ✅ 完了 | Qiita記事一覧                        |
+| お問い合わせ         | ✅ 完了 | reCAPTCHA付きフォーム                |
+| ダークモード         | ✅ 完了 | next-themes + 切り替えUI             |
+| レスポンシブ         | ✅ 完了 | モバイル対応済み                     |
+| SEO                  | ✅ 完了 | メタデータ、構造化データ             |
 
 ### 技術スタック
 
@@ -47,15 +47,15 @@ Infra:    Turborepo (モノレポ), pnpm
 
 ### 優先度マトリクス
 
-| 機能 | 効果 | 難易度 | 工数 | 優先度 |
-|------|:----:|:------:|:----:|:------:|
-| 1. スキルセクション | 高 | 低-中 | 4-6h | ⭐⭐⭐⭐⭐ |
-| 2. プロジェクト詳細ページ | 高 | 中 | 8-12h | ⭐⭐⭐⭐⭐ |
-| 3. ページ遷移アニメーション | 中 | 低 | 2-4h | ⭐⭐⭐⭐ |
-| 4. 閲覧分析（Analytics） | 中 | 低 | 1-2h | ⭐⭐⭐⭐ |
-| 5. 多言語対応（i18n） | 高 | 中 | 8-12h | ⭐⭐⭐ |
-| 6. ブログ機能 | 高 | 高 | 16-24h | ⭐⭐⭐ |
-| 7. お問い合わせ履歴永続化 | 中 | 高 | 12-20h | ⭐⭐ |
+| 機能                        | 効果 | 難易度 |  工数  |   優先度   |
+| --------------------------- | :--: | :----: | :----: | :--------: |
+| 1. スキルセクション         |  高  | 低-中  |  4-6h  | ⭐⭐⭐⭐⭐ |
+| 2. プロジェクト詳細ページ   |  高  |   中   | 8-12h  | ⭐⭐⭐⭐⭐ |
+| 3. ページ遷移アニメーション |  中  |   低   |  2-4h  |  ⭐⭐⭐⭐  |
+| 4. 閲覧分析（Analytics）    |  中  |   低   |  1-2h  |  ⭐⭐⭐⭐  |
+| 5. 多言語対応（i18n）       |  高  |   中   | 8-12h  |   ⭐⭐⭐   |
+| 6. ブログ機能               |  高  |   高   | 16-24h |   ⭐⭐⭐   |
+| 7. お問い合わせ履歴永続化   |  中  |   高   | 12-20h |    ⭐⭐    |
 
 ---
 
@@ -118,11 +118,11 @@ Infra:    Turborepo (モノレポ), pnpm
 
 #### 要件定義
 
-| 項目 | 内容 |
-|------|------|
-| 配置場所 | Aboutページ or 新規 `/skills` ページ |
-| データソース | 静的定義 + GitHub言語データ |
-| 表示形式 | カテゴリ別カード + 習熟度バー |
+| 項目         | 内容                                 |
+| ------------ | ------------------------------------ |
+| 配置場所     | Aboutページ or 新規 `/skills` ページ |
+| データソース | 静的定義 + GitHub言語データ          |
+| 表示形式     | カテゴリ別カード + 習熟度バー        |
 
 #### UI設計
 
@@ -149,6 +149,7 @@ Infra:    Turborepo (モノレポ), pnpm
 #### 実装計画
 
 **新規ファイル**:
+
 ```
 apps/web/
 ├── components/
@@ -168,6 +169,7 @@ apps/web/
 ```
 
 **データ構造**:
+
 ```typescript
 // apps/web/data/skills.ts
 export type SkillLevel = 1 | 2 | 3 | 4 | 5;
@@ -201,6 +203,7 @@ export const skillsData: SkillCategory[] = [
 ```
 
 **実装ステップ**:
+
 1. [ ] スキルデータファイル作成 (30min)
 2. [ ] 型定義作成 (15min)
 3. [ ] SkillBar コンポーネント (45min)
@@ -221,11 +224,11 @@ export const skillsData: SkillCategory[] = [
 
 #### 要件定義
 
-| 項目 | 内容 |
-|------|------|
-| ルート | `/portfolio/[slug]` |
-| データソース | MDX + frontmatter or JSON |
-| コンテンツ | 概要、技術スタック、課題と解決策、スクリーンショット |
+| 項目         | 内容                                                 |
+| ------------ | ---------------------------------------------------- |
+| ルート       | `/portfolio/[slug]`                                  |
+| データソース | MDX + frontmatter or JSON                            |
+| コンテンツ   | 概要、技術スタック、課題と解決策、スクリーンショット |
 
 #### UI設計
 
@@ -268,9 +271,9 @@ export const skillsData: SkillCategory[] = [
 └─────────────────────────────────────────────────────────────┘
 ```
 
-#### 実装計画
+## 実装計画
 
-### アプローチA: JSON + 静的生成（推奨
+### アプローチA: JSON + 静的生成（推奨）
 
 ```
 apps/web/
@@ -300,6 +303,7 @@ apps/web/
 ```
 
 **データ構造**:
+
 ```typescript
 // apps/web/data/projects/types.ts
 export interface Project {
@@ -323,6 +327,7 @@ export interface Project {
 ```
 
 **実装ステップ**:
+
 1. [ ] プロジェクトデータ構造設計 (30min)
 2. [ ] サンプルプロジェクトデータ作成 (1h)
 3. [ ] ProjectDetail コンポーネント群作成 (2h)
@@ -343,15 +348,16 @@ export interface Project {
 
 #### 要件定義
 
-| 項目 | 内容 |
-|------|------|
-| ライブラリ | framer-motion |
-| アニメーション | フェード + スライド |
-| 対象 | ページ全体、セクション |
+| 項目           | 内容                   |
+| -------------- | ---------------------- |
+| ライブラリ     | framer-motion          |
+| アニメーション | フェード + スライド    |
+| 対象           | ページ全体、セクション |
 
 #### 実装計画
 
 **新規ファイル**:
+
 ```
 apps/web/
 ├── components/
@@ -365,6 +371,7 @@ apps/web/
 ```
 
 **実装例**:
+
 ```typescript
 // apps/web/components/animations/PageTransition.tsx
 "use client";
@@ -399,6 +406,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
 ```
 
 **実装ステップ**:
+
 1. [ ] framer-motion インストール (5min)
 2. [ ] PageTransition コンポーネント作成 (30min)
 3. [ ] FadeIn/SlideIn ユーティリティ作成 (30min)
@@ -407,6 +415,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
 6. [ ] パフォーマンス確認 (30min)
 
 **依存パッケージ**:
+
 ```bash
 pnpm add framer-motion --filter web
 ```
@@ -419,15 +428,16 @@ pnpm add framer-motion --filter web
 
 #### 要件定義
 
-| 項目 | 内容 |
-|------|------|
-| サービス | Vercel Analytics（推奨）or Plausible |
-| 取得データ | PV、滞在時間、流入元、デバイス |
-| プライバシー | Cookie不要、GDPR対応 |
+| 項目         | 内容                                 |
+| ------------ | ------------------------------------ |
+| サービス     | Vercel Analytics（推奨）or Plausible |
+| 取得データ   | PV、滞在時間、流入元、デバイス       |
+| プライバシー | Cookie不要、GDPR対応                 |
 
 #### 実装計画（Vercel Analytics）
 
 **変更ファイル**:
+
 ```
 apps/web/
 ├── package.json              # @vercel/analytics 追加
@@ -436,6 +446,7 @@ apps/web/
 ```
 
 **実装例**:
+
 ```typescript
 // apps/web/app/layout.tsx
 import { Analytics } from "@vercel/analytics/react";
@@ -455,12 +466,14 @@ export default function RootLayout({ children }) {
 ```
 
 **実装ステップ**:
+
 1. [ ] @vercel/analytics インストール (5min)
 2. [ ] layout.tsx に追加 (10min)
 3. [ ] Vercel ダッシュボードで確認 (15min)
 4. [ ] カスタムイベント追加（オプション） (30min)
 
 **依存パッケージ**:
+
 ```bash
 pnpm add @vercel/analytics @vercel/speed-insights --filter web
 ```
@@ -473,16 +486,17 @@ pnpm add @vercel/analytics @vercel/speed-insights --filter web
 
 #### 要件定義
 
-| 項目 | 内容 |
-|------|------|
-| ライブラリ | next-intl |
-| 対応言語 | 日本語（デフォルト）、英語 |
-| URL構造 | `/ja/...`, `/en/...` |
-| 切り替え | ヘッダーに言語セレクタ |
+| 項目       | 内容                       |
+| ---------- | -------------------------- |
+| ライブラリ | next-intl                  |
+| 対応言語   | 日本語（デフォルト）、英語 |
+| URL構造    | `/ja/...`, `/en/...`       |
+| 切り替え   | ヘッダーに言語セレクタ     |
 
 #### 実装計画
 
 **ファイル構造**:
+
 ```
 apps/web/
 ├── messages/
@@ -507,6 +521,7 @@ apps/web/
 ```
 
 **翻訳ファイル例**:
+
 ```json
 // messages/ja.json
 {
@@ -528,6 +543,7 @@ apps/web/
 ```
 
 **実装ステップ**:
+
 1. [ ] next-intl インストール (10min)
 2. [ ] i18n設定ファイル作成 (30min)
 3. [ ] 翻訳ファイル作成（日本語） (1h)
@@ -539,6 +555,7 @@ apps/web/
 9. [ ] テスト (1h)
 
 **依存パッケージ**:
+
 ```bash
 pnpm add next-intl --filter web
 ```
@@ -551,15 +568,16 @@ pnpm add next-intl --filter web
 
 #### 要件定義
 
-| 項目 | 内容 |
-|------|------|
-| コンテンツ形式 | MDX |
-| 機能 | カテゴリ、タグ、検索、目次 |
-| URL | `/blog`, `/blog/[slug]` |
+| 項目           | 内容                       |
+| -------------- | -------------------------- |
+| コンテンツ形式 | MDX                        |
+| 機能           | カテゴリ、タグ、検索、目次 |
+| URL            | `/blog`, `/blog/[slug]`    |
 
 #### 実装計画
 
 **ファイル構造**:
+
 ```
 apps/web/
 ├── content/
@@ -587,6 +605,7 @@ apps/web/
 ```
 
 **MDX記事例**:
+
 ```mdx
 ---
 title: "Next.js 15の新機能まとめ"
@@ -603,12 +622,12 @@ tags: ["Next.js", "React", "TypeScript"]
 Next.js 15がリリースされました...
 
 <CodeBlock language="typescript">
-// コード例
-const greeting = "Hello, World!";
+  // コード例 const greeting = "Hello, World!";
 </CodeBlock>
 ```
 
 **実装ステップ**:
+
 1. [ ] MDX関連パッケージインストール (15min)
 2. [ ] MDX設定（next.config.js） (30min)
 3. [ ] 記事取得ユーティリティ (1h)
@@ -621,6 +640,7 @@ const greeting = "Hello, World!";
 10. [ ] テスト (1h)
 
 **依存パッケージ**:
+
 ```bash
 pnpm add @next/mdx @mdx-js/loader @mdx-js/react gray-matter reading-time --filter web
 pnpm add -D @types/mdx --filter web
@@ -634,15 +654,16 @@ pnpm add -D @types/mdx --filter web
 
 #### 要件定義
 
-| 項目 | 内容 |
-|------|------|
+| 項目         | 内容                           |
+| ------------ | ------------------------------ |
 | データベース | Supabase（推奨）or PlanetScale |
-| 認証 | Supabase Auth |
-| 管理画面 | `/admin` (認証必須) |
+| 認証         | Supabase Auth                  |
+| 管理画面     | `/admin` (認証必須)            |
 
 #### 実装計画
 
 **ファイル構造**:
+
 ```
 apps/api/
 ├── src/
@@ -666,6 +687,7 @@ apps/web/
 ```
 
 **データベーススキーマ**:
+
 ```sql
 CREATE TABLE contacts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -679,6 +701,7 @@ CREATE TABLE contacts (
 ```
 
 **実装ステップ**:
+
 1. [ ] Supabase プロジェクト作成 (30min)
 2. [ ] テーブル作成 (15min)
 3. [ ] Supabase クライアント設定 (30min)
@@ -691,6 +714,7 @@ CREATE TABLE contacts (
 10. [ ] テスト (1.5h)
 
 **依存パッケージ**:
+
 ```bash
 # Backend
 pnpm add @supabase/supabase-js --filter api
@@ -705,53 +729,51 @@ pnpm add @supabase/ssr @supabase/supabase-js --filter web
 
 ### パフォーマンス
 
-| 項目 | 対策 |
-|------|------|
+| 項目           | 対策                          |
+| -------------- | ----------------------------- |
 | バンドルサイズ | framer-motionは動的インポート |
-| 画像最適化 | next/image使用 |
-| フォント | next/font最適化済み |
-| キャッシュ | ISR活用（revalidate: 600） |
+| 画像最適化     | next/image使用                |
+| フォント       | next/font最適化済み           |
+| キャッシュ     | ISR活用（revalidate: 600）    |
 
 ### アクセシビリティ
 
-| 項目 | 対策 |
-|------|------|
-| キーボード操作 | 全インタラクティブ要素対応 |
-| スクリーンリーダー | aria-label, role適切に |
-| カラーコントラスト | WCAG AA準拠 |
-| フォーカス管理 | visible focus ring |
+| 項目               | 対策                       |
+| ------------------ | -------------------------- |
+| キーボード操作     | 全インタラクティブ要素対応 |
+| スクリーンリーダー | aria-label, role適切に     |
+| カラーコントラスト | WCAG AA準拠                |
+| フォーカス管理     | visible focus ring         |
 
 ### SEO
 
-| 項目 | 対策 |
-|------|------|
-| メタデータ | 各ページに個別設定 |
-| 構造化データ | JSON-LD継続 |
-| sitemap | 動的生成対応 |
-| OGP | 各ページに設定 |
+| 項目         | 対策               |
+| ------------ | ------------------ |
+| メタデータ   | 各ページに個別設定 |
+| 構造化データ | JSON-LD継続        |
+| sitemap      | 動的生成対応       |
+| OGP          | 各ページに設定     |
 
 ---
 
 ## リスクと対策
 
-| リスク | 影響 | 対策 |
-|--------|:----:|------|
-| framer-motionバンドルサイズ増加 | 中 | 動的インポート、tree shaking |
-| i18n導入による複雑化 | 中 | 段階的導入、自動テスト強化 |
-| MDXビルド時間増加 | 低 | 記事数制限、増加時はCMS検討 |
-| Supabase依存 | 中 | 抽象化レイヤー、バックアップ |
-
----
+| リスク                          | 影響 | 対策                         |
+| ------------------------------- | :--: | ---------------------------- |
+| framer-motionバンドルサイズ増加 |  中  | 動的インポート、tree shaking |
+| i18n導入による複雑化            |  中  | 段階的導入、自動テスト強化   |
+| MDXビルド時間増加               |  低  | 記事数制限、増加時はCMS検討  |
+| Supabase依存                    |  中  | 抽象化レイヤー、バックアップ |
 
 ## 見積りサマリ
 
-| Phase | 機能 | 工数 |
-|-------|------|:----:|
-| Phase 1 | Analytics + アニメーション | 3-4h |
-| Phase 2 | スキル + プロジェクト詳細 | 12-18h |
-| Phase 3 | i18n + ブログ | 24-36h |
-| Phase 4 | DB永続化 | 12-20h |
-| **合計** | | **51-78h** |
+| Phase    | 機能                       |    工数    |
+| -------- | -------------------------- | :--------: |
+| Phase 1  | Analytics + アニメーション |    3-4h    |
+| Phase 2  | スキル + プロジェクト詳細  |   12-18h   |
+| Phase 3  | i18n + ブログ              |   24-36h   |
+| Phase 4  | DB永続化                   |   12-20h   |
+| **合計** |                            | **51-78h** |
 
 ---
 

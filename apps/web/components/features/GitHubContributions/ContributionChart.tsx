@@ -35,6 +35,13 @@ const Header = styled.div`
 
 const HeaderLeft = styled.div``;
 
+const HeaderRight = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+`;
+
 const Title = styled.h3`
     font-size: ${({ theme }) => `${theme.typography.headings.h3}px`};
     font-weight: 700;
@@ -82,6 +89,11 @@ const RefreshButton = styled.button<{ $isLoading?: boolean }>`
             transform: rotate(360deg);
         }
     }
+`;
+
+const ErrorMessage = styled.p`
+    font-size: 12px;
+    color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 const Stats = styled.p`
@@ -247,6 +259,7 @@ const LegendCell = styled.div<{ $color: string }>`
 export default function ContributionChart({ data }: ContributionChartProps) {
     const [currentData, setCurrentData] = useState<GitHubContributionCalendar>(data);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [hoveredDay, setHoveredDay] = useState<ContributionDay | null>(null);
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
@@ -254,13 +267,13 @@ export default function ContributionChart({ data }: ContributionChartProps) {
         if (isRefreshing) return;
 
         setIsRefreshing(true);
+        setErrorMessage(null);
         try {
             const newData = await refreshGitHubContributions();
             setCurrentData(newData);
         } catch (error) {
             console.error('Failed to refresh contributions:', error);
-            // エラー時はアラートを表示（簡易実装）
-            alert('コントリビューションの更新に失敗しました。しばらく経ってから再度お試しください。');
+            setErrorMessage('コントリビューションの更新に失敗しました。しばらく経ってから再度お試しください。');
         } finally {
             setIsRefreshing(false);
         }
@@ -320,26 +333,33 @@ export default function ContributionChart({ data }: ContributionChartProps) {
                         過去1年間で<strong>{currentData.totalContributions.toLocaleString()}</strong>件のコントリビューション
                     </Stats>
                 </HeaderLeft>
-                <RefreshButton
-                    onClick={handleRefresh}
-                    disabled={isRefreshing}
-                    $isLoading={isRefreshing}
-                    aria-label="最新情報を取得"
-                    title="最新情報を取得"
-                >
-                    <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                <HeaderRight>
+                    <RefreshButton
+                        onClick={handleRefresh}
+                        disabled={isRefreshing}
+                        $isLoading={isRefreshing}
+                        aria-label="最新情報を取得"
+                        title="最新情報を取得"
                     >
-                        <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
-                        <path d="M21 3v5h-5" />
-                    </svg>
-                    {isRefreshing ? '更新中...' : '最新情報を取得'}
-                </RefreshButton>
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+                            <path d="M21 3v5h-5" />
+                        </svg>
+                        {isRefreshing ? '更新中...' : '最新情報を取得'}
+                    </RefreshButton>
+                    {errorMessage && (
+                        <ErrorMessage role="status" aria-live="polite">
+                            {errorMessage}
+                        </ErrorMessage>
+                    )}
+                </HeaderRight>
             </Header>
 
             <ChartWrapper>

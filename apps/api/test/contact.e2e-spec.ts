@@ -2,14 +2,19 @@ import { BadRequestException, INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
 import { AppModule } from 'src/app.module';
+import { GlobalExceptionFilter } from 'src/common/filters/http-exception.filter';
 import { ContactService } from 'src/modules/contact/contact.service';
 import { RecaptchaService } from 'src/modules/contact/recaptcha.service';
 import request from 'supertest';
+import { Logger } from 'nestjs-pino';
 
 interface ContactResponse {
   success: boolean;
   message: string;
   errors?: Record<string, string[]>;
+  error?: {
+    message: string;
+  };
 }
 
 describe('Contact API (e2e)', () => {
@@ -48,6 +53,7 @@ describe('Contact API (e2e)', () => {
 
     const moduleFixture: TestingModule = await builder.compile();
     const created = moduleFixture.createNestApplication();
+    created.useGlobalFilters(new GlobalExceptionFilter(created.get(Logger)));
     await created.init();
     return created;
   }
@@ -96,7 +102,7 @@ describe('Contact API (e2e)', () => {
       const res = await request(server)
         .post('/api/contact')
         .send(payload)
-        .expect(200);
+        .expect(201);
 
       const body = res.body as ContactResponse;
       expect(body).toMatchObject({
@@ -228,11 +234,14 @@ describe('Contact API (e2e)', () => {
         recaptchaToken: 'invalid-recaptcha-token',
       };
 
-      const res = await request(server).post('/api/contact').send(payload);
+      const res = await request(server)
+        .post('/api/contact')
+        .send(payload)
+        .expect(400);
 
       const body = res.body as ContactResponse;
       expect(body.success).toBe(false);
-      expect(body.message).toContain('reCAPTCHA');
+      expect(body.error?.message).toContain('reCAPTCHA');
     });
 
     it('失敗: reCAPTCHAトークンが未指定', async () => {

@@ -1,8 +1,35 @@
 import { Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { GithubService } from './github.service';
-import type { GitHubRateLimitInfo } from './github.service';
+import type {
+  GitHubRateLimitInfo,
+  GitHubRepositoryDto,
+} from './github.service';
 import { DEFAULT_REPOSITORY_LIMIT } from '../../constants/constants';
-import { GithubContributionsRefreshGuard } from './guards/github-contributions-refresh.guard';
+import { ApiKeyProtected } from '../../common/decorators/api-key-protected.decorator';
+import { ApiKeyGuard } from '../../common/guards/api-key.guard';
+import { GithubRepositoriesQueryDto } from './dto/github-repositories.query.dto';
+
+type RepositoryPagination = {
+  page: number;
+  perPage: number;
+  hasMore: boolean;
+};
+
+type GithubRepositoriesResult = {
+  repositories: GitHubRepositoryDto[];
+  pagination: RepositoryPagination;
+};
+
+type GitHubRepositoriesResponse = {
+  success: true;
+  repositories: GitHubRepositoryDto[];
+  pagination: RepositoryPagination;
+  rateLimit?: {
+    limit: number;
+    remaining: number;
+    resetAt: string;
+  };
+};
 
 @Controller('api/github')
 export class GithubController {
@@ -10,38 +37,33 @@ export class GithubController {
 
   @Get('repositories')
   async getRepositories(
-    @Query('limit') limit?: string,
-    @Query('page') page?: string,
-  ) {
-    const parsedLimit = limit ? parseInt(limit, 10) : NaN;
-    const safeLimit =
-      Number.isFinite(parsedLimit) && parsedLimit > 0
-        ? parsedLimit
-        : DEFAULT_REPOSITORY_LIMIT;
+    @Query() query: GithubRepositoriesQueryDto,
+  ): Promise<GitHubRepositoriesResponse> {
+    const safeLimit = query.limit ?? DEFAULT_REPOSITORY_LIMIT;
+    const safePage = query.page ?? 1;
 
-    const parsedPage = page ? parseInt(page, 10) : 1;
-    const safePage =
-      Number.isFinite(parsedPage) && parsedPage >= 1 ? parsedPage : 1;
-
-    const result = await this.github.getUserPublicRepositories(
+    const result = (await this.github.getUserPublicRepositories(
       safeLimit,
       safePage,
-    );
+    )) as GithubRepositoriesResult;
     const rateLimit: GitHubRateLimitInfo | null =
       this.github.getRateLimitInfo();
 
-    return {
+    const response: GitHubRepositoriesResponse = {
       success: true,
       repositories: result.repositories,
       pagination: result.pagination,
-      ...(rateLimit && {
-        rateLimit: {
-          limit: rateLimit.limit,
-          remaining: rateLimit.remaining,
-          resetAt: new Date(rateLimit.resetAt * 1000).toISOString(),
-        },
-      }),
     };
+
+    if (rateLimit) {
+      response.rateLimit = {
+        limit: rateLimit.limit,
+        remaining: rateLimit.remaining,
+        resetAt: new Date(rateLimit.resetAt * 1000).toISOString(),
+      };
+    }
+
+    return response;
   }
 
   @Get('rate-limit')
@@ -80,7 +102,11 @@ export class GithubController {
    * POST /api/github/contributions/refresh
    */
   @Post('contributions/refresh')
-  @UseGuards(GithubContributionsRefreshGuard)
+  @ApiKeyProtected(
+    'GITHUB_CONTRIBUTIONS_REFRESH_API_KEY',
+    'GitHub contributions refresh API key is not configured.',
+  )
+  @UseGuards(ApiKeyGuard)
   async refreshContributions() {
     const contributions = await this.github.refreshContributionCalendar();
     return {
