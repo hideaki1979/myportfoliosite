@@ -1,6 +1,8 @@
-import { Controller, Get, Post, Query } from '@nestjs/common';
+import { Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { GithubService } from './github.service';
+import type { GitHubRateLimitInfo } from './github.service';
 import { DEFAULT_REPOSITORY_LIMIT } from '../../constants/constants';
+import { GithubContributionsRefreshGuard } from './guards/github-contributions-refresh.guard';
 
 @Controller('api/github')
 export class GithubController {
@@ -12,17 +14,21 @@ export class GithubController {
     @Query('page') page?: string,
   ) {
     const parsedLimit = limit ? parseInt(limit, 10) : NaN;
-    const safeLimit = Number.isFinite(parsedLimit)
-      ? parsedLimit
-      : DEFAULT_REPOSITORY_LIMIT;
+    const safeLimit =
+      Number.isFinite(parsedLimit) && parsedLimit > 0
+        ? parsedLimit
+        : DEFAULT_REPOSITORY_LIMIT;
 
     const parsedPage = page ? parseInt(page, 10) : 1;
-    const safePage = Number.isFinite(parsedPage) && parsedPage >= 1
-      ? parsedPage
-      : 1;
+    const safePage =
+      Number.isFinite(parsedPage) && parsedPage >= 1 ? parsedPage : 1;
 
-    const result = await this.github.getUserPublicRepositories(safeLimit, safePage);
-    const rateLimit = this.github.getRateLimitInfo();
+    const result = await this.github.getUserPublicRepositories(
+      safeLimit,
+      safePage,
+    );
+    const rateLimit: GitHubRateLimitInfo | null =
+      this.github.getRateLimitInfo();
 
     return {
       success: true,
@@ -74,6 +80,7 @@ export class GithubController {
    * POST /api/github/contributions/refresh
    */
   @Post('contributions/refresh')
+  @UseGuards(GithubContributionsRefreshGuard)
   async refreshContributions() {
     const contributions = await this.github.refreshContributionCalendar();
     return {

@@ -1,4 +1,5 @@
-import { GitHubRepository } from "../../components/features/GitHubRepos";
+import type { GitHubRepository, PaginationInfo } from "../../components/features/GitHubRepos";
+import type { GitHubRepositoriesResponse } from "../../lib/api/github";
 
 export const mockRepositories: GitHubRepository[] = [
     {
@@ -32,6 +33,17 @@ export const mockRepositories: GitHubRepository[] = [
         updatedAt: '2024-01-03T00:00:00Z',
     },
 ];
+
+const defaultPagination: PaginationInfo = {
+    page: 1,
+    perPage: 20,
+    hasMore: false,
+};
+
+export const mockRepositoriesResponse: GitHubRepositoriesResponse = {
+    repositories: mockRepositories,
+    pagination: defaultPagination,
+};
 
 /**
  * GitHubReposコンポーネントのモック実装

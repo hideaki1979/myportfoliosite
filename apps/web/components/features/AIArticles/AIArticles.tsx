@@ -5,7 +5,6 @@ import { useState, useMemo } from 'react';
 import { AIArticlesProps } from './types';
 import AIArticleCard from './AIArticleCard';
 import { extractUniqueTags, filterArticles } from '../../../lib/search-utils';
-import type { QiitaArticle } from '../../../lib/api/qiita';
 import SearchBar from '../QiitaArticles/SearchBar';
 import TagFilter from '../QiitaArticles/TagFilter';
 
@@ -75,32 +74,15 @@ export default function AIArticles({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  // QiitaArticle形式に変換（search-utilsとの互換性のため）
-  const articlesForSearch = useMemo(() => {
-    return initialData.map((article) => ({
-      id: article.id,
-      title: article.title,
-      url: article.url,
-      likesCount: article.likesCount,
-      stocksCount: article.stocksCount,
-      createdAt: article.createdAt,
-      tags: article.tags,
-    })) as QiitaArticle[];
-  }, [initialData]);
-
   // 利用可能なタグを抽出
   const availableTags = useMemo(() => {
-    return extractUniqueTags(articlesForSearch);
-  }, [articlesForSearch]);
+    return extractUniqueTags(initialData);
+  }, [initialData]);
 
   // フィルタリング
   const filteredArticles = useMemo(() => {
-    const filtered = filterArticles(articlesForSearch, searchQuery, selectedTags);
-    // 元のAIArticle形式で返す
-    return initialData.filter((article) =>
-      filtered.some((f) => f.id === article.id)
-    );
-  }, [initialData, articlesForSearch, searchQuery, selectedTags]);
+    return filterArticles(initialData, searchQuery, selectedTags);
+  }, [initialData, searchQuery, selectedTags]);
 
   // フォーマット済み最終更新日時
   const formattedLastUpdated = useMemo(() => {

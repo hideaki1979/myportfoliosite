@@ -39,6 +39,10 @@ import { AIArticlesModule } from './modules/ai-articles/ai-articles.module';
           then: Joi.string().email().required(),
           otherwise: Joi.string().empty('').default('admin@example.com'),
         }),
+        AI_ARTICLES_REFRESH_API_KEY: Joi.string().allow('').default(''),
+        GITHUB_CONTRIBUTIONS_REFRESH_API_KEY: Joi.string()
+          .allow('')
+          .default(''),
       }),
     }),
     LoggerModule.forRootAsync({

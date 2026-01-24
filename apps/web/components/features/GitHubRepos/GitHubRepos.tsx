@@ -101,7 +101,7 @@ export default function GitHubRepos({
     const [currentPage, setCurrentPage] = useState(initialPagination?.page ?? 1);
     const [hasMore, setHasMore] = useState(initialPagination?.hasMore ?? false);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
-    const perPage = initialPagination?.perPage ?? 20;
+    const perPage = initialPagination?.perPage ?? limit ?? 20;
 
     // リトライハンドラー
     const handleRetry = async () => {

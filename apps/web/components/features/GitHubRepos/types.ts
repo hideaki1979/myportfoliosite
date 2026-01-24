@@ -2,6 +2,10 @@
  * GitHubリポジトリ関連の型定義
  */
 
+import type { PaginationInfo } from '@repo/shared-types';
+
+export type { PaginationInfo };
+
 export interface GitHubRepository {
     id: string;
     name: string;
@@ -30,12 +34,6 @@ export interface GitHubProfile {
 
 export type SortBy = 'stars' | 'updated';
 export type SortOrder = 'asc' | 'desc';
-
-export interface PaginationInfo {
-    page: number;
-    perPage: number;
-    hasMore: boolean;
-}
 
 export interface GitHubReposProps {
     initialData?: GitHubRepository[];

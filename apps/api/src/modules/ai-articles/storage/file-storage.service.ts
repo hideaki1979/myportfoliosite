@@ -2,7 +2,11 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Logger } from 'nestjs-pino';
 import * as fs from 'fs';
 import * as path from 'path';
-import { AIArticlesStorage } from '../dto/ai-article.dto';
+import {
+  AIArticlesStorage,
+  AIArticlesStorageInput,
+  AIArticlesStorageSchema,
+} from '../dto/ai-article.dto';
 
 const DATA_DIR = path.join(process.cwd(), 'data');
 const DATA_FILE = path.join(DATA_DIR, 'ai-articles.json');
@@ -42,7 +46,17 @@ export class FileStorageService implements OnModuleInit {
       }
 
       const content = fs.readFileSync(DATA_FILE, 'utf-8');
-      const data = JSON.parse(content) as AIArticlesStorage;
+      const parsedJson = JSON.parse(content) as AIArticlesStorageInput;
+      const result = AIArticlesStorageSchema.safeParse(parsedJson);
+
+      if (!result.success) {
+        this.logger.error(
+          `AI articles data validation failed: ${result.error.message}`,
+        );
+        return null;
+      }
+
+      const data = result.data;
 
       this.logger.debug(`Read ${data.articles.length} AI articles from file`);
       return data;

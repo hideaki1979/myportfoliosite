@@ -1,5 +1,6 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import type { PaginationInfo } from '@repo/shared-types';
 import { Logger } from 'nestjs-pino';
 import { CacheService } from '../cache/cache.service';
 import { API_TIMEOUT, GITHUB_GRAPHQL_URL } from 'src/constants/constants';
@@ -24,12 +25,6 @@ export interface GitHubRepositoryDto {
   forkCount: number;
   primaryLanguage: string | null;
   updatedAt: string;
-}
-
-export interface PaginationInfo {
-  page: number;
-  perPage: number;
-  hasMore: boolean;
 }
 
 export interface RepositoriesWithPagination {
@@ -139,16 +134,16 @@ export class GithubService {
     const perPage = Math.min(Math.max(perPageBase, 1), 100);
 
     const numericPage = Number(page);
-    const safePage = Number.isFinite(numericPage) && numericPage >= 1
-      ? Math.floor(numericPage)
-      : 1;
+    const safePage =
+      Number.isFinite(numericPage) && numericPage >= 1
+        ? Math.floor(numericPage)
+        : 1;
 
     const cacheKey = `${CACHE_KEY_PREFIX}:${perPage}:page${safePage}`;
     const staleCacheKey = `${cacheKey}:stale`;
 
     // キャッシュから取得を試行
-    const cached =
-      this.cacheService.get<RepositoriesWithPagination>(cacheKey);
+    const cached = this.cacheService.get<RepositoriesWithPagination>(cacheKey);
     if (cached) {
       this.logger.log(
         `GitHub repositories served from cache (page ${safePage}, ${cached.repositories.length} items)`,

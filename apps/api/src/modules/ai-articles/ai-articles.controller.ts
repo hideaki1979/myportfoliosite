@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Query } from '@nestjs/common';
+import { Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { AIArticlesService } from './ai-articles.service';
 import type {
   AIArticlesResponse,
   AIArticlesTagsResponse,
 } from './dto/ai-article.dto';
+import { AIArticlesRefreshGuard } from './guards/ai-articles-refresh.guard';
 
 @Controller('api/ai-articles')
 export class AIArticlesController {
@@ -18,30 +19,16 @@ export class AIArticlesController {
     @Query('tag') tag?: string,
     @Query('limit') limit?: string,
   ): AIArticlesResponse {
-    const data = this.aiArticlesService.getArticles();
-
-    let articles = data.articles;
-
-    // タグでフィルタリング
-    if (tag) {
-      const tagLower = tag.toLowerCase();
-      articles = articles.filter((article) =>
-        article.tags.some((t) => t.name.toLowerCase() === tagLower),
-      );
-    }
-
-    // 件数制限
-    if (limit) {
-      const numLimit = parseInt(limit, 10);
-      if (!isNaN(numLimit) && numLimit > 0) {
-        articles = articles.slice(0, numLimit);
-      }
-    }
+    const numLimit = limit ? parseInt(limit, 10) : undefined;
+    const { articles, lastUpdated } = this.aiArticlesService.findArticles({
+      tag,
+      limit: numLimit && !isNaN(numLimit) ? numLimit : undefined,
+    });
 
     return {
       success: true,
       articles,
-      lastUpdated: data.lastUpdated,
+      lastUpdated,
       total: articles.length,
     };
   }
@@ -64,6 +51,7 @@ export class AIArticlesController {
    * POST /api/ai-articles/refresh
    */
   @Post('refresh')
+  @UseGuards(AIArticlesRefreshGuard)
   async refresh(): Promise<AIArticlesResponse> {
     const data = await this.aiArticlesService.fetchAndSaveArticles();
     return {

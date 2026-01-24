@@ -129,7 +129,15 @@ RECAPTCHA_SECRET_KEY=your_recaptcha_secret_key
 RESEND_API_KEY=your_resend_api_key  # オプション
 RESEND_FROM=noreply@example.com
 RESEND_TO=admin@example.com
+AI_ARTICLES_REFRESH_API_KEY=your_refresh_api_key  # オプション（本番は必須）
+GITHUB_CONTRIBUTIONS_REFRESH_API_KEY=your_refresh_api_key  # オプション（本番は必須）
 ```
+
+`POST /api/ai-articles/refresh` は `x-api-key` ヘッダで保護されています。  
+本番環境で `AI_ARTICLES_REFRESH_API_KEY` が未設定の場合は 401 を返します。
+
+`POST /api/github/contributions/refresh` は `x-api-key` ヘッダで保護されています。  
+本番環境で `GITHUB_CONTRIBUTIONS_REFRESH_API_KEY` が未設定の場合は 401 を返します。
 
 5. **開発サーバーの起動**
 

@@ -34,7 +34,7 @@
 
 ### 技術スタック
 
-```
+```text
 Frontend: Next.js 15 (App Router), React 19, TypeScript, styled-components
 Backend:  NestJS 11, Pino Logger, Resend (メール)
 Testing:  Vitest, Playwright, Jest
@@ -270,7 +270,7 @@ export const skillsData: SkillCategory[] = [
 
 #### 実装計画
 
-**アプローチA: JSON + 静的生成（推奨）**
+### アプローチA: JSON + 静的生成（推奨
 
 ```
 apps/web/

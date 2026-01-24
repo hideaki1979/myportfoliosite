@@ -2,6 +2,8 @@
  * AI記事のDTO定義
  */
 
+import { z } from 'zod';
+
 export interface AIArticleDto {
   id: string;
   title: string;
@@ -23,6 +25,14 @@ export interface AIArticleAuthorDto {
   id: string;
   name: string;
   profileImageUrl: string;
+}
+
+/**
+ * 記事検索オプション
+ */
+export interface FindArticlesOptions {
+  tag?: string;
+  limit?: number;
 }
 
 /**
@@ -54,6 +64,37 @@ export interface AIArticlesStorage {
   articles: AIArticleDto[];
   tags: string[];
 }
+
+export const AIArticleTagSchema = z.object({
+  name: z.string(),
+  versions: z.array(z.string()),
+});
+
+export const AIArticleAuthorSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  profileImageUrl: z.string(),
+});
+
+export const AIArticleSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  url: z.string(),
+  likesCount: z.number(),
+  stocksCount: z.number(),
+  createdAt: z.string(),
+  tags: z.array(AIArticleTagSchema),
+  author: AIArticleAuthorSchema,
+  fetchedAt: z.string(),
+});
+
+export const AIArticlesStorageSchema = z.object({
+  lastUpdated: z.string(),
+  articles: z.array(AIArticleSchema),
+  tags: z.array(z.string()),
+});
+
+export type AIArticlesStorageInput = z.input<typeof AIArticlesStorageSchema>;
 
 /**
  * API レスポンス型

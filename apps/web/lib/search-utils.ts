@@ -1,17 +1,20 @@
-import type { QiitaArticle } from './api/qiita';
-
 /**
  * 検索ユーティリティ
  * 
  * Qiita記事のクライアントサイド検索・フィルタリング機能を提供
  */
 
+type TagLike = { name: string };
+type SearchableArticle = { title: string; tags: TagLike[] };
+
 /**
  * 記事からユニークなタグを抽出する
  * @param articles - 記事の配列
  * @returns 出現回数でソートされたタグ名の配列
  */
-export function extractUniqueTags(articles: QiitaArticle[]): string[] {
+export function extractUniqueTags<T extends SearchableArticle>(
+  articles: T[],
+): string[] {
   const tagCount = new Map<string, number>();
   
   for (const article of articles) {
@@ -35,10 +38,10 @@ export function extractUniqueTags(articles: QiitaArticle[]): string[] {
  * @param query - 検索クエリ（空文字の場合は全記事を返す）
  * @returns フィルタリングされた記事の配列
  */
-export function searchArticles(
-  articles: QiitaArticle[],
+export function searchArticles<T extends SearchableArticle>(
+  articles: T[],
   query: string,
-): QiitaArticle[] {
+): T[] {
   const trimmedQuery = query.trim().toLowerCase();
   
   if (!trimmedQuery) {
@@ -69,10 +72,10 @@ export function searchArticles(
  * @param selectedTags - 選択されたタグ名の配列（空の場合は全記事を返す）
  * @returns フィルタリングされた記事の配列
  */
-export function filterByTags(
-  articles: QiitaArticle[],
+export function filterByTags<T extends SearchableArticle>(
+  articles: T[],
   selectedTags: string[],
-): QiitaArticle[] {
+): T[] {
   if (selectedTags.length === 0) {
     return articles;
   }
@@ -97,11 +100,11 @@ export function filterByTags(
  * @param selectedTags - 選択されたタグ名の配列
  * @returns フィルタリングされた記事の配列
  */
-export function filterArticles(
-  articles: QiitaArticle[],
+export function filterArticles<T extends SearchableArticle>(
+  articles: T[],
   query: string,
   selectedTags: string[],
-): QiitaArticle[] {
+): T[] {
   let result = articles;
   
   // 検索クエリでフィルタリング

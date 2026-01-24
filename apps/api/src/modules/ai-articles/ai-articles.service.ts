@@ -6,6 +6,7 @@ import {
   AIArticleDto,
   AIArticlesStorage,
   AI_RELATED_TAGS,
+  FindArticlesOptions,
   QiitaArticleApiResponse,
 } from './dto/ai-article.dto';
 import { CacheService } from '../cache/cache.service';
@@ -59,6 +60,32 @@ export class AIArticlesService {
       lastUpdated: '',
       articles: [],
       tags: [],
+    };
+  }
+
+  findArticles(options: FindArticlesOptions = {}): {
+    articles: AIArticleDto[];
+    lastUpdated: string;
+  } {
+    const data = this.getArticles();
+    let articles = data.articles;
+
+    // タグでフィルタリング
+    if (options.tag) {
+      const tagLower = options.tag.toLowerCase();
+      articles = articles.filter((article) =>
+        article.tags.some((t) => t.name.toLowerCase() === tagLower),
+      );
+    }
+
+    // 件数制限
+    if (options.limit && options.limit > 0) {
+      articles = articles.slice(0, options.limit);
+    }
+
+    return {
+      articles,
+      lastUpdated: data.lastUpdated,
     };
   }
 

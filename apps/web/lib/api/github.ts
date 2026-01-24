@@ -60,13 +60,13 @@ export async function fetchGitHubContributions(): Promise<GitHubContributionCale
         });
 
         if (!response.ok) {
-            const errorData = (await response.json().catch(() => {})) as GitHubContributionsApiResponse;
+            const errorData = (await response.json().catch(() => { })) as GitHubContributionsApiResponse;
             throw new Error(
                 errorData.error?.message ||
                 `GitHub contributions API error: ${response.status}`,
             );
         }
-        
+
         const result = (await response.json()) as GitHubContributionsApiResponse;
 
         if (!result.success || !result.contributions) {
@@ -92,12 +92,12 @@ export async function fetchGitHubRepositories(
     limit = 20,
     page = 1,
 ): Promise<GitHubRepositoriesResponse> {
-    const defaultPagination: PaginationInfo = { page: 1, perPage: limit, hasMore: false };
+    const safeLimit = Math.min(Math.max(limit, 1), 100);
+    const safePage = Math.max(page, 1);
+    const defaultPagination: PaginationInfo = { page: safePage, perPage: safeLimit, hasMore: false };
 
     try {
         // Next.js Route Handlerを呼び出し（内部API）
-        const safeLimit = Math.min(Math.max(limit, 1), 100);
-        const safePage = Math.max(page, 1);
         const url = new URL(`${apiBaseUrl}/api/github/repositories`)
         url.searchParams.set('limit', String(safeLimit));
         url.searchParams.set('page', String(safePage));
@@ -157,7 +157,7 @@ export async function fetchGitHubContributionsClient(): Promise<GitHubContributi
         });
 
         if (!response.ok) {
-            const errorData = (await response.json().catch(() => {})) as GitHubContributionsApiResponse;
+            const errorData = (await response.json().catch(() => { })) as GitHubContributionsApiResponse;
             throw new Error(
                 errorData.error?.message ||
                 `GitHub contributions request failed: ${response.status}`,
@@ -245,7 +245,7 @@ export async function refreshGitHubContributions(): Promise<GitHubContributionCa
         });
 
         if (!response.ok) {
-            const errorData = (await response.json().catch(() => {})) as GitHubContributionsApiResponse;
+            const errorData = (await response.json().catch(() => { })) as GitHubContributionsApiResponse;
             throw new Error(
                 errorData.error?.message ||
                 `GitHub contributions refresh failed: ${response.status}`,
