@@ -27,6 +27,11 @@ out/
 build
 dist
 
+# Compiled outputs
+apps/api/test/**/*.js
+apps/api/test/**/*.js.map
+apps/api/test/**/*.d.ts
+
 
 # Debug
 npm-debug.log*
