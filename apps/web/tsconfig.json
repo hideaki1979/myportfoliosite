@@ -2,9 +2,6 @@
   "extends": "@repo/typescript-config/nextjs.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "paths": {
-      "@repo/shared-types": ["../../packages/shared-types/src"]
-    },
     "plugins": [
       {
         "name": "next"
