@@ -1,6 +1,7 @@
 "use client";
 
 import styled from "styled-components";
+import { SkillChart } from "../features/SkillChart";
 
 export default function AboutMe() {
   return (
@@ -35,39 +36,7 @@ export default function AboutMe() {
             React（Next.js）、Go、NestJSを学習しながら、就職活動中。
           </Subtitle>
         </Header>
-        <Grid>
-          <Block>
-            <BlockTitle>開発工程・開発手法</BlockTitle>
-            <BlockList>
-              <li>
-                要件定義 / 基本設計 / 詳細設計 / 実装・単体テスト / 結合テスト /
-                総合テスト / 本番稼働〜運用・保守
-              </li>
-              <li>ウォーターフォール / アジャイル / スクラム</li>
-            </BlockList>
-          </Block>
-          <Block>
-            <BlockTitle>スキルスタック</BlockTitle>
-            <BlockList>
-              <li>HTML / CSS / JavaScript / React</li>
-              <li>Next.js / TypeScript / styled-components</li>
-              <li>Node.js（Express / NestJS）/ Go / Java / COBOL</li>
-              <li>Jest / Testing Library / Playwright</li>
-              <li>Oracle / MySQL / PostgreSQL</li>
-            </BlockList>
-          </Block>
-          <Block>
-            <BlockTitle>スキルスタック（その他）</BlockTitle>
-            <BlockList>
-              <li>Git(GitHub) / Docker / AWS / Firebase</li>
-              <li>Eclipse / VS Code / Cursor / Kiro</li>
-              <li>
-                Github Copilot / Claude Code / Gemini CLI / Code Rabbit / Gemini
-                Code Assist
-              </li>
-            </BlockList>
-          </Block>
-        </Grid>
+        <SkillChart />
       </Inner>
     </Section>
   );
@@ -109,37 +78,4 @@ const Title = styled.h2`
 
 const Subtitle = styled.p`
   color: ${({ theme }) => theme.colors.text.secondary};
-`;
-
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-
-  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}px) {
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 24px;
-  }
-`;
-
-const Block = styled.section`
-  background-color: ${({ theme }) => theme.colors.background.primary};
-  padding: 16px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-`;
-
-const BlockTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.headings.h3}px;
-  margin-bottom: 12px;
-  color: ${({ theme }) => theme.colors.text.primary};
-`;
-
-const BlockList = styled.ul`
-  margin: 0;
-  padding-left: 16px;
-  display: grid;
-  gap: 8px;
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-size: ${({ theme }) => theme.typography.body}px;
 `;
