@@ -52,7 +52,7 @@ export const SKILL_CATEGORIES: SkillCategory[] = [
     skills: [
       { name: "Node.js", level: 3, experience: "1年" },
       { name: "NestJS", level: 2, experience: "半年" },
-      { name: "Go", level: 2, experience: "学習中" },
+      { name: "Go", level: 1, experience: "学習中" },
       { name: "Java", level: 3, experience: "2年" },
       { name: "COBOL", level: 3, experience: "5年" },
       { name: "PHP/Laravel", level: 2, experience: "半年" },
