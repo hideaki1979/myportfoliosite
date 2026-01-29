@@ -301,4 +301,131 @@ describe('QiitaService', () => {
       expect(result).toBeNull();
     });
   });
+
+  describe('getUserInfo', () => {
+    const mockUserApiResponse = {
+      id: 'testuser',
+      name: 'Test User',
+      profile_image_url: 'https://example.com/avatar.png',
+      description: 'Test description',
+      followers_count: 100,
+      followees_count: 50,
+      items_count: 25,
+      website_url: 'https://example.com',
+      organization: 'Test Org',
+    };
+
+    const expectedUserDto = {
+      id: 'testuser',
+      name: 'Test User',
+      profileImageUrl: 'https://example.com/avatar.png',
+      description: 'Test description',
+      followersCount: 100,
+      followeesCount: 50,
+      itemsCount: 25,
+      websiteUrl: 'https://example.com',
+      organization: 'Test Org',
+    };
+
+    it('should return cached user info if available', async () => {
+      cacheService.get.mockReturnValue(expectedUserDto);
+
+      const result = await service.getUserInfo();
+
+      expect(result).toEqual(expectedUserDto);
+      expect(cacheService.get).toHaveBeenCalledWith('qiita:user-info');
+      expect(logger.log).toHaveBeenCalledWith(
+        'Qiita user info served from cache',
+      );
+    });
+
+    it('should fetch user info from API when cache is empty', async () => {
+      cacheService.get.mockReturnValue(null);
+
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockUserApiResponse),
+        headers: {
+          get: () => null,
+        },
+      } as unknown as Response);
+
+      const result = await service.getUserInfo();
+
+      expect(result).toEqual(expectedUserDto);
+      expect(cacheService.set).toHaveBeenCalledWith(
+        'qiita:user-info',
+        expectedUserDto,
+        expect.any(Number),
+      );
+      expect(cacheService.set).toHaveBeenCalledWith(
+        'qiita:user-info:stale',
+        expectedUserDto,
+        expect.any(Number),
+      );
+      expect(logger.log).toHaveBeenCalledWith(
+        'Fetched user info for testuser from Qiita API',
+      );
+
+      fetchSpy.mockRestore();
+    });
+
+    it('should return null when QIITA_USER_ID is not configured', async () => {
+      const emptyConfigService = {
+        get: jest.fn((key: string, defaultValue?: string) => {
+          if (key === 'QIITA_USER_ID') return '';
+          if (key === 'QIITA_TOKEN') return 'test-token';
+          return defaultValue || '';
+        }),
+      };
+
+      const emptyUserService = new QiitaService(
+        emptyConfigService as unknown as ConfigService,
+        logger,
+        cacheService,
+      );
+
+      const result = await emptyUserService.getUserInfo();
+
+      expect(result).toBeNull();
+      expect(logger.warn).toHaveBeenCalledWith(
+        'QIITA_USER_ID is not configured, cannot fetch user info.',
+      );
+    });
+
+    it('should use stale cache on API error', async () => {
+      cacheService.get.mockImplementation((key: string) => {
+        if (key === 'qiita:user-info') return null;
+        if (key === 'qiita:user-info:stale') return expectedUserDto;
+        return null;
+      });
+
+      const fetchSpy = jest
+        .spyOn(global, 'fetch')
+        .mockRejectedValue(new Error('Network error'));
+
+      const result = await service.getUserInfo();
+
+      expect(result).toEqual(expectedUserDto);
+      expect(logger.warn).toHaveBeenCalledWith(
+        'Qiita API error, serving stale user info cache',
+      );
+
+      fetchSpy.mockRestore();
+    });
+
+    it('should return null when no cache available on API error', async () => {
+      cacheService.get.mockReturnValue(null);
+
+      const fetchSpy = jest
+        .spyOn(global, 'fetch')
+        .mockRejectedValue(new Error('Network error'));
+
+      const result = await service.getUserInfo();
+
+      expect(result).toBeNull();
+
+      fetchSpy.mockRestore();
+    });
+  });
 });
