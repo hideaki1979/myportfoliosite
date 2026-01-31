@@ -142,6 +142,18 @@ export default function SearchBar({
     inputRef.current?.focus();
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== 'Escape') {
+      return;
+    }
+
+    if (!localValue) {
+      return;
+    }
+
+    handleClear();
+  };
+
   const showCount =
     resultCount !== undefined && totalCount !== undefined && value.trim() !== '';
 
@@ -159,6 +171,7 @@ export default function SearchBar({
           type="text"
           value={localValue}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           placeholder={placeholder}
           aria-label="記事を検索"
         />

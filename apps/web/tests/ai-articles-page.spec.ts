@@ -16,7 +16,11 @@ import AxeBuilder from "@axe-core/playwright";
 
 // ページオブジェクトモデル（POM）パターン
 class AIArticlesPage {
-    constructor(private page: Page) { }
+    constructor(public page: Page) { }
+
+    async waitForTimeout(ms: number) {
+        await this.page.waitForTimeout(ms);
+    }
 
     async goto() {
         await this.page.goto('/ai-articles', { waitUntil: 'domcontentloaded' });
@@ -78,7 +82,7 @@ class AIArticlesPage {
     async search(query: string) {
         await this.searchInput.fill(query);
         // デバウンス待機
-        await this.page.waitForTimeout(500);
+        await this.waitForTimeout(500);
     }
 
     async clearSearch() {
@@ -156,7 +160,7 @@ test.describe("AI Articles ページ - 検索機能", () => {
         if (hasSearchInput) {
             // 検索フィールドに入力
             await aiArticlesPage.searchInput.fill("LLM");
-            await aiArticlesPage.page.waitForTimeout(300);
+            await aiArticlesPage.waitForTimeout(300);
 
             // クリアボタンが表示されるか確認
             const hasClearButton = await aiArticlesPage.searchClearButton.isVisible().catch(() => false);

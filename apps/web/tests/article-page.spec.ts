@@ -17,6 +17,14 @@ import AxeBuilder from "@axe-core/playwright";
 class ArticlePage {
     constructor(private page: Page) { }
 
+    async waitForTimeout(ms: number) {
+        await this.page.waitForTimeout(ms);
+    }
+
+    locator(selector: string) {
+        return this.page.locator(selector);
+    }
+
     async goto() {
         await this.page.goto('/article', { waitUntil: 'domcontentloaded' });
         await this.page.waitForSelector('h1', { timeout: 10000 });
@@ -105,13 +113,19 @@ test.describe("Article ページ - ユーザージャーニー", () => {
         await expect(articlePage.searchInput).toBeVisible();
     });
 
-    test("Qiita記事一覧が表示される", async () => {
+    test("Qiita記事一覧が表示される", async ({ page }) => {
         // 記事リストまたはスケルトンローダーが表示される
         // CI環境ではAPIが利用できない場合があるため、空の場合もOK
         const hasArticles = await articlePage.articleCards.count() > 0;
-        const hasEmptyState = await articlePage.page.locator('text=記事がまだ取得されていません').isVisible().catch(() => false);
+        const hasEmptyState = await articlePage.locator('text=記事が見つかりませんでした').isVisible().catch(() => false);
 
-        expect(hasArticles || hasEmptyState || true).toBe(true);
+        // 記事一覧、空の状態、またはローディング状態のいずれかが表示される
+        expect(hasArticles || hasEmptyState).toBe(true);
+        await expect(articlePage.searchInput).toHaveValue("TypeScript");
+
+        // Escapeキーでクリア（実装によっては動作しない場合もある）
+        await page.keyboard.press("Escape");
+        await expect(articlePage.searchInput).toHaveValue("");
     });
 
     test("現在ページのナビゲーションリンクが強調表示される", async ({ page }) => {
@@ -143,7 +157,7 @@ test.describe("Article ページ - 検索機能", () => {
     test("検索をクリアできる", async () => {
         // 検索フィールドに入力
         await articlePage.searchInput.fill("React");
-        await articlePage.page.waitForTimeout(300);
+        await articlePage.waitForTimeout(300);
 
         // クリアボタンが表示されるか確認
         const hasClearButton = await articlePage.searchClearButton.isVisible().catch(() => false);
