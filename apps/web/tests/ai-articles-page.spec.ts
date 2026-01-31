@@ -228,7 +228,7 @@ test.describe("AI Articles ページ - タグフィルター", () => {
         if (articleCount > 0) {
             // タグボタンが表示される
             const tagCount = await aiArticlesPage.tagButtons.count();
-            expect(tagCount).toBeGreaterThanOrEqual(0);
+            expect(tagCount).toBeGreaterThan(0);
         }
     });
 
